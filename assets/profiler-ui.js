@@ -18,6 +18,7 @@
   var results = document.getElementById('results');
   var downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
   var copyJsonBtn = document.getElementById('copyJsonBtn');
+  var announcer = document.getElementById('resultsAnnouncer');
 
   var currentResult = null;
   var currentName = '';
@@ -49,10 +50,16 @@
   // ── Event wiring ─────────────────────────────────────────────────────────
   dropzone.addEventListener('click', function () { fileInput.click(); });
   dropzone.addEventListener('keydown', function (e) {
+    // Ignore keydowns bubbling up from the nested "sample" button - otherwise
+    // pressing Enter/Space to activate it also re-triggers the file picker.
+    if (e.target !== dropzone) return;
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
   });
   fileInput.addEventListener('change', function (e) {
     if (e.target.files && e.target.files[0]) readFile(e.target.files[0]);
+    // The hidden input can't visibly hold focus after the native picker
+    // closes - return it to the dropzone so keyboard users aren't stranded.
+    dropzone.focus();
   });
   ['dragenter', 'dragover'].forEach(function (ev) {
     dropzone.addEventListener(ev, function (e) {
@@ -115,7 +122,11 @@
 
   // ── Rendering ─────────────────────────────────────────────────────────────
   var GRADE_COLOR = { A: 'var(--accent3)', B: 'var(--accent3)',
-                      C: '#b08a2f', D: 'var(--accent)', F: 'var(--accent)' };
+                      C: 'var(--warn)', D: 'var(--accent)', F: 'var(--accent)' };
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
   function pct(x) { return (x * 100).toFixed(1) + '%'; }
   function esc(s) {
@@ -167,7 +178,12 @@
     renderIntersections(r.intersections);
 
     results.hidden = false;
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    results.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+
+    announcer.textContent = 'Profile complete for ' + name + ': score ' + r.overall_score +
+      ' out of 100, grade ' + r.grade + '. ' + r.dimensions.length + ' demographic dimension' +
+      (r.dimensions.length === 1 ? '' : 's') + ' detected' +
+      (r.flags.length ? ', ' + r.flags.length + ' flag' + (r.flags.length === 1 ? '' : 's') + ' raised.' : '.');
   }
 
   function dimCard(d) {
