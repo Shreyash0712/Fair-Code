@@ -15,6 +15,9 @@ dependencies = [
     "pandas>=2.0",
 ]
 
+[project.optional-dependencies]
+excel = ["openpyxl>=3.0"]
+
 [project.urls]
 Homepage = "https://github.com/yakew7/Fair-Code"
 Website = "https://fair-code-five.vercel.app"

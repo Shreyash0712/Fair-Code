@@ -5,7 +5,7 @@
    same numbers as the Python CLI for the same CSV. All analysis runs locally
    in the browser - the file never leaves the visitor's machine.
 
-   Exposes window.FairCodeProfiler = { parseCSV, profile }.
+   Exposes window.FairCodeProfiler = { parseCSV, sniffDelimiter, profile }.
    ════════════════════════════════════════════════════════════════════════ */
 (function (global) {
   'use strict';
@@ -33,10 +33,30 @@
 
   var DATE_RE = /\d{1,4}[/-]\d{1,2}[/-]\d{1,4}/;
 
-  // ── CSV parsing ────────────────────────────────────────────────────────
+  // ── Delimiter sniffing (SPEC-adjacent; mirrors faircode/loaders.py) ─────
+  // Picks whichever of , \t ; | appears the same number of times on every
+  // sampled line - so a tab-separated export saved as .csv still parses.
+  var DELIMITER_CANDIDATES = [',', '\t', ';', '|'];
+
+  function sniffDelimiter(text) {
+    var sample = text.slice(0, 8192).split(/\r\n|\r|\n/).filter(Boolean).slice(0, 5);
+    if (!sample.length) return ',';
+    var best = ',', bestCount = -1;
+    DELIMITER_CANDIDATES.forEach(function (d) {
+      var counts = sample.map(function (line) { return line.split(d).length - 1; });
+      var first = counts[0];
+      if (first <= 0) return;
+      var consistent = counts.every(function (c) { return c === first; });
+      if (consistent && first > bestCount) { bestCount = first; best = d; }
+    });
+    return best;
+  }
+
+  // ── CSV/TSV parsing ──────────────────────────────────────────────────────
   // Handles quoted fields, escaped quotes (""), and newlines inside quotes.
-  function parseCSV(text) {
+  function parseCSV(text, delimiter) {
     if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
+    delimiter = delimiter || sniffDelimiter(text);
     var rows = [], field = '', row = [], inQuotes = false;
     for (var i = 0; i < text.length; i++) {
       var c = text[i];
@@ -47,7 +67,7 @@
         } else field += c;
       } else if (c === '"') {
         inQuotes = true;
-      } else if (c === ',') {
+      } else if (c === delimiter) {
         row.push(field); field = '';
       } else if (c === '\n' || c === '\r') {
         if (c === '\r' && text[i + 1] === '\n') i++;
@@ -380,5 +400,5 @@
     };
   }
 
-  global.FairCodeProfiler = { parseCSV: parseCSV, profile: profile };
+  global.FairCodeProfiler = { parseCSV: parseCSV, sniffDelimiter: sniffDelimiter, profile: profile };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

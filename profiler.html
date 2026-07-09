@@ -92,12 +92,13 @@
     </section>
 
     <section class="dropzone" id="dropzone" tabindex="0" role="button"
-             aria-label="Upload a CSV file or click to browse">
-      <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+             aria-label="Upload a CSV or TSV file, or click to browse">
+      <input type="file" id="fileInput" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
       <div class="dropzone-inner">
         <div class="dropzone-icon">⊕</div>
-        <p class="dropzone-title">Drop a CSV here, or <span class="link">browse</span></p>
-        <p class="dropzone-hint">Plain comma-separated values, with a header row.</p>
+        <p class="dropzone-title">Drop a CSV or TSV here, or <span class="link">browse</span></p>
+        <p class="dropzone-hint">Comma- or tab-separated values, with a header row. (Excel files:
+        use <code>faircode profile data.xlsx</code> from the CLI.)</p>
         <button class="sample-btn" id="sampleBtn" type="button">Try it with a sample dataset</button>
       </div>
     </section>

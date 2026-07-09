@@ -78,8 +78,14 @@
   copyJsonBtn.addEventListener('click', copyResultAsJSON);
 
   function readFile(file) {
-    if (!/\.csv$/i.test(file.name) && file.type !== 'text/csv') {
-      return showError('Please choose a .csv file.');
+    if (/\.xlsx$/i.test(file.name)) {
+      return showError('Excel (.xlsx) isn\'t supported in the browser profiler yet - ' +
+        'run "faircode profile ' + file.name + '" from the CLI, or export to CSV/TSV first.');
+    }
+    var okExt = /\.(csv|tsv)$/i.test(file.name);
+    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values';
+    if (!okExt && !okType) {
+      return showError('Please choose a .csv or .tsv file.');
     }
     var reader = new FileReader();
     reader.onload = function () { runText(String(reader.result), file.name); };

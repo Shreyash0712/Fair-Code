@@ -1,10 +1,13 @@
 """Command-line interface for the Fair Code dataset profiler.
 
     faircode profile data.csv
+    faircode profile data.tsv
+    faircode profile data.xlsx
     faircode profile data.csv --json
     faircode profile data.csv --html report.html
 
 Uses only stdlib argparse + pandas (no heavyweight profiling dependency).
+Reading .xlsx additionally requires the optional 'openpyxl' extra.
 """
 
 from __future__ import annotations
@@ -12,9 +15,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-import pandas as pd
-
 from . import __version__
+from .loaders import read_table
 from .profiler import profile
 from .report import to_html, to_json, to_terminal
 
@@ -28,8 +30,8 @@ def main(argv: list[str] | None = None) -> int:
                         version=f"faircode {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("profile", help="profile a CSV for demographic imbalance")
-    p.add_argument("csv", help="path to the CSV file")
+    p = sub.add_parser("profile", help="profile a dataset for demographic imbalance")
+    p.add_argument("csv", help="path to the dataset file (.csv, .tsv, or .xlsx)")
     p.add_argument("--json", action="store_true", help="emit JSON to stdout")
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
@@ -38,12 +40,15 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "profile":
         try:
-            df = pd.read_csv(args.csv)
+            df = read_table(args.csv)
         except FileNotFoundError:
             print(f"error: file not found: {args.csv}", file=sys.stderr)
             return 2
+        except RuntimeError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
         except Exception as exc:  # noqa: BLE001 - surface any parse failure plainly
-            print(f"error: could not read CSV: {exc}", file=sys.stderr)
+            print(f"error: could not read dataset: {exc}", file=sys.stderr)
             return 2
 
         result = profile(df)

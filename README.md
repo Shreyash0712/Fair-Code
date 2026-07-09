@@ -650,15 +650,20 @@ no train/test split, no proxy removal.
 It ships in two forms that share one analysis spec ([faircode/SPEC.md](faircode/SPEC.md)), so the
 same CSV produces the same numbers in both:
 
-**Web - drop in a CSV, audit it in your browser.** Open **[profiler.html](profiler.html)** (linked
-from the site nav, live at [fair-code-five.vercel.app](https://fair-code-five.vercel.app)). All
-analysis runs client-side - **your file never leaves your browser**, which matters for health data.
+**Web - drop in a CSV or TSV, audit it in your browser.** Open **[profiler.html](profiler.html)**
+(linked from the site nav, live at [fair-code-five.vercel.app](https://fair-code-five.vercel.app)).
+All analysis runs client-side - **your file never leaves your browser**, which matters for health
+data. (Excel `.xlsx` isn't supported client-side yet - use the CLI below.)
 
-**CLI - `faircode`.**
+**CLI - `faircode`.** Reads `.csv`, `.tsv`, and `.xlsx` (delimiter is auto-detected for anything
+else); `.xlsx` needs the optional `excel` extra.
 
 ```bash
 pip install -e .                                   # installs the faircode console script
+pip install -e ".[excel]"                          # + .xlsx support (openpyxl)
 faircode profile "Insurance Denial/insurance.csv"  # terminal report
+faircode profile data.tsv                          # tab-separated exports work too
+faircode profile data.xlsx                         # Excel workbooks work too
 faircode profile data.csv --json                   # machine-readable
 faircode profile data.csv --html report.html       # standalone HTML report
 ```
