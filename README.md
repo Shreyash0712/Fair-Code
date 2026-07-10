@@ -104,7 +104,8 @@ Three of the six audits are healthcare or welfare-system models. Each demonstrat
 **Upcoming healthcare AI explainers:**
 
 - Why Accuracy Is Not Enough in Healthcare AI - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
-- False Positives and False Negatives in Medical Risk Models - how the direction of error matters, and why false negatives cluster in historically undertreated groups
+
+Read the published explainer: [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups.
 
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
@@ -180,7 +181,8 @@ Fair-Code/
 │   ├── distribution-shift.md
 │   ├── ai-objectivity-myth.md
 │   ├── confounding-variable.md
-│   └── predictive-parity.md
+│   ├── predictive-parity.md
+│   └── false-positives-vs-false-negatives.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -569,6 +571,7 @@ features = [
 | [The Biggest Myth About AI Objectivity](explainers/ai-objectivity-myth.md) | Why "it's just math" isn't a defense - models trained on biased history produce biased outcomes, and the math just makes them harder to challenge |
 | [What Is a Confounding Variable?](explainers/confounding-variable.md) | How a hidden third variable creates spurious correlations between a feature and an outcome - and why removing the protected attribute leaves the bias intact until the confounder is removed too |
 | [What Is Predictive Parity?](explainers/predictive-parity.md) | Why the ProPublica vs Northpointe COMPAS dispute was really two correct fairness checks that cannot both hold when base rates differ |
+| [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) | Why the direction of a model's error matters in medicine, and why false negatives cluster in historically undertreated groups even when overall accuracy looks fine |
 
 ---
 
@@ -723,8 +726,8 @@ directly. Run the tests with `pytest tests/`.
 - [x] Explainer: The Biggest Myth About AI Objectivity
 - [x] Explainer: What Is a Confounding Variable?
 - [x] Explainer: What Is Predictive Parity?
+- [x] Explainer: False Positives vs. False Negatives in Medical Risk Models
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
-- [ ] Explainer: False Positives and False Negatives in Medical Risk Models
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
 - [ ] LLM bias audit
@@ -750,7 +753,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Forks | 8+ |
 | Combined Social Reach (Instagram + LinkedIn) | ~10K |
 | Code Audits Published | 6 |
-| Explainers Published | 23 |
+| Explainers Published | 24 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

@@ -4,6 +4,21 @@ All notable changes to Fair Code are documented here.
 
 ---
 
+## [1.2.2] - 10 Jul 2026
+### Added
+- Explainer: False Positives vs. False Negatives in Medical Risk Models - `false-positives-vs-false-negatives.md` created, added to `index.html`, `README.md`, and `CONTRIBUTING.md`
+  - Full explainer covering the false positive / false negative trade-off at a model's decision threshold, and why asymmetric clinical costs (a missed diagnosis vs. a false alarm) make this trade-off higher-stakes in medical risk models than elsewhere
+  - Comparison table contrasting false positives and false negatives by immediate cost, downstream cost, and who absorbs each
+  - Real-world proof anchored to Audit 06 (Healthcare Readmission): its published demographic parity gaps (race 0.08% to 0.06%, age 0.28% to 0.09%), paired with Obermeyer et al.'s 2019 finding that correcting a cost-as-proxy-for-illness algorithm would raise the share of Black patients identified for extra care from 17.7% to 46.5%
+  - Detection code: `error_rate_gaps()` and `cost_weighted_threshold()` - pandas/scikit-learn group-wise FPR/FNR computation and a cost-weighted threshold sweep
+  - Four numbered limitations (cost-ratio value judgments, per-group threshold vs. disparate treatment, small-subgroup FPR/FNR noise, equal error rates not guaranteeing equal outcomes), cross-links to equalized-odds, calibration, predictive-parity, and disparate-treatment, and three further reading citations (Obermeyer et al. 2019, Rajkomar et al. 2018, Chouldechova 2017)
+  - Nav dropdown (desktop + mobile), ticker strips, and roadmap updated on website
+### Changed
+- `README.md`: `false-positives-vs-false-negatives.md` added to explainers table, repository structure tree, and What's Next checklist; corresponding item in the Healthcare AI Bias Focus "Upcoming" list replaced with a link to the published explainer; Traction explainer count updated to 24
+- `CONTRIBUTING.md`: `false-positives-vs-false-negatives.md` added to existing explainers table
+
+---
+
 ## [1.2.1] - 6 Jul 2026
 ### Added
 - Explainer: Predictive Parity - `predictive-parity.md` created (contributed by @propcgamer20-png), added to `index.html`, `README.md`, and `CONTRIBUTING.md`

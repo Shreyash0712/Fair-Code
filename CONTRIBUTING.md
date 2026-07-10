@@ -274,6 +274,7 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `ai-objectivity-myth.md` | Why "it's just math" isn't a defense - models trained on biased history reproduce that bias |
 | `confounding-variable.md` | How a hidden third variable creates spurious correlations that persist after protected-attribute removal - and how to detect and adjust for it |
 | `predictive-parity.md` | Why an equally trustworthy positive prediction across groups can still hide an unequal false-positive burden |
+| `false-positives-vs-false-negatives.md` | Why the direction of a model's error matters in medicine, and why false negatives cluster in historically undertreated groups |
 
 ### A good explainer should include
 

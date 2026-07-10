@@ -167,4 +167,11 @@ window.FAIR_CODE_EXPLAINERS = [
     summary: 'Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.',
     tags: ['metrics', 'detection'],
   },
+  {
+    slug: 'false-positives-vs-false-negatives',
+    title: 'False Positives vs. False Negatives in Medical Risk Models',
+    subtitle: 'When a missed high-risk flag costs more than a false alarm',
+    summary: 'Learn why a single accuracy or AUC number can hide two very different kinds of mistakes, and why a missed diagnosis and a false alarm are almost never equally costly. See how one global decision threshold can produce equal overall accuracy while still leaving very different false negative rates across demographic groups.',
+    tags: ['metrics', 'detection'],
+  },
 ];
