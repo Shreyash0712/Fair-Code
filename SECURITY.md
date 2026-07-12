@@ -44,7 +44,7 @@ Because these projects are primarily data analysis scripts and a static website,
 
 - **Dependency vulnerabilities** - a Python package or npm dependency with a known CVE that could affect users who clone and run the code
 - **Script injection** - any way a specially crafted dataset could cause `unfair.py` or `fair.py` to execute arbitrary code on a user's machine
-- **Website vulnerabilities** - XSS, CSP bypass, or any injection vector in `index.html` that could affect visitors to [fair-code-five.vercel.app](https://fair-code-five.vercel.app)
+- **Website vulnerabilities** - XSS, CSP bypass, or any injection vector in `index.html` that could affect visitors to [thefaircode.xyz](https://www.thefaircode.xyz)
 - **Dependency confusion / supply chain** - a malicious package name collision in `requirements.txt` or any future `package.json`
 - **Data exposure** - if any future dataset or file in the repo inadvertently contains personally identifiable information (PII) that was not intended to be public
 

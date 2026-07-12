@@ -22,7 +22,7 @@ jobs:
 
             Fair Code exists because bias in AI has real consequences for real people, so every issue matters here, whether it's a bug, a dataset question, or something that just didn't feel right. We'll take a look and get back to you.
 
-            In the meantime, feel free to explore the [live audits](https://fair-code-five.vercel.app) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.
+            In the meantime, feel free to explore the [live audits](https://www.thefaircode.xyz) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.
           pr-message: |
             Hey @${{ github.actor }}, your first PR on Fair Code, that's awesome, thank you.
 

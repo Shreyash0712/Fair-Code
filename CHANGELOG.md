@@ -4,11 +4,22 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.2.3-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.2.4-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.2.4] - 12 Jul 2026
+### Changed
+- Live site domain moved from `fair-code-five.vercel.app` to **[thefaircode.xyz](https://www.thefaircode.xyz)**
+  - `README.md`: live-website link, repository-structure comment, Open Dataset Profiler section, and Website section updated to the new domain
+  - `SECURITY.md`: website-vulnerability scope link updated
+  - `CITATION.cff`: `url` field updated
+  - `pyproject.toml`: `project.urls.Website` updated
+  - `.github/workflows/first.interaction.yml`: first-issue greeting link updated
 
 ---
 

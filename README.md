@@ -6,7 +6,7 @@
 
 **by [Yash Kewlani](https://github.com/yakew7) · [@thefaircodeproject](https://instagram.com/thefaircodeproject)**
 
-[🌐 Live website](https://fair-code-five.vercel.app) · [📓 Notebooks](#projects) · [🧠 Explainers](#explainers) · [🤝 Contribute](CONTRIBUTING.md)
+[🌐 Live website](https://www.thefaircode.xyz) · [📓 Notebooks](#projects) · [🧠 Explainers](#explainers) · [🤝 Contribute](CONTRIBUTING.md)
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-orange?style=flat-square&logo=scikit-learn)
@@ -193,7 +193,7 @@ Fair-Code/
 ├── SECURITY.md
 ├── assets/                              # web assets (CSS + JS)
 │   └── profiler-engine.js, profiler-ui.js, profiler.css   # client-side profiler
-├── index.html                           # live at fair-code-five.vercel.app
+├── index.html                           # live at thefaircode.xyz
 ├── profiler.html                        # Open Dataset Profiler - client-side web tool
 └── requirements.txt
 ```
@@ -656,7 +656,7 @@ It ships in two forms that share one analysis spec ([faircode/SPEC.md](faircode/
 same CSV produces the same numbers in both:
 
 **Web - drop in a CSV or TSV, audit it in your browser.** Open **[profiler.html](profiler.html)**
-(linked from the site nav, live at [fair-code-five.vercel.app](https://fair-code-five.vercel.app)).
+(linked from the site nav, live at [thefaircode.xyz](https://www.thefaircode.xyz)).
 All analysis runs client-side - **your file never leaves your browser**, which matters for health
 data. (Excel `.xlsx` isn't supported client-side yet - use the CLI below.)
 
@@ -774,7 +774,7 @@ See the full contributor list on [GitHub](https://github.com/yakew7/Fair-Code/gr
 
 ## Website
 
-The full project is at **[fair-code-five.vercel.app](https://fair-code-five.vercel.app)** - everything in this repo presented visually, with before/after terminal outputs, bias bar charts, search and filter across all audits and explainers, copy buttons on every code block, share links per audit, and light/dark mode.
+The full project is at **[thefaircode.xyz](https://www.thefaircode.xyz)** - everything in this repo presented visually, with before/after terminal outputs, bias bar charts, search and filter across all audits and explainers, copy buttons on every code block, share links per audit, and light/dark mode.
 
 ---
 
