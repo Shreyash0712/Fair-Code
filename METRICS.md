@@ -1,6 +1,18 @@
+<div align="center">
+
 # Fair Code - Metrics Tracker
 
+![Stars](https://img.shields.io/badge/Stars-27-brightgreen?style=flat-square&logo=github)
+![Contributors](https://img.shields.io/badge/Contributors-7-blue?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-8-orange?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-23-blueviolet?style=flat-square)
+![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
+
 Weekly snapshot of project health. Updated every Friday.
+
+[How to Update](#how-to-update) · [Weekly Metrics](#weekly-metrics) · [Targets](#targets) · [Notes](#notes)
+
+</div>
 
 ---
 

@@ -1,4 +1,10 @@
+<div align="center">
+
 # Fair Code Profiler - Analysis Spec
+
+![Source of Truth](https://img.shields.io/badge/Source%20of%20Truth-Single%20Spec-blue?style=flat-square)
+![Engines](https://img.shields.io/badge/Engines-Python%20%2B%20JS-orange?style=flat-square)
+![Parity](https://img.shields.io/badge/Parity-Bit--for--Bit-brightgreen?style=flat-square)
 
 This is the **single source of truth** for the Open Dataset Profiler. Both implementations -
 the Python engine (`faircode/profiler.py`) and the browser engine (`assets/profiler-engine.js`) -
@@ -8,6 +14,10 @@ The Profiler is **diagnostic**, not predictive. It audits a dataset's *demograph
 before any model is trained. It does not train models, drop columns, or measure prediction gaps -
 that is what the `unfair.py` / `fair.py` audits do. The Profiler answers a different question:
 **"who is, and is not, adequately represented in this data?"**
+
+[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune)
+
+</div>
 
 ---
 

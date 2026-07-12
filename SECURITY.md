@@ -1,6 +1,16 @@
+<div align="center">
+
 # Security Policy
 
-> *This document applies to **Fair Code** (`yakew7/Fair-Code`) and any other repository under this account that links to it.*
+![Responsible Disclosure](https://img.shields.io/badge/Disclosure-Coordinated-blue?style=flat-square)
+![Response Time](https://img.shields.io/badge/Acknowledgement-%3C48h-brightgreen?style=flat-square)
+![Supported](https://img.shields.io/badge/Supported-main%20branch-success?style=flat-square)
+
+*This document applies to **Fair Code** (`yakew7/Fair-Code`) and any other repository under this account that links to it.*
+
+[Scope](#scope) · [Supported Versions](#supported-versions) · [What Counts](#what-counts-as-a-vulnerability) · [Reporting](#reporting-a-vulnerability) · [Timeline](#response-timeline) · [Disclosure](#disclosure-policy)
+
+</div>
 
 ---
 

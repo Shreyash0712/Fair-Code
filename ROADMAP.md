@@ -1,8 +1,20 @@
+<div align="center">
+
 # Fair Code - Public Roadmap
+
+![Phase 1](https://img.shields.io/badge/Phase%201-Complete-brightgreen?style=flat-square)
+![Phase 2](https://img.shields.io/badge/Phase%202-In%20Progress-yellow?style=flat-square)
+![Phase 3](https://img.shields.io/badge/Phase%203-In%20Progress-yellow?style=flat-square)
+![Phase 4](https://img.shields.io/badge/Phase%204-In%20Progress-yellow?style=flat-square)
+![Phase 5](https://img.shields.io/badge/Phase%205-Planned-lightgrey?style=flat-square)
 
 This is the public roadmap for Fair Code. It tracks what has been built, what is actively in progress, and what comes next.
 
-Last updated: June 2026
+*Last updated: June 2026*
+
+[Where We Are](#where-we-are) · Phase 1 · Phase 2 · Phase 3 · Phase 4 · Phase 5 · [Content Schedule](#content-schedule) · [How to Contribute](#how-to-contribute)
+
+</div>
 
 ---
 
@@ -11,13 +23,10 @@ Last updated: June 2026
 Fair Code is an open-source responsible AI platform explaining algorithmic bias, fairness, and AI accountability through code audits, explainers, healthcare-bias case studies, and contributor-led GitHub documentation.
 
 **Current traction (June 2026):**
-- 27+ GitHub stars
-- 7+ external contributors
-- 8+ forks
-- 10K+ combined social reach (Instagram + LinkedIn)
-- 6 published code audits
-- 22 published explainers
-- CI pipeline running on every push and PR
+
+| Stars | Contributors | Forks | Social Reach | Audits | Explainers | CI |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| 27+ | 7+ | 8+ | 10K+ | 6 | 22 | ✅ every push/PR |
 
 ---
 

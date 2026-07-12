@@ -1,6 +1,14 @@
+<div align="center">
+
 # Changelog
 
-All notable changes to Fair Code are documented here.
+![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
+![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.2.3-brightgreen?style=flat-square)
+
+All notable changes to Fair Code are documented here, newest first.
+
+</div>
 
 ---
 
@@ -48,6 +56,9 @@ All notable changes to Fair Code are documented here.
 - `CONTRIBUTING.md`: `predictive-parity.md` added to existing explainers table
 
 ---
+
+<details>
+<summary><strong>Older releases (v1.2.0 and earlier)</strong> - click to expand</summary>
 
 ## [1.2.0] - "Open Tools & Causal Foundations" - 30 Jun 2026
 
@@ -332,3 +343,5 @@ First release since **v1.1.0** (9 Jun 2026). The headline is the **Open Dataset 
 - Interactive website (`index.html`) deployed at fair-code-five.vercel.app
   - Light mode, mobile-responsive layout
 - README with project overview, results table, and methodology
+
+</details>
