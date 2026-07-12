@@ -4,6 +4,21 @@ All notable changes to Fair Code are documented here.
 
 ---
 
+## [1.2.3] - 12 Jul 2026
+### Added
+- Explainer: What Is Supervised Learning? - `supervised-learning.md` created, added to `index.html`, `README.md`, and `CONTRIBUTING.md`
+  - Full explainer covering the input-label-mapping mechanism behind every audit in this repo: features and a ground-truth label go in, a fitted model that generalises to unseen inputs comes out
+  - Walks through `train_test_split` and `model.fit()` in the AI Fair Recruitment audit's `unfair.py` directly, showing the learning step has no way to distinguish a legitimate pattern from a discriminatory one
+  - Real-world proof anchored to Audit 02 (AI Fair Recruitment): the published 4.51% gender hiring gap collapsing to 0.12% (97.3% reduction) once gender and age are dropped from the feature set, with German Credit Lending (Audit 03) referenced as a second supervised task with a different label type
+  - Detection code: `train_supervised_classifier()` and `compare_label_vs_prediction_gap()` - pandas/scikit-learn training on labeled data plus a group-wise comparison of the label gap against the prediction gap on held-out rows
+  - Four numbered limitations (label as proxy for the real target, matching labels not implying fairness, mapping expiry under population shift, generalisation assuming the future resembles the past), cross-links to label-bias, ml-bias, distribution-shift, and calibration, and three further reading citations (Hastie, Tibshirani & Friedman; Barocas, Hardt & Narayanan; Mehrabi et al. 2021)
+  - Nav dropdown (desktop + mobile), ticker strips, and roadmap updated on website
+### Changed
+- `README.md`: `supervised-learning.md` added to explainers table, repository structure tree, and What's Next checklist
+- `CONTRIBUTING.md`: `supervised-learning.md` added to existing explainers table
+
+---
+
 ## [1.2.2] - 10 Jul 2026
 ### Added
 - Explainer: False Positives vs. False Negatives in Medical Risk Models - `false-positives-vs-false-negatives.md` created, added to `index.html`, `README.md`, and `CONTRIBUTING.md`

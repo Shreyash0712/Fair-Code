@@ -182,7 +182,8 @@ Fair-Code/
 │   ├── ai-objectivity-myth.md
 │   ├── confounding-variable.md
 │   ├── predictive-parity.md
-│   └── false-positives-vs-false-negatives.md
+│   ├── false-positives-vs-false-negatives.md
+│   └── supervised-learning.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -572,6 +573,7 @@ features = [
 | [What Is a Confounding Variable?](explainers/confounding-variable.md) | How a hidden third variable creates spurious correlations between a feature and an outcome - and why removing the protected attribute leaves the bias intact until the confounder is removed too |
 | [What Is Predictive Parity?](explainers/predictive-parity.md) | Why the ProPublica vs Northpointe COMPAS dispute was really two correct fairness checks that cannot both hold when base rates differ |
 | [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) | Why the direction of a model's error matters in medicine, and why false negatives cluster in historically undertreated groups even when overall accuracy looks fine |
+| [What Is Supervised Learning?](explainers/supervised-learning.md) | How a model turns labeled examples into a decision rule, and why it reproduces whatever pattern - fair or not - sits in the labels it's trained on |
 
 ---
 
@@ -727,6 +729,7 @@ directly. Run the tests with `pytest tests/`.
 - [x] Explainer: What Is a Confounding Variable?
 - [x] Explainer: What Is Predictive Parity?
 - [x] Explainer: False Positives vs. False Negatives in Medical Risk Models
+- [x] Explainer: What Is Supervised Learning?
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias

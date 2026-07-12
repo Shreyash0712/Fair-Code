@@ -174,4 +174,11 @@ window.FAIR_CODE_EXPLAINERS = [
     summary: 'Learn why a single accuracy or AUC number can hide two very different kinds of mistakes, and why a missed diagnosis and a false alarm are almost never equally costly. See how one global decision threshold can produce equal overall accuracy while still leaving very different false negative rates across demographic groups.',
     tags: ['metrics', 'detection'],
   },
+  {
+    slug: 'supervised-learning',
+    title: 'What Is Supervised Learning?',
+    subtitle: 'Teaching a model to reproduce exactly what it was shown',
+    summary: 'See how a model turns labeled examples into a decision rule by walking through the AI Fair Recruitment audit\'s train/test split and fit step directly. Includes detection code that compares the gap in a dataset\'s labels against the gap in a trained model\'s own predictions.',
+    tags: ['explainability', 'data'],
+  },
 ];
