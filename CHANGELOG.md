@@ -4,11 +4,26 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.2.5-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.0-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.3.0] - 13 Jul 2026
+### Added
+- Intersectional bias analysis - auditing two protected attributes at once, so the doubly-disadvantaged group at their intersection is measured directly instead of being averaged away into each single-axis gap (closes the roadmap's last open Phase 5 item)
+  - **`intersectional_report()` in [`faircode/significance.py`](faircode/significance.py)** - takes an outcome and two boolean masks (each marking the disadvantaged side of one attribute), splits the population into the four `mask_a × mask_b` quadrants, and compares the doubly-disadvantaged cell against the baseline cell with the same bootstrap CI + permutation p-value the single-axis audits already use. Also returns each attribute's marginal gap (what it would report on its own), a `superadditive` flag (true when the compounded gap exceeds the sum of the two marginals), and per-quadrant rates/sizes so a thin intersection cell is visible before the small-sample warning fires. Pure numpy/pandas, no new dependencies
+  - **Wired into the three audits that already track 2+ protected attributes**, as a new printed block after the existing single-attribute output in both `unfair.py` and `fair.py`: Insurance Denial (age × sex), Benefits Denial (sex × race), Healthcare Readmission (sex × race). COMPAS, AI Fair Recruitment, and German Credit Lending track one attribute each and are unchanged - there is nothing to cross
+  - **Notebook: [`07_intersectional_bias_audit.ipynb`](notebooks/07_intersectional_bias_audit.ipynb)** - explains what intersectionality means (Crenshaw 1989) and why marginal fairness gaps can hide a worse compounded one, then runs `intersectional_report` on the biased vs. mitigated models for all three pairs. Finding: proxy removal closes the intersectional gap roughly in step with the marginals for Benefits and Healthcare, but for Insurance the marginal age/sex gaps shrink while the young-women gap does not, tipping the mitigated model into superadditive territory - the harm a marginal-only audit could not surface
+  - Three new tests in `tests/test_significance.py` (additive → not superadditive, superadditive → flagged and significant, small doubly-disadvantaged cell → warning) - 50 significance tests passing
+### Changed
+- `README.md`: methodology note that audits tracking 2+ protected attributes also report an intersectional (combined) gap, linking notebook 07
+- `ROADMAP.md`: Phase 5 "Intersectional bias notebook" item marked complete
+- `CONTRIBUTING.md`: audit-script template now asks audits tracking 2+ attributes to report at least one intersectional pair with `intersectional_report`, following the three wired audits
+- `CITATION.cff`: version `1.2.0` → `1.3.0`; release date updated to 2026-07-13; abstract extended to cover intersectional bias analysis
 
 ---
 

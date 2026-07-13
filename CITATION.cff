@@ -8,7 +8,9 @@ abstract: "An open-source research project that exposes and fixes bias in
   fairness gap, removes protected attributes and proxy variables, and proves
   the reduction with reproducible code and public datasets. Includes the Open
   Dataset Profiler (CLI and client-side web tool) for auditing any tabular
-  dataset's demographic representation before a model is trained."
+  dataset's demographic representation before a model is trained, and
+  intersectional analysis that measures the compounded gap on the group at
+  the intersection of two protected attributes."
 authors:
   - family-names: Kewlani
     given-names: Yash
@@ -17,8 +19,8 @@ authors:
 repository-code: "https://github.com/yakew7/Fair-Code"
 url: "https://www.thefaircode.xyz"
 license: MIT
-version: "1.2.0"
-date-released: "2026-06-30"
+version: "1.3.0"
+date-released: "2026-07-13"
 keywords:
   - algorithmic-fairness
   - bias-detection
@@ -26,6 +28,7 @@ keywords:
   - ai-ethics
   - proxy-variables
   - demographic-parity
+  - intersectionality
   - dataset-profiling
   - compas
   - python
