@@ -161,6 +161,38 @@
       </div>
     </section>
 
+    <!-- ── Compare two datasets: representation drift ─────────────────── -->
+    <section class="compare-block" aria-labelledby="compareHeading">
+      <h2 class="section-title" id="compareHeading">Compare two datasets — representation drift</h2>
+      <p class="section-note">
+        Profile a baseline against a later snapshot — training vs. production, last quarter vs. this
+        one — to see how each demographic dimension's representation shifted. Drift is measured with
+        the Population Stability Index (PSI). Both files stay in your browser.
+      </p>
+
+      <div class="compare-drops">
+        <div class="mini-drop" id="dropA" tabindex="0" role="button"
+             aria-label="Upload baseline dataset A (CSV or TSV)">
+          <input type="file" id="fileA" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+          <span class="mini-drop-tag">A · Baseline</span>
+          <span class="mini-drop-name" id="nameA">Drop CSV/TSV, or <span class="link">browse</span></span>
+        </div>
+        <div class="mini-drop" id="dropB" tabindex="0" role="button"
+             aria-label="Upload current dataset B (CSV or TSV)">
+          <input type="file" id="fileB" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+          <span class="mini-drop-tag">B · Current</span>
+          <span class="mini-drop-name" id="nameB">Drop CSV/TSV, or <span class="link">browse</span></span>
+        </div>
+      </div>
+      <div class="compare-actions">
+        <button class="sample-btn" id="compareSampleBtn" type="button">Try with sample drift data</button>
+      </div>
+
+      <p class="profiler-error" id="compareError" role="alert" hidden></p>
+      <p class="sr-only" id="compareAnnouncer" aria-live="polite" aria-atomic="true"></p>
+      <section class="compare-results" id="compareResults" hidden></section>
+    </section>
+
     <footer class="profiler-foot">
       <p>This is the web counterpart of the <code>faircode</code> CLI. Same analysis, same numbers -
       run <code>faircode profile data.csv</code> locally for terminal, JSON, and HTML reports.
@@ -172,6 +204,7 @@
 
   <script src="assets/profiler-engine.js"></script>
   <script src="assets/profiler-ui.js"></script>
+  <script src="assets/profiler-compare.js"></script>
   <script>
     (function () {
       var toggle = document.getElementById('themeToggle');

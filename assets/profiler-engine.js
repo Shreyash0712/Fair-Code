@@ -18,6 +18,11 @@
   var AGE_BANDS = [0, 18, 30, 45, 60, 75];
   var MAX_CATEGORICAL_CARD = 20;
   var MAX_DIMENSION_GROUPS = 50;
+  // Comparison / drift (SPEC section 8)
+  var PSI_EPSILON = 0.0001;
+  var PSI_MODERATE = 0.10;
+  var PSI_SIGNIFICANT = 0.25;
+  var SCORE_DROP_FLAG = 5;
 
   // Pandas-style missing tokens, so JS null-handling matches read_csv defaults.
   var NA_TOKENS = { '': 1, 'na': 1, 'n/a': 1, 'nan': 1, 'null': 1, 'none': 1 };
@@ -400,5 +405,111 @@
     };
   }
 
-  global.FairCodeProfiler = { parseCSV: parseCSV, sniffDelimiter: sniffDelimiter, profile: profile };
+  // ── Dataset comparison / drift (SPEC section 8) ────────────────────────
+  function shareMap(dim) {
+    var m = {};
+    dim.groups.forEach(function (g) { m[g.label] = g.share; });
+    return m;
+  }
+
+  function psiTerm(shareA, shareB) {
+    var a = shareA > 0 ? shareA : PSI_EPSILON;
+    var b = shareB > 0 ? shareB : PSI_EPSILON;
+    return (b - a) * Math.log(b / a);
+  }
+
+  function driftLevel(psi) {
+    if (psi >= PSI_SIGNIFICANT) return 'significant';
+    if (psi >= PSI_MODERATE) return 'moderate';
+    return 'none';
+  }
+
+  function compareDimension(dimA, dimB) {
+    var sa = shareMap(dimA), sb = shareMap(dimB);
+    var labels = {};
+    Object.keys(sa).forEach(function (l) { labels[l] = 1; });
+    Object.keys(sb).forEach(function (l) { labels[l] = 1; });
+
+    var groups = [], psiTotal = 0, tvdTotal = 0;
+    Object.keys(labels).forEach(function (label) {
+      var a = sa[label] || 0, b = sb[label] || 0;
+      psiTotal += psiTerm(a, b);
+      tvdTotal += Math.abs(b - a);
+      var status = (a === 0 && b > 0) ? 'appeared'
+                 : (a > 0 && b === 0) ? 'disappeared' : 'shifted';
+      groups.push({ label: String(label), share_a: round(a, 4),
+                    share_b: round(b, 4), share_delta: round(b - a, 4),
+                    status: status });
+    });
+    // most-shifted first, then label asc - matches Python.
+    groups.sort(function (x, y) {
+      return (Math.abs(y.share_delta) - Math.abs(x.share_delta)) ||
+             (x.label < y.label ? -1 : x.label > y.label ? 1 : 0);
+    });
+
+    return {
+      name: dimA.name, kind: dimA.kind,
+      dimension_score_a: dimA.dimension_score,
+      dimension_score_b: dimB.dimension_score,
+      dimension_score_delta: dimB.dimension_score - dimA.dimension_score,
+      psi: round(psiTotal, 4), tvd: round(0.5 * tvdTotal, 4),
+      drift_level: driftLevel(psiTotal), groups: groups
+    };
+  }
+
+  function compare(resultA, resultB, nameA, nameB) {
+    nameA = nameA || 'A'; nameB = nameB || 'B';
+    var dimsA = {}, dimsB = {};
+    resultA.dimensions.forEach(function (d) { dimsA[d.name] = d; });
+    resultB.dimensions.forEach(function (d) { dimsB[d.name] = d; });
+
+    var shared = resultA.dimensions.filter(function (d) { return dimsB[d.name]; })
+                                   .map(function (d) { return d.name; });
+    var added = resultB.dimensions.filter(function (d) { return !dimsA[d.name]; })
+                                  .map(function (d) { return d.name; });
+    var removed = resultA.dimensions.filter(function (d) { return !dimsB[d.name]; })
+                                    .map(function (d) { return d.name; });
+
+    var dimensions = shared.map(function (n) {
+      return compareDimension(dimsA[n], dimsB[n]);
+    });
+    var scoreDelta = resultB.overall_score - resultA.overall_score;
+
+    var flags = [];
+    if (scoreDelta <= -SCORE_DROP_FLAG) {
+      flags.push('overall representation score dropped ' + Math.abs(scoreDelta) +
+                 ' points (' + resultA.overall_score + ' → ' + resultB.overall_score + ')');
+    }
+    dimensions.forEach(function (cd) {
+      if (cd.drift_level !== 'none') {
+        flags.push(cd.name + ': ' + cd.drift_level +
+                   ' representation drift (PSI ' + cd.psi.toFixed(2) + ')');
+      }
+      cd.groups.forEach(function (g) {
+        if (g.status === 'appeared') {
+          flags.push(cd.name + ": '" + g.label + "' appeared (" +
+                     (g.share_a * 100).toFixed(1) + '% → ' +
+                     (g.share_b * 100).toFixed(1) + '%)');
+        } else if (g.status === 'disappeared') {
+          flags.push(cd.name + ": '" + g.label + "' disappeared (" +
+                     (g.share_a * 100).toFixed(1) + '% → ' +
+                     (g.share_b * 100).toFixed(1) + '%)');
+        }
+      });
+    });
+    added.forEach(function (n) { flags.push("dimension '" + n + "' is present only in " + nameB); });
+    removed.forEach(function (n) { flags.push("dimension '" + n + "' is present only in " + nameA); });
+
+    return {
+      a: { name: nameA, n_rows: resultA.n_rows,
+           overall_score: resultA.overall_score, grade: resultA.grade },
+      b: { name: nameB, n_rows: resultB.n_rows,
+           overall_score: resultB.overall_score, grade: resultB.grade },
+      score_delta: scoreDelta, dimensions: dimensions,
+      added_dimensions: added, removed_dimensions: removed, flags: flags
+    };
+  }
+
+  global.FairCodeProfiler = { parseCSV: parseCSV, sniffDelimiter: sniffDelimiter,
+                              profile: profile, compare: compare };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -78,6 +78,64 @@ def to_terminal(result: dict) -> str:
     return "\n".join(lines)
 
 
+def _delta(n: int) -> str:
+    return f"{n:+d}"
+
+
+def compare_to_terminal(cmp: dict) -> str:
+    """Render a compare() result (SPEC section 8) as terminal text."""
+    lines: list[str] = []
+    add = lines.append
+    a, b = cmp["a"], cmp["b"]
+
+    add("=" * WIDTH)
+    add("FAIR CODE - REPRESENTATION DRIFT  (A → B)")
+    add("=" * WIDTH)
+    add("")
+    add(f"  A  {a['name']}")
+    add(f"     {a['n_rows']:,} rows · score {a['overall_score']}/100 (Grade {a['grade']})")
+    add(f"  B  {b['name']}")
+    add(f"     {b['n_rows']:,} rows · score {b['overall_score']}/100 (Grade {b['grade']})")
+    add(f"  Overall score change: {_delta(cmp['score_delta'])} points")
+    add("")
+
+    if not cmp["dimensions"]:
+        add("  No shared demographic dimensions to compare.")
+    for cd in cmp["dimensions"]:
+        add("-" * WIDTH)
+        add(f"{cd['name']}  [{cd['kind']}]    PSI {cd['psi']:.3f}  "
+            f"({cd['drift_level']} drift)")
+        add(f"  score {cd['dimension_score_a']} → {cd['dimension_score_b']} "
+            f"({_delta(cd['dimension_score_delta'])})    TVD {cd['tvd']:.3f}")
+        add("-" * WIDTH)
+        for g in cd["groups"][:DISPLAY_GROUPS]:
+            tag = {"appeared": "  (appeared)", "disappeared": "  (disappeared)",
+                   "shifted": ""}[g["status"]]
+            add(f"  {g['label'][:18]:<18} {g['share_a'] * 100:5.1f}% → "
+                f"{g['share_b'] * 100:5.1f}%  ({g['share_delta'] * 100:+5.1f} pp){tag}")
+        if len(cd["groups"]) > DISPLAY_GROUPS:
+            add(f"  … and {len(cd['groups']) - DISPLAY_GROUPS} more groups")
+        add("")
+
+    if cmp["added_dimensions"]:
+        add(f"  Only in B: {', '.join(cmp['added_dimensions'])}")
+    if cmp["removed_dimensions"]:
+        add(f"  Only in A: {', '.join(cmp['removed_dimensions'])}")
+    if cmp["added_dimensions"] or cmp["removed_dimensions"]:
+        add("")
+
+    if cmp["flags"]:
+        add("=" * WIDTH)
+        add("DRIFT FLAGS")
+        add("=" * WIDTH)
+        for f in cmp["flags"]:
+            add(f"  ! {f}")
+        add("")
+
+    add("=" * WIDTH)
+    return "\n".join(lines)
+
+
 def to_html(result: dict) -> str:
     """A self-contained HTML report echoing the 'Audit Ledger' palette."""
     def esc(s) -> str:

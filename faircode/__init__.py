@@ -11,7 +11,8 @@ model's prediction gap, `faircode` audits a dataset's demographic representation
 See faircode/SPEC.md for the analysis spec shared with the web engine.
 """
 
+from .compare import compare
 from .profiler import profile
 
-__all__ = ["profile"]
+__all__ = ["profile", "compare"]
 __version__ = "0.1.0"

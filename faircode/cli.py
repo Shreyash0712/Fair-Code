@@ -5,6 +5,8 @@
     faircode profile data.xlsx
     faircode profile data.csv --json
     faircode profile data.csv --html report.html
+    faircode compare train.csv prod.csv
+    faircode compare train.csv prod.csv --json
 
 Uses only stdlib argparse + pandas (no heavyweight profiling dependency).
 Reading .xlsx additionally requires the optional 'openpyxl' extra.
@@ -16,9 +18,25 @@ import argparse
 import sys
 
 from . import __version__
+from .compare import compare
 from .loaders import read_table
 from .profiler import profile
-from .report import to_html, to_json, to_terminal
+from .report import compare_to_terminal, to_html, to_json, to_terminal
+
+
+def _read_or_exit(path: str):
+    """Read a table, or print a plain error and raise SystemExit(2)."""
+    try:
+        return read_table(path)
+    except FileNotFoundError:
+        print(f"error: file not found: {path}", file=sys.stderr)
+        raise SystemExit(2)
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(2)
+    except Exception as exc:  # noqa: BLE001 - surface any parse failure plainly
+        print(f"error: could not read dataset {path}: {exc}", file=sys.stderr)
+        raise SystemExit(2)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -36,22 +54,16 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
 
+    c = sub.add_parser("compare",
+                       help="compare two datasets for representation drift")
+    c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, or .xlsx)")
+    c.add_argument("csv_b", help="current dataset B (.csv, .tsv, or .xlsx)")
+    c.add_argument("--json", action="store_true", help="emit JSON to stdout")
+
     args = parser.parse_args(argv)
 
     if args.command == "profile":
-        try:
-            df = read_table(args.csv)
-        except FileNotFoundError:
-            print(f"error: file not found: {args.csv}", file=sys.stderr)
-            return 2
-        except RuntimeError as exc:
-            print(f"error: {exc}", file=sys.stderr)
-            return 2
-        except Exception as exc:  # noqa: BLE001 - surface any parse failure plainly
-            print(f"error: could not read dataset: {exc}", file=sys.stderr)
-            return 2
-
-        result = profile(df)
+        result = profile(_read_or_exit(args.csv))
 
         if args.html:
             with open(args.html, "w", encoding="utf-8") as fh:
@@ -62,6 +74,18 @@ def main(argv: list[str] | None = None) -> int:
             print(to_json(result))
         else:
             print(to_terminal(result))
+        return 0
+
+    if args.command == "compare":
+        result = compare(
+            profile(_read_or_exit(args.csv_a)),
+            profile(_read_or_exit(args.csv_b)),
+            name_a=args.csv_a, name_b=args.csv_b,
+        )
+        if args.json:
+            print(to_json(result))
+        else:
+            print(compare_to_terminal(result))
         return 0
 
     parser.print_help()

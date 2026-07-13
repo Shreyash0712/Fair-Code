@@ -15,7 +15,7 @@ before any model is trained. It does not train models, drop columns, or measure 
 that is what the `unfair.py` / `fair.py` audits do. The Profiler answers a different question:
 **"who is, and is not, adequately represented in this data?"**
 
-[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune)
+[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift)
 
 </div>
 
@@ -159,3 +159,64 @@ with `imbalance_ratio ≥ 3`, every dimension with `missing_pct ≥ 0.05`, and e
 | `IMBALANCE_FLAG`       | 3.0     | imbalance-ratio flag             |
 | `MISSING_FLAG`         | 0.05    | missing-data flag                |
 | `AGE_BANDS`            | 0,18,30,45,60,75 | age band edges          |
+| `PSI_EPSILON`          | 0.0001  | share floor in PSI (§8)          |
+| `PSI_MODERATE`         | 0.10    | PSI ≥ this → moderate drift (§8) |
+| `PSI_SIGNIFICANT`      | 0.25    | PSI ≥ this → significant drift (§8) |
+| `SCORE_DROP_FLAG`      | 5       | overall-score drop flagged (§8)  |
+
+---
+
+## 8. Dataset comparison (representation drift)
+
+`compare(A, B)` takes two **profile results** - a baseline `A` (e.g. training data) and a
+current `B` (e.g. production data) - and reports how each demographic dimension's representation
+shifted. It is pure post-processing over two `profile()` outputs, so both engines agree bit-for-bit.
+It reads the already-computed group **shares**; it never re-parses the raw rows.
+
+Dimensions are matched by **name**. A dimension present in both is compared; one present only in `B`
+is an `added_dimension`, only in `A` a `removed_dimension`.
+
+For a shared dimension, take the **union** of group labels. Each label has `share_a` and `share_b`
+(a share of `0` when the label is absent on that side). Per dimension:
+
+- **PSI** (Population Stability Index) - the standard population-drift metric:
+  `PSI = Σ (b_i − a_i) · ln(b_i / a_i)`, where `a_i = max(share_a_i, PSI_EPSILON)` and
+  `b_i = max(share_b_i, PSI_EPSILON)`. The epsilon floor keeps appeared/disappeared groups finite.
+  PSI ≥ 0; larger = more drift.
+- **drift_level** from PSI: `none` (`< 0.10`), `moderate` (`0.10 ≤ PSI < 0.25`), `significant` (`≥ 0.25`).
+- **TVD** (Total Variation Distance) - an easy-to-read companion: `0.5 · Σ |b_i − a_i|`, range `[0, 1]`.
+- **dimension_score_delta** = `dimension_score_b − dimension_score_a`.
+- Per group: `share_a`, `share_b`, `share_delta = share_b − share_a`, and a `status` of
+  `appeared` (`a = 0, b > 0`), `disappeared` (`a > 0, b = 0`), or `shifted`. Groups are ordered by
+  **descending `|share_delta|`**, then label ascending (deterministic tie-break, both engines agree).
+
+Top level: `score_delta = overall_score_b − overall_score_a`. `flags` is assembled from: an
+overall-score drop of `≥ SCORE_DROP_FLAG` points, every dimension whose `drift_level ≠ none`, every
+`appeared`/`disappeared` group, and every added/removed dimension.
+
+### Result shape
+
+```jsonc
+{
+  "a": { "name": "train.csv", "n_rows": 5000, "overall_score": 78, "grade": "B" },
+  "b": { "name": "prod.csv",  "n_rows": 4200, "overall_score": 61, "grade": "C" },
+  "score_delta": -17,
+  "dimensions": [
+    {
+      "name": "race", "kind": "race",
+      "dimension_score_a": 82, "dimension_score_b": 55, "dimension_score_delta": -27,
+      "psi": 0.3412, "tvd": 0.21, "drift_level": "significant",
+      "groups": [
+        { "label": "White", "share_a": 0.60, "share_b": 0.81, "share_delta": 0.21, "status": "shifted" },
+        { "label": "Asian", "share_a": 0.10, "share_b": 0.0,  "share_delta": -0.10, "status": "disappeared" }
+      ]
+    }
+  ],
+  "added_dimensions": ["income_bracket"],
+  "removed_dimensions": [],
+  "flags": [ "race: significant representation drift (PSI 0.34)", "race: 'Asian' disappeared (10.0% → 0.0%)" ]
+}
+```
+
+Rounding uses the same half-up helper as the rest of the spec (`Math.round` / `floor(x·f + 0.5)`):
+`psi`, `tvd`, and the share fields to 4 dp; score deltas are integers.
