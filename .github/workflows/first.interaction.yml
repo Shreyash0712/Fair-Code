@@ -16,14 +16,14 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: |
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: |
             Hey @${{ github.actor }}, thanks for raising this. I really appreciate it.
 
             Fair Code exists because bias in AI has real consequences for real people, so every issue matters here, whether it's a bug, a dataset question, or something that just didn't feel right. We'll take a look and get back to you.
 
             In the meantime, feel free to explore the [live audits](https://www.thefaircode.xyz) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.
-          pr-message: |
+          pr_message: |
             Hey @${{ github.actor }}, your first PR on Fair Code, that's awesome, thank you.
 
             This project is about making AI more accountable, and contributions like yours are what keep that work going. We'll review your changes shortly.
