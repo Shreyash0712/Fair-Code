@@ -12,7 +12,7 @@ import re
 
 import pandas as pd
 
-from .detect import detect_columns
+from .detect import VALID_KINDS, detect_columns
 
 # ── Defaults (SPEC section 7) ───────────────────────────────────────────────
 MIN_SHARE_THRESHOLD = 0.05
@@ -226,14 +226,22 @@ def _build_flags(dimensions: list[dict], intersections: list[dict]) -> list[str]
     return flags
 
 
-def profile(df: pd.DataFrame) -> dict:
-    """Profile a DataFrame for demographic representation. See SPEC section 6."""
-    detected = detect_columns(df)
+def profile(df: pd.DataFrame, overrides=None) -> dict:
+    """Profile a DataFrame for demographic representation. See SPEC section 6.
+
+    `overrides` is an optional {column: kind} map (SPEC section 1) that forces a
+    column's dimension when auto-detection misses or mislabels it.
+    """
+    overrides = overrides or {}
+    detected = detect_columns(df, overrides)
     dimensions = [_dimension(df, d["name"], d["kind"]) for d in detected]
     # Drop identifier/date-like columns that exploded into many groups; geography
-    # (cities, regions) legitimately has high cardinality, so it is exempt.
+    # (cities, regions) legitimately has high cardinality, so it is exempt - as is
+    # any column the user explicitly mapped (their intent overrides the heuristic).
+    forced = {name for name, kind in overrides.items() if kind in VALID_KINDS}
     dimensions = [d for d in dimensions
-                  if d["kind"] == "geography" or d["n_groups"] <= MAX_DIMENSION_GROUPS]
+                  if d["kind"] == "geography" or d["name"] in forced
+                  or d["n_groups"] <= MAX_DIMENSION_GROUPS]
     kept_names = {d["name"] for d in dimensions}
     detected = [d for d in detected if d["name"] in kept_names]
     intersections = _intersections(df, detected)

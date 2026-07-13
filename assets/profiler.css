@@ -241,6 +241,45 @@
 }
 .inter-cell.empty { border-color: var(--accent); color: var(--accent); }
 
+/* ── Column mapping (manual override) ────────────────── */
+.mapping-block {
+  margin-top: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px 22px;
+}
+.mapping-summary {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  cursor: pointer; padding: 14px 0; list-style: none;
+}
+.mapping-summary::-webkit-details-marker { display: none; }
+.mapping-summary::before {
+  content: '▸'; color: var(--muted); font-size: 13px; transition: transform 0.15s ease;
+}
+.mapping-block[open] .mapping-summary::before { transform: rotate(90deg); }
+.mapping-hint { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.mapping-list { display: grid; gap: 8px; padding-bottom: 18px; }
+.map-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 0; border-top: 1px solid var(--border);
+}
+.map-col {
+  flex: 0 0 auto; min-width: 150px; font-size: 14px; color: var(--white);
+  font-family: var(--mono); word-break: break-word;
+}
+.map-auto {
+  flex: 1; font-size: 12px; color: var(--muted); font-family: var(--mono);
+}
+.map-auto .on { color: var(--accent3); }
+.map-select {
+  flex: 0 0 auto; font-family: var(--mono); font-size: 12.5px;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--border2); border-radius: 6px; padding: 6px 10px; cursor: pointer;
+}
+.map-select:hover { border-color: var(--accent); }
+.map-row.overridden .map-select { border-color: var(--accent3); color: var(--accent3); }
+
 /* ── Compare two datasets: representation drift ──────── */
 .compare-block { margin-top: 56px; padding-top: 8px; }
 .compare-drops {

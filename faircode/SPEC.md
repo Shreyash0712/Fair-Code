@@ -48,6 +48,16 @@ After per-dimension analysis, any dimension that exploded into more than `MAX_DI
 (default **50**) groups is **dropped** as a likely identifier/date column - *except* `geography`,
 which legitimately has high cardinality (many cities/regions).
 
+### Manual overrides
+
+Both engines accept an optional `overrides` map (`{column: kind}`) that wins over auto-detection -
+for datasets with unusual headers (`gndr`, `patient_region_code`) that the name heuristic misses or
+mistypes. A value in {`sex`, `race`, `age`, `geography`, `categorical`} **forces** that column to
+that kind regardless of its name; any other value (e.g. `ignore`) **excludes** the column. An
+explicitly-forced column is also exempt from the `MAX_DIMENSION_GROUPS` drop above (the user's intent
+overrides the heuristic). Surfaced as `faircode profile data.csv --map gndr=sex` in the CLI and as
+editable per-column dropdowns in the web profiler.
+
 ---
 
 ## 2. Age normalization

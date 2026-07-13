@@ -19,9 +19,29 @@ import sys
 
 from . import __version__
 from .compare import compare
+from .detect import VALID_KINDS
 from .loaders import read_table
 from .profiler import profile
 from .report import compare_to_terminal, to_html, to_json, to_terminal
+
+_MAP_CHOICES = VALID_KINDS + ("ignore",)
+
+
+def _parse_map(pairs):
+    """Parse repeated --map COL=KIND flags into an {column: kind} override dict."""
+    overrides = {}
+    for pair in pairs or []:
+        if "=" not in pair:
+            print(f"error: invalid --map '{pair}', expected COL=KIND", file=sys.stderr)
+            raise SystemExit(2)
+        col, kind = pair.split("=", 1)
+        kind = kind.strip().lower()
+        if kind not in _MAP_CHOICES:
+            print(f"error: invalid --map kind '{kind}' for column '{col.strip()}'; "
+                  f"choose from {', '.join(_MAP_CHOICES)}", file=sys.stderr)
+            raise SystemExit(2)
+        overrides[col.strip()] = kind
+    return overrides
 
 
 def _read_or_exit(path: str):
@@ -53,6 +73,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--json", action="store_true", help="emit JSON to stdout")
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
+    p.add_argument("--map", action="append", metavar="COL=KIND",
+                   help="force a column's dimension when auto-detection misses it; "
+                        "KIND is one of " + ", ".join(_MAP_CHOICES) + " (repeatable)")
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
@@ -63,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "profile":
-        result = profile(_read_or_exit(args.csv))
+        result = profile(_read_or_exit(args.csv), _parse_map(args.map))
 
         if args.html:
             with open(args.html, "w", encoding="utf-8") as fh:

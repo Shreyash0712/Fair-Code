@@ -21,6 +21,10 @@ KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 
 MAX_CATEGORICAL_CARD = 20
 
+# Kinds a user may force a column to via a manual override. Anything else
+# (e.g. "ignore") excludes the column from analysis. Mirror in profiler-engine.js.
+VALID_KINDS = ("sex", "race", "age", "geography", "categorical")
+
 
 def _tokens(name: str) -> list[str]:
     """Split a column name into lower-case tokens on separators AND camelCase.
@@ -53,15 +57,26 @@ def classify_name(name: str) -> str | None:
     return None
 
 
-def detect_columns(df) -> list[dict]:
+def detect_columns(df, overrides=None) -> list[dict]:
     """Detect demographic columns in a DataFrame.
 
     Returns a list of {"name": str, "kind": str} dicts. Keyword-matched columns
     are always kept; unmatched columns are kept as generic "categorical" only
     when their distinct non-null value count is in [2, MAX_CATEGORICAL_CARD].
+
+    `overrides` is an optional {column: kind} map that wins over auto-detection:
+    a kind in VALID_KINDS forces that column to that dimension (regardless of its
+    name); any other value (e.g. "ignore") drops the column from analysis.
     """
+    overrides = overrides or {}
     detected: list[dict] = []
     for col in df.columns:
+        if col in overrides:
+            kind = overrides[col]
+            if kind in VALID_KINDS:
+                detected.append({"name": col, "kind": kind})
+            # any other override value (e.g. "ignore") excludes the column
+            continue
         kind = classify_name(col)
         if kind is not None:
             detected.append({"name": col, "kind": kind})

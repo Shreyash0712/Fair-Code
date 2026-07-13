@@ -18,6 +18,8 @@
   var AGE_BANDS = [0, 18, 30, 45, 60, 75];
   var MAX_CATEGORICAL_CARD = 20;
   var MAX_DIMENSION_GROUPS = 50;
+  // Kinds a manual override may force a column to; mirror faircode/detect.py.
+  var VALID_KINDS = { sex: 1, race: 1, age: 1, geography: 1, categorical: 1 };
   // Comparison / drift (SPEC section 8)
   var PSI_EPSILON = 0.0001;
   var PSI_MODERATE = 0.10;
@@ -138,9 +140,15 @@
     return Object.keys(seen).length;
   }
 
-  function detectColumns(table) {
+  function detectColumns(table, overrides) {
+    overrides = overrides || {};
     var detected = [];
     table.columns.forEach(function (col) {
+      if (Object.prototype.hasOwnProperty.call(overrides, col)) {
+        var forced = overrides[col];
+        if (VALID_KINDS[forced]) detected.push({ name: col, kind: forced });
+        return; // any other value (e.g. 'ignore') excludes the column
+      }
       var kind = classifyName(col);
       if (kind !== null) { detected.push({ name: col, kind: kind }); return; }
       var n = nunique(table.rows, col);
@@ -373,13 +381,18 @@
   }
 
   // ── Public entry point ─────────────────────────────────────────────────
-  function profile(table) {
-    var detected = detectColumns(table);
+  function profile(table, overrides) {
+    overrides = overrides || {};
+    var detected = detectColumns(table, overrides);
     var dimensions = detected.map(function (d) {
       return dimension(table, d.name, d.kind);
     });
+    var forced = {};
+    Object.keys(overrides).forEach(function (col) {
+      if (VALID_KINDS[overrides[col]]) forced[col] = 1;
+    });
     dimensions = dimensions.filter(function (d) {
-      return d.kind === 'geography' || d.n_groups <= MAX_DIMENSION_GROUPS;
+      return d.kind === 'geography' || forced[d.name] || d.n_groups <= MAX_DIMENSION_GROUPS;
     });
     var keptNames = {};
     dimensions.forEach(function (d) { keptNames[d.name] = 1; });

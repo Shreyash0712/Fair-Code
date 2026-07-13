@@ -120,6 +120,30 @@ def test_real_datasets_produce_sane_result(csv):
     assert "age" in kinds and "sex" in kinds  # both datasets have age + sex
 
 
+# ── Manual overrides (issue #62) ─────────────────────────────────────────────
+def test_override_forces_undetected_column():
+    # 'gndr' is not a detection keyword, so it's normally missed (or categorical).
+    df = pd.DataFrame({"gndr": ["M", "F"] * 50})
+    result = profile(df, overrides={"gndr": "sex"})
+    dim = next(d for d in result["dimensions"] if d["name"] == "gndr")
+    assert dim["kind"] == "sex"
+
+
+def test_override_ignore_excludes_column():
+    df = pd.DataFrame({"sex": ["M", "F"] * 50})
+    result = profile(df, overrides={"sex": "ignore"})
+    assert result["dimensions"] == []
+
+
+def test_override_exempts_forced_column_from_cardinality_drop():
+    # 60 distinct values would normally be dropped (> MAX_DIMENSION_GROUPS), but a
+    # forced non-geography override keeps it.
+    df = pd.DataFrame({"code": [f"v{i}" for i in range(60)]})
+    assert profile(df)["dimensions"] == []  # dropped by default
+    result = profile(df, overrides={"code": "race"})
+    assert [d["name"] for d in result["dimensions"]] == ["code"]
+
+
 def test_date_column_dropped_not_garbage():
     # A birthdate column must not become 6 nonsense age bands.
     df = pd.DataFrame({

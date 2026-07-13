@@ -19,9 +19,19 @@
   var downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
   var copyJsonBtn = document.getElementById('copyJsonBtn');
   var announcer = document.getElementById('resultsAnnouncer');
+  var mappingBlock = document.getElementById('mappingBlock');
+  var mappingList = document.getElementById('mappingList');
 
   var currentResult = null;
   var currentName = '';
+  var currentTable = null;   // parsed table, kept so overrides can re-profile
+  var autoKinds = {};        // column -> auto-detected kind (for the mapping hints)
+
+  // Kinds a column can be manually mapped to, plus Auto / Not-demographic.
+  var MAP_OPTIONS = [
+    ['auto', 'Auto'], ['sex', 'Sex'], ['race', 'Race'], ['age', 'Age'],
+    ['geography', 'Geography'], ['categorical', 'Categorical'], ['ignore', 'Not demographic']
+  ];
 
   // ── Embedded sample dataset (health-themed, deliberately imbalanced) ─────
   // Skewed toward young Caucasian patients in two regions, with a sparse
@@ -106,9 +116,13 @@
       if (!table.columns.length || !table.rows.length) {
         return showError('That CSV looks empty or has no data rows.');
       }
+      currentTable = table;
       var result = E.profile(table);
+      autoKinds = {};
+      result.dimensions.forEach(function (d) { autoKinds[d.name] = d.kind; });
       errorEl.hidden = true;
-      render(result, name);
+      render(result, name, true);
+      renderMapping(table.columns);
     } catch (err) {
       showError('Could not profile that file: ' + err.message);
     }
@@ -135,7 +149,7 @@
     });
   }
 
-  function render(r, name) {
+  function render(r, name, scroll) {
     currentResult = r;
     currentName = name;
 
@@ -178,7 +192,9 @@
     renderIntersections(r.intersections);
 
     results.hidden = false;
-    results.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+    if (scroll) {
+      results.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+    }
 
     announcer.textContent = 'Profile complete for ' + name + ': score ' + r.overall_score +
       ' out of 100, grade ' + r.grade + '. ' + r.dimensions.length + ' demographic dimension' +
@@ -240,6 +256,64 @@
     host.appendChild(wrap);
     block.hidden = false;
   }
+
+  // ── Column mapping (manual override, issue #62) ─────────────────────────
+  // Lists every column with its auto-detected kind and a dropdown to override
+  // it. Built once per file; changing a dropdown re-profiles in place without
+  // rebuilding the list, so selections and focus survive.
+  function renderMapping(columns) {
+    mappingList.innerHTML = '';
+    columns.forEach(function (col) {
+      var auto = autoKinds[col];
+      var row = document.createElement('div');
+      row.className = 'map-row';
+
+      var hint = auto
+        ? 'auto: <span class="on">' + esc(auto) + '</span>'
+        : 'auto: not detected';
+
+      var opts = MAP_OPTIONS.map(function (o) {
+        return '<option value="' + o[0] + '">' + o[1] + '</option>';
+      }).join('');
+
+      row.innerHTML =
+        '<span class="map-col" title="' + esc(col) + '">' + esc(col) + '</span>' +
+        '<span class="map-auto">' + hint + '</span>' +
+        '<select class="map-select" data-col="' + esc(col) +
+        '" aria-label="Map column ' + esc(col) + '">' + opts + '</select>';
+
+      mappingList.appendChild(row);
+    });
+    mappingBlock.hidden = false;
+  }
+
+  function readOverrides() {
+    var overrides = {};
+    var selects = mappingList.querySelectorAll('.map-select');
+    for (var i = 0; i < selects.length; i++) {
+      var sel = selects[i];
+      var row = sel.closest('.map-row');
+      if (sel.value !== 'auto') {
+        overrides[sel.getAttribute('data-col')] = sel.value;
+        if (row) row.classList.add('overridden');
+      } else if (row) {
+        row.classList.remove('overridden');
+      }
+    }
+    return overrides;
+  }
+
+  // Delegated so it keeps working across re-renders of the list.
+  mappingList.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('map-select') || !currentTable) return;
+    try {
+      var result = E.profile(currentTable, readOverrides());
+      errorEl.hidden = true;
+      render(result, currentName, false);
+    } catch (err) {
+      showError('Could not re-profile with that mapping: ' + err.message);
+    }
+  });
 
   // ── Report export: "Download report (HTML)" / "Copy as JSON" ────────────
   // Ports faircode/report.py's to_html so the browser report matches the

@@ -151,6 +151,17 @@
         <ul id="flagsList"></ul>
       </div>
 
+      <details class="mapping-block" id="mappingBlock">
+        <summary class="mapping-summary">
+          <span class="section-title" style="margin:0">Column mapping</span>
+          <span class="mapping-hint">auto-detection missed a column? map it here</span>
+        </summary>
+        <p class="section-note">Detection keys off column names, so an oddly-named column
+        (<code>gndr</code>, <code>patient_region_code</code>) can be missed or mistyped. Override any
+        column below and the audit re-runs instantly — nothing leaves your browser.</p>
+        <div class="mapping-list" id="mappingList"></div>
+      </details>
+
       <h3 class="section-title">Detected demographic dimensions</h3>
       <div class="dimensions" id="dimensions"></div>
 
