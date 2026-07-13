@@ -3,10 +3,12 @@
 Run from the repo root:  pytest tests/ -q
 """
 
+import numpy as np
 import pytest
 
 from faircode.significance import (
     bootstrap_ci,
+    intersectional_report,
     permutation_test,
     significance_report,
 )
@@ -53,3 +55,70 @@ def test_small_sample_warning_trigger():
     assert significance_report(small, large)["small_sample_warning"]
     assert significance_report(large, small)["small_sample_warning"]
     assert not significance_report(large, large)["small_sample_warning"]
+
+
+# ── Intersectional report ────────────────────────────────────────────────────
+def _crossed(cells):
+    """Build (outcome, mask_a, mask_b) from a list of (a, b, n, n_ones) cells.
+
+    Each cell is a quadrant of the mask_a x mask_b grid with a fixed positive
+    rate, so the four cells are independent by construction - no interaction
+    unless the cell rates put one there.
+    """
+    outcome, mask_a, mask_b = [], [], []
+    for a, b, n, ones in cells:
+        outcome += [1] * ones + [0] * (n - ones)
+        mask_a += [bool(a)] * n
+        mask_b += [bool(b)] * n
+    return outcome, np.array(mask_a), np.array(mask_b)
+
+
+def test_intersectional_additive_case_is_not_superadditive():
+    # Balanced quadrants with purely additive rates: neither=0.20, +0.20 for a,
+    # +0.10 for b, and both = 0.50 = 0.20 + 0.20 + 0.10 (no extra interaction).
+    outcome, mask_a, mask_b = _crossed([
+        (0, 0, 100, 20),   # neither
+        (1, 0, 100, 40),   # a only  → effect_a = +0.20
+        (0, 1, 100, 30),   # b only  → effect_b = +0.10
+        (1, 1, 100, 50),   # both    → additive, no interaction
+    ])
+    rep = intersectional_report(outcome, mask_a, mask_b)
+    assert not rep["superadditive"]
+    assert rep["gap_a_alone"] == pytest.approx(0.20, abs=1e-9)
+    assert rep["gap_b_alone"] == pytest.approx(0.10, abs=1e-9)
+    # With no interaction the compounded gap is exactly the sum of the marginals.
+    assert rep["intersectional"]["gap"] == pytest.approx(
+        rep["gap_a_alone"] + rep["gap_b_alone"], abs=1e-9)
+
+
+def test_intersectional_superadditive_case_is_flagged_and_significant():
+    # A small doubly-disadvantaged cell with a rate far above what either
+    # marginal predicts. Because the cell is thin, the marginals barely move,
+    # so the compounded gap dwarfs their sum.
+    outcome, mask_a, mask_b = _crossed([
+        (0, 0, 400, 80),    # neither: 0.20
+        (1, 0, 400, 140),   # a only : 0.35
+        (0, 1, 400, 140),   # b only : 0.35
+        (1, 1, 40,  36),    # both   : 0.90 - disproportionately worse
+    ])
+    rep = intersectional_report(outcome, mask_a, mask_b)
+    assert rep["superadditive"]
+    assert abs(rep["intersectional"]["gap"]) > (
+        abs(rep["gap_a_alone"]) + abs(rep["gap_b_alone"]))
+    assert rep["intersectional"]["significant"]
+
+
+def test_intersectional_small_doubly_disadvantaged_cell_warns():
+    # Overall attribute groups are large, but their intersection is tiny.
+    # The warning must fire on the intersection, not on the marginals.
+    outcome, mask_a, mask_b = _crossed([
+        (0, 0, 400, 80),
+        (1, 0, 400, 140),
+        (0, 1, 400, 140),
+        (1, 1, 20,  15),    # both: n = 20 < 30
+    ])
+    rep = intersectional_report(outcome, mask_a, mask_b)
+    assert rep["cell_sizes"]["both"] == 20
+    assert rep["intersectional"]["small_sample_warning"]
+    # The a and b groups on their own are far larger than the 30-row floor.
+    assert (mask_a.sum() >= 30) and (mask_b.sum() >= 30)

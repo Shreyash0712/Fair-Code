@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 
-from faircode.significance import significance_report
+from faircode.significance import significance_report, intersectional_report
 
 # ============================================================
 # HOSPITAL READMISSION BIAS AUDIT - BIASED MODEL
@@ -202,6 +202,31 @@ print(f"  Permutation p-value: {age_sig['p_value']:.4f} "
       f"({'significant' if age_sig['significant'] else 'not significant'} at α=0.05)")
 if age_sig['small_sample_warning']:
     print(f"  Small-sample warning: n={age_sig['n_a']} vs {age_sig['n_b']} (<30)")
+
+# ── INTERSECTIONAL GAP: Female × Minority ────────────────────
+# Gender and race each report a marginal gap above; crossing them
+# checks the doubly-disadvantaged cell (minority women) against
+# the baseline (non-minority men) to see if the harm compounds.
+inter = intersectional_report(
+    results['pred'],
+    results['is_female'] == 1,     # disadvantaged side of gender
+    results['is_minority'] == 1,   # disadvantaged side of race
+)
+isr = inter['intersectional']
+marg_sum = abs(inter['gap_a_alone']) + abs(inter['gap_b_alone'])
+print("\n── Intersectional: Female × Minority ────────────────────")
+print(f"  {'Both (minority women)':<25}: {inter['cell_rates']['both']:.2%}  (n={inter['cell_sizes']['both']})")
+print(f"  {'Neither (baseline)':<25}: {inter['cell_rates']['neither']:.2%}  (n={inter['cell_sizes']['neither']})")
+print(f"  {'Marginal gap (sex alone)':<25}: {inter['gap_a_alone']:.2%}")
+print(f"  {'Marginal gap (race alone)':<25}: {inter['gap_b_alone']:.2%}")
+print(f"  {'Intersectional gap':<25}: {isr['gap']:.2%}  [CI: {isr['ci_low']:.2%}, {isr['ci_high']:.2%}]  "
+      f"p={isr['p_value']:.4f} ({'significant' if isr['significant'] else 'not significant'})")
+if inter['superadditive']:
+    print(f"  Superadditive: yes - compounded gap exceeds the sum of marginal gaps ({marg_sum:.2%})")
+else:
+    print(f"  Superadditive: no - compounded gap is within the sum of marginal gaps ({marg_sum:.2%})")
+if isr['small_sample_warning']:
+    print(f"  Small-sample warning: doubly-disadvantaged cell n={isr['n_a']} vs baseline n={isr['n_b']} (<30)")
 
 print("\n" + "=" * 62)
 print("WHAT'S WRONG")

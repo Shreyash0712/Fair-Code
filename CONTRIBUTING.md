@@ -95,6 +95,10 @@ This is the biased baseline. It must:
 - report the fairness gap with `significance_report` from `faircode.significance`
   (`from faircode.significance import significance_report`), passing the two groups'
   raw per-row predictions - do not reimplement the statistics
+- if the audit tracks 2+ protected attributes, also report at least one intersectional
+  (combined) pair with `intersectional_report` from `faircode.significance`, following the
+  pattern in `Insurance Denial/unfair.py`, `Benefits Denial/unfair.py`, or
+  `Healthcare Readmission/unfair.py` - single-attribute audits skip this
 - print results in this format:
 
 ```text

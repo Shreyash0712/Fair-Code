@@ -128,7 +128,7 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 - [x] Profiler: two-dataset comparison for representation drift (`faircode compare`, PSI)
 - [x] Profiler: manual column mapping, reference-population baseline, choosable intersection pair, tunable thresholds, and chi-squared proxy hints
 - [ ] AIF360 / Fairlearn integration examples
-- [ ] Intersectional bias notebook (auditing across multiple protected attributes simultaneously)
+- [x] Intersectional bias notebook (auditing across multiple protected attributes simultaneously)
 - [x] Statistical significance testing for fairness gaps
 
 ---

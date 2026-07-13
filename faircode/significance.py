@@ -110,3 +110,81 @@ def significance_report(group_a, group_b, n_resamples=10000,
         "n_b": n_b,
         "small_sample_warning": n_a < 30 or n_b < 30,
     }
+
+
+# ── Intersectional (two-attribute) report ────────────────────────────────────
+def intersectional_report(outcome, mask_a, mask_b, n_resamples=10000,
+                          n_permutations=10000, confidence=0.95,
+                          random_state=42):
+    """Compounded gap for the group that sits at the intersection of two attributes.
+
+    Measuring each protected attribute on its own can hide the harm that lands
+    on the people who carry both. A model can look nearly fair on sex alone and
+    on race alone, yet flag minority women far more often than either marginal
+    gap would predict - the classic intersectionality argument (Crenshaw 1989):
+    the disadvantage compounds rather than adding up. A single-axis audit
+    literally cannot see this, because it averages the intersection back into
+    each attribute's marginal.
+
+    So we split the population into the four quadrants of mask_a x mask_b and
+    compare the doubly-disadvantaged cell (both True) against the baseline cell
+    (both False) with the same bootstrap CI + permutation test the single-axis
+    audits use. We also keep each attribute's marginal gap (the gap it would
+    report on its own, ignoring the other attribute) so the two views can be set
+    side by side. When the intersectional gap exceeds the sum of the marginals
+    the disparity is *superadditive* - the intersection is worse than the parts,
+    which is the finding a marginal-only audit would have missed.
+
+    outcome is the prediction/outcome series; mask_a and mask_b are boolean
+    arrays/Series aligned to it, each True on the disadvantaged side of that
+    attribute (same rows the single-axis audits already pass to
+    significance_report). cell_rates / cell_sizes expose all four quadrants so a
+    thin doubly-disadvantaged cell is visible on its own, before the
+    small_sample_warning inside the intersectional result is even checked.
+    """
+    y = _as_array(outcome)
+    a = np.asarray(mask_a, dtype=bool)
+    b = np.asarray(mask_b, dtype=bool)
+
+    both = a & b
+    neither = ~a & ~b
+    a_only = a & ~b
+    b_only = ~a & b
+
+    # Marginal gap = the gap each attribute reports on its own, ignoring the
+    # other. This is exactly what a single-axis audit measures for that attr.
+    gap_a_alone = float(y[a].mean() - y[~a].mean())
+    gap_b_alone = float(y[b].mean() - y[~b].mean())
+
+    intersectional = significance_report(y[both], y[neither], n_resamples,
+                                         n_permutations, confidence,
+                                         random_state)
+
+    # abs() on both sides: two gaps in the same direction stack, and a
+    # compounded gap larger than that stacked total is the superadditive signal.
+    superadditive = (abs(intersectional["gap"])
+                     > abs(gap_a_alone) + abs(gap_b_alone))
+
+    def _rate(mask):
+        return float(y[mask].mean()) if mask.any() else float("nan")
+
+    cell_rates = {
+        "both": _rate(both),
+        "neither": _rate(neither),
+        "a_only": _rate(a_only),
+        "b_only": _rate(b_only),
+    }
+    cell_sizes = {
+        "both": int(both.sum()),
+        "neither": int(neither.sum()),
+        "a_only": int(a_only.sum()),
+        "b_only": int(b_only.sum()),
+    }
+    return {
+        "gap_a_alone": gap_a_alone,
+        "gap_b_alone": gap_b_alone,
+        "intersectional": intersectional,
+        "superadditive": bool(superadditive),
+        "cell_rates": cell_rates,
+        "cell_sizes": cell_sizes,
+    }
