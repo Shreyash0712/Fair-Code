@@ -18,8 +18,31 @@
   var AGE_BANDS = [0, 18, 30, 45, 60, 75];
   var MAX_CATEGORICAL_CARD = 20;
   var MAX_DIMENSION_GROUPS = 50;
+  var REFERENCE_DEVIATION_FLAG = 0.05;
   // Kinds a manual override may force a column to; mirror faircode/detect.py.
   var VALID_KINDS = { sex: 1, race: 1, age: 1, geography: 1, categorical: 1 };
+
+  // Tunable knobs (SPEC section 7); overridable per call via profile(opts).
+  var DEFAULT_OPTS = {
+    min_share: MIN_SHARE_THRESHOLD,
+    intersection_floor: INTERSECTION_FLOOR,
+    imbalance_flag: IMBALANCE_FLAG,
+    missing_flag: MISSING_FLAG,
+    reference_flag: REFERENCE_DEVIATION_FLAG,
+    cross: null,      // [colA, colB] to force the intersection pair (SPEC 4)
+    reference: null   // {column: {group: expected_share}} baseline (SPEC 8)
+  };
+
+  function resolveOpts(opts) {
+    var o = {};
+    Object.keys(DEFAULT_OPTS).forEach(function (k) { o[k] = DEFAULT_OPTS[k]; });
+    if (opts) {
+      Object.keys(opts).forEach(function (k) {
+        if (opts[k] !== null && opts[k] !== undefined) o[k] = opts[k];
+      });
+    }
+    return o;
+  }
   // Comparison / drift (SPEC section 8)
   var PSI_EPSILON = 0.0001;
   var PSI_MODERATE = 0.10;
@@ -207,7 +230,8 @@
   }
 
   // ── Per-dimension metrics (SPEC section 3) ─────────────────────────────
-  function analyzeGroups(counts, nTotal, nullCount, skew) {
+  function analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold) {
+    if (minShareThreshold === undefined) minShareThreshold = MIN_SHARE_THRESHOLD;
     var labels = Object.keys(counts);
     var nNonnull = 0, i;
     for (i = 0; i < labels.length; i++) nNonnull += counts[labels[i]];
@@ -239,7 +263,7 @@
       entropyRatio = H / Math.log(k);
     }
 
-    var under = groups.filter(function (g) { return g.share < MIN_SHARE_THRESHOLD; })
+    var under = groups.filter(function (g) { return g.share < minShareThreshold; })
                       .map(function (g) { return g.label; });
 
     return {
@@ -257,7 +281,7 @@
     };
   }
 
-  function dimension(table, name, kind) {
+  function dimension(table, name, kind, minShareThreshold) {
     var rows = table.rows, nTotal = rows.length, i, v;
 
     if (kind === 'age' && !looksLikeDates(rows, name)) {
@@ -275,7 +299,7 @@
           if (b === null) nullCount++;
           else counts[b] = (counts[b] || 0) + 1;
         }
-        var res = analyzeGroups(counts, nTotal, nullCount, skew);
+        var res = analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold);
         res.name = name; res.kind = kind;
         return res;
       }
@@ -288,7 +312,7 @@
       if (v === null) nulls++;
       else c[v] = (c[v] || 0) + 1;
     }
-    var r = analyzeGroups(c, nTotal, nulls, null);
+    var r = analyzeGroups(c, nTotal, nulls, null, minShareThreshold);
     r.name = name; r.kind = kind;
     return r;
   }
@@ -310,11 +334,21 @@
     return out;
   }
 
-  function intersections(table, dims) {
+  function pickCross(dims, cross) {
+    if (cross && cross.length === 2) {
+      var byName = {};
+      dims.forEach(function (d) { byName[d.name] = d; });
+      if (byName[cross[0]] && byName[cross[1]]) return [byName[cross[0]], byName[cross[1]]];
+    }
+    return [dims[0], dims[1]];
+  }
+
+  function intersections(table, dims, intersectionFloor, cross) {
     if (dims.length < 2) return [];
-    var a = dims[0], b = dims[1];
+    if (intersectionFloor === undefined) intersectionFloor = INTERSECTION_FLOOR;
+    var pair = pickCross(dims, cross), a = pair[0], b = pair[1];
     var nTotal = table.rows.length;
-    var floor = INTERSECTION_FLOOR * nTotal;
+    var floor = intersectionFloor * nTotal;
     var la = labelize(table, a.name, a.kind);
     var lb = labelize(table, b.name, b.kind);
 
@@ -350,7 +384,40 @@
     return 'F';
   }
 
-  function buildFlags(dimensions, inters) {
+  function applyReference(dimensions, reference, referenceFlag) {
+    if (referenceFlag === undefined) referenceFlag = REFERENCE_DEVIATION_FLAG;
+    var flags = [];
+    dimensions.forEach(function (d) {
+      var ref = reference[d.name];
+      if (!ref) return;
+      var actual = {};
+      d.groups.forEach(function (g) { actual[g.label] = g.share; });
+      var labels = {};
+      Object.keys(actual).forEach(function (l) { labels[l] = 1; });
+      Object.keys(ref).forEach(function (l) { labels[l] = 1; });
+      var groups = [], deviation = 0;
+      Object.keys(labels).forEach(function (label) {
+        var exp = ref[label] || 0, act = actual[label] || 0, delta = act - exp;
+        deviation += Math.abs(delta);
+        groups.push({ label: String(label), expected: round(exp, 4),
+                      actual: round(act, 4), delta: round(delta, 4) });
+        if (exp - act >= referenceFlag) {
+          flags.push(d.name + ": '" + label + "' under-represented vs reference (" +
+                     (act * 100).toFixed(1) + '% vs ' + (exp * 100).toFixed(1) + '% expected)');
+        }
+      });
+      groups.sort(function (x, y) {
+        return (Math.abs(y.delta) - Math.abs(x.delta)) ||
+               (x.label < y.label ? -1 : x.label > y.label ? 1 : 0);
+      });
+      d.reference = { deviation: round(0.5 * deviation, 4), groups: groups };
+    });
+    return flags;
+  }
+
+  function buildFlags(dimensions, inters, imbalanceFlag, missingFlag) {
+    if (imbalanceFlag === undefined) imbalanceFlag = IMBALANCE_FLAG;
+    if (missingFlag === undefined) missingFlag = MISSING_FLAG;
     var flags = [];
     dimensions.forEach(function (d) {
       d.groups.forEach(function (g) {
@@ -359,13 +426,13 @@
                      (g.share * 100).toFixed(1) + '%)');
         }
       });
-      if (d.imbalance_ratio !== null && d.imbalance_ratio >= IMBALANCE_FLAG) {
+      if (d.imbalance_ratio !== null && d.imbalance_ratio >= imbalanceFlag) {
         flags.push(d.name + ': imbalance ratio ' + d.imbalance_ratio.toFixed(1) +
                    '× between largest and smallest group');
       } else if (d.imbalance_ratio === null && d.n_groups > 1) {
         flags.push(d.name + ': a subgroup is effectively absent (0 rows)');
       }
-      if (d.missing_pct >= MISSING_FLAG) {
+      if (d.missing_pct >= missingFlag) {
         flags.push(d.name + ': ' + (d.missing_pct * 100).toFixed(1) +
                    '% of values are missing');
       }
@@ -381,11 +448,12 @@
   }
 
   // ── Public entry point ─────────────────────────────────────────────────
-  function profile(table, overrides) {
+  function profile(table, overrides, opts) {
     overrides = overrides || {};
+    var o = resolveOpts(opts);
     var detected = detectColumns(table, overrides);
     var dimensions = detected.map(function (d) {
-      return dimension(table, d.name, d.kind);
+      return dimension(table, d.name, d.kind, o.min_share);
     });
     var forced = {};
     Object.keys(overrides).forEach(function (col) {
@@ -398,7 +466,10 @@
     dimensions.forEach(function (d) { keptNames[d.name] = 1; });
     detected = detected.filter(function (d) { return keptNames[d.name]; });
 
-    var inters = intersections(table, detected);
+    var inters = intersections(table, detected, o.intersection_floor, o.cross);
+
+    var refFlags = [];
+    if (o.reference) refFlags = applyReference(dimensions, o.reference, o.reference_flag);
 
     var overall = 0;
     if (dimensions.length) {
@@ -414,8 +485,39 @@
       grade: grade(overall),
       dimensions: dimensions,
       intersections: inters,
-      flags: buildFlags(dimensions, inters)
+      flags: buildFlags(dimensions, inters, o.imbalance_flag, o.missing_flag).concat(refFlags)
     };
+  }
+
+  // ── Reference baseline parsing (mirror faircode.profiler.parse_reference) ──
+  var REF_COLUMN_ALIASES = ['column', 'dimension', 'dim'];
+  var REF_GROUP_ALIASES = ['group', 'value', 'label', 'category'];
+  var REF_SHARE_ALIASES = ['share', 'expected', 'expected_share', 'proportion', 'percent', 'pct'];
+
+  function parseReference(table) {
+    var lower = {};
+    table.columns.forEach(function (c) { lower[String(c).trim().toLowerCase()] = c; });
+    function pick(aliases) {
+      for (var i = 0; i < aliases.length; i++) if (lower[aliases[i]]) return lower[aliases[i]];
+      return null;
+    }
+    var colC = pick(REF_COLUMN_ALIASES), grpC = pick(REF_GROUP_ALIASES), shrC = pick(REF_SHARE_ALIASES);
+    if (!(colC && grpC && shrC)) {
+      throw new Error('reference needs column, group, and share columns (e.g. headers: column,group,share)');
+    }
+    var raw = [];
+    table.rows.forEach(function (row) {
+      var share = parseFloat(row[shrC]);
+      if (isNaN(share)) return;
+      raw.push([String(row[colC]).trim(), String(row[grpC]).trim(), share]);
+    });
+    var scale = raw.some(function (r) { return r[2] > 1.5; }) ? 100 : 1;
+    var reference = {};
+    raw.forEach(function (r) {
+      if (!reference[r[0]]) reference[r[0]] = {};
+      reference[r[0]][r[1]] = r[2] / scale;
+    });
+    return reference;
   }
 
   // ── Dataset comparison / drift (SPEC section 8) ────────────────────────
@@ -524,5 +626,6 @@
   }
 
   global.FairCodeProfiler = { parseCSV: parseCSV, sniffDelimiter: sniffDelimiter,
-                              profile: profile, compare: compare };
+                              profile: profile, compare: compare,
+                              parseReference: parseReference };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

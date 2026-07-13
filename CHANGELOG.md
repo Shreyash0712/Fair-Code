@@ -4,11 +4,29 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.2.4-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.2.5-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.2.5] - 13 Jul 2026
+### Added
+- Open Dataset Profiler - a wave of six enhancements, all sharing one spec ([`faircode/SPEC.md`](faircode/SPEC.md)) so CLI and web stay bit-for-bit identical
+  - **Two-dataset comparison for representation drift** (#60) - `faircode compare A.csv B.csv` and side-by-side A/B dropzones in the web profiler. Reports per-dimension drift with the Population Stability Index (PSI), Total Variation Distance, per-group share shifts, and appeared/disappeared groups; flags significant drift and overall-score drops. New `faircode/compare.py`, `assets/profiler-compare.js`, SPEC §8, `tests/test_compare.py`
+  - **Manual column mapping** (#62) - override auto-detection when a column is oddly named (`gndr`, `patient_region_code`). `faircode profile --map COL=KIND` (repeatable) and editable per-column dropdowns in the web profiler that re-run the audit in place. Forced columns are exempt from the high-cardinality drop. SPEC §1
+  - **Reference-population baseline** (#56) - score a dataset against an external population (e.g. Census age×sex), not just internal balance. `faircode profile --reference baseline.csv` and a web upload; surfaces per-group expected-vs-actual deltas, a deviation metric, and under-representation-vs-reference flags. SPEC §9
+  - **Choosable intersection pair** (#58) - cross any two demographic columns, not just the first two detected. `faircode profile --cross colA,colB` and two dropdowns in the web profiler. SPEC §4
+  - **Chi-squared proxy hints** (#61) - opt-in `faircode profile --proxy-hints` flags strongly-associated column pairs (a "this may be a proxy for that protected attribute" signal) with p-values and Cramér's V. Python/CLI-only via the optional `scipy` extra; never affects the score, so the two engines stay in sync. New `faircode/proxy.py`, `tests/test_proxy.py`
+  - **Tunable thresholds** (#63) - `--min-share`, `--intersection-floor`, `--imbalance-flag`, `--missing-flag` on the CLI, threaded through `profile(df, opts=...)` and the JS engine. SPEC §7
+### Changed
+- `faircode/profiler.py`: `profile()` gains an `opts` argument (thresholds, `cross`, `reference`) plus a `parse_reference()` helper; `detect_columns()`/`profile()` gain manual overrides
+- `assets/profiler-engine.js`: mirrors the new `opts`, `parseReference`, and `compare` surface (verified bit-for-bit against the Python CLI)
+- `assets/profiler-ui.js`, `profiler.html`, `assets/profiler.css`: column-mapping panel, cross-dimension selectors, and reference-baseline controls
+- `pyproject.toml`: new optional `proxy` extra (`scipy`)
+- `README.md`, `ROADMAP.md`: Open Dataset Profiler capabilities and Phase 5 status updated
 
 ---
 

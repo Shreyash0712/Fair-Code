@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 excel = ["openpyxl>=3.0"]
+proxy = ["scipy>=1.10"]
 
 [project.urls]
 Homepage = "https://github.com/yakew7/Fair-Code"

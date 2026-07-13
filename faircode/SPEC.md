@@ -15,7 +15,7 @@ before any model is trained. It does not train models, drop columns, or measure 
 that is what the `unfair.py` / `fair.py` audits do. The Profiler answers a different question:
 **"who is, and is not, adequately represented in this data?"**
 
-[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift)
+[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift) · [9. Reference](#9-reference-baseline)
 
 </div>
 
@@ -93,13 +93,23 @@ For a dimension with `k` groups and null-excluded normalized shares `p_1 … p_k
 - **skewness** - Fisher–Pearson sample skewness of the raw numeric ages:
   `g1 = (1/N · Σ (x−x̄)³) / (1/N · Σ (x−x̄)²)^1.5`. `null`/`0` if variance is 0 or `N < 3`.
 
+### Proxy hints (opt-in, informational, not scored)
+An optional pass (`faircode profile … --proxy-hints`) runs a chi-squared test of independence
+(`scipy.stats.chi2_contingency`) over every pair of detected dimensions and reports pairs with
+`p < 0.05`, each with its p-value and Cramér's V effect size, most-significant first. It surfaces
+"this column may be a proxy for that protected attribute" - the same pattern the bias audits use.
+This is **Python/CLI-only** (needs the optional `scipy` extra) and never affects the score, so it is
+intentionally **not** part of the JS engine; the two engines stay bit-for-bit identical without it.
+
 ---
 
 ## 4. Intersectional gaps (informational, not scored)
 
-Take the **first two** detected demographic dimensions (in detection order). Build their crosstab of
-counts. Report every cell whose count is `0` (an absent subgroup) or `< intersection_floor` of total
-rows (default **0.01** → "near-empty"). Skip if fewer than two dimensions were detected.
+Take the **first two** detected demographic dimensions (in detection order) - or an explicit pair via
+the `cross` option (`--cross colA,colB` in the CLI, two dropdowns in the web profiler; if either name
+isn't detected, falls back to the first two). Build their crosstab of counts. Report every cell whose
+count is `0` (an absent subgroup) or `< intersection_floor` of total rows (default **0.01** →
+"near-empty"). Skip if fewer than two dimensions were detected.
 
 ---
 
@@ -160,6 +170,10 @@ with `imbalance_ratio ≥ 3`, every dimension with `missing_pct ≥ 0.05`, and e
 ---
 
 ## 7. Defaults (single place to tune)
+
+The four flagging thresholds are overridable per run without editing source: `profile(df, opts={...})`
+in Python, `profile(table, overrides, opts)` in JS, and `--min-share` / `--intersection-floor` /
+`--imbalance-flag` / `--missing-flag` on the CLI. Omitted knobs fall back to the defaults below.
 
 | Constant               | Default | Used by                          |
 |------------------------|:-------:|----------------------------------|
@@ -230,3 +244,40 @@ overall-score drop of `≥ SCORE_DROP_FLAG` points, every dimension whose `drift
 
 Rounding uses the same half-up helper as the rest of the spec (`Math.round` / `floor(x·f + 0.5)`):
 `psi`, `tvd`, and the share fields to 4 dp; score deltas are integers.
+
+---
+
+## 9. Reference baseline
+
+"Balanced internally" ≠ "representative of the target population." An optional **reference baseline**
+scores a dataset's shares against an external population (e.g. US Census age×sex), catching
+under-sampling relative to who a model will actually serve. Supplied via `--reference baseline.csv`
+(CLI) or an upload (web), and passed to the engine as the `reference` option.
+
+**Format** - a long-format table with three columns (headers case-insensitive; `column`/`dimension`,
+`group`/`value`/`label`, `share`/`expected`/`percent`). Shares may be fractions (`0.51`) or
+percentages (`51`) - if any value exceeds `1.5` the whole table is read as percentages. Parsed into
+`{column: {group: expected_share}}`.
+
+```
+column,group,share
+sex,male,0.49
+sex,female,0.51
+race,White,0.60
+race,Black,0.13
+```
+
+**Application** - for each detected dimension whose name is in the reference, take the union of its
+group labels and the reference's. For each label compute `expected`, `actual`, and
+`delta = actual − expected`; the dimension's `deviation = 0.5 · Σ |actual − expected|` (TVD vs the
+baseline). Groups are ordered by descending `|delta|`. A group with `expected − actual ≥
+REFERENCE_DEVIATION_FLAG` (default **0.05**) is flagged as *under-represented vs reference*. The
+per-dimension `reference` block and its flags are additive; the balance-only headline score is
+unchanged.
+
+```jsonc
+"reference": {
+  "deviation": 0.23,
+  "groups": [ { "label": "White", "expected": 0.60, "actual": 0.80, "delta": 0.20 } ]
+}
+```

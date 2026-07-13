@@ -151,10 +151,16 @@ Fair-Code/
 │   ├── SPEC.md                          #   analysis spec shared with the web port
 │   ├── detect.py                        #   demographic column auto-detection
 │   ├── profiler.py                      #   core representation engine (pure pandas)
+│   ├── compare.py                       #   two-dataset representation drift (PSI)
+│   ├── proxy.py                         #   chi-squared proxy hints (scipy, opt-in)
+│   ├── significance.py                  #   fairness-gap CI + permutation test
 │   ├── report.py                        #   terminal / JSON / HTML rendering
-│   └── cli.py                           #   `faircode profile <csv>` entry point
+│   └── cli.py                           #   `faircode profile` / `compare` entry point
 ├── tests/
-│   └── test_profiler.py                 # pytest suite for the profiler
+│   ├── test_profiler.py                 # pytest suite for the profiler
+│   ├── test_compare.py                  #   drift / comparison tests
+│   ├── test_proxy.py                    #   proxy-hint tests (scipy)
+│   └── test_significance.py             #   significance-module tests
 ├── pyproject.toml                       # packages the `faircode` console script
 │
 ├── explainers/
@@ -192,7 +198,7 @@ Fair-Code/
 ├── LICENSE
 ├── SECURITY.md
 ├── assets/                              # web assets (CSS + JS)
-│   └── profiler-engine.js, profiler-ui.js, profiler.css   # client-side profiler
+│   └── profiler-engine.js, profiler-ui.js, profiler-compare.js, profiler.css   # client-side profiler
 ├── index.html                           # live at thefaircode.xyz
 ├── profiler.html                        # Open Dataset Profiler - client-side web tool
 └── requirements.txt
@@ -666,15 +672,26 @@ else); `.xlsx` needs the optional `excel` extra.
 ```bash
 pip install -e .                                   # installs the faircode console script
 pip install -e ".[excel]"                          # + .xlsx support (openpyxl)
+pip install -e ".[proxy]"                           # + chi-squared proxy hints (scipy)
 faircode profile "Insurance Denial/insurance.csv"  # terminal report
 faircode profile data.tsv                          # tab-separated exports work too
 faircode profile data.xlsx                         # Excel workbooks work too
 faircode profile data.csv --json                   # machine-readable
 faircode profile data.csv --html report.html       # standalone HTML report
+faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
+faircode profile data.csv --map gndr=sex           # fix a missed column
+faircode profile data.csv --cross race,age         # choose the intersection pair
+faircode profile data.csv --reference census.csv   # score vs a population baseline
+faircode profile data.csv --proxy-hints            # chi-squared proxy hints (needs scipy)
+faircode profile data.csv --min-share 0.1          # tune the flagging thresholds
 ```
 
 The engine is domain-agnostic - it works on any tabular CSV (health, hiring, lending, justice),
-auto-detecting demographic columns (sex, race, age, geography) by name. It depends only on
+auto-detecting demographic columns (sex, race, age, geography) by name. Beyond the single-dataset
+audit it can **compare two datasets** for representation drift (`compare`, web A/B dropzones),
+**manually map** a mis-detected column (`--map`, web dropdowns), **choose** which two columns to
+cross, score against a **reference population baseline** (`--reference`, web upload), surface
+**chi-squared proxy hints**, and take **tunable thresholds**. It depends only on
 **pandas** (no `ydata-profiling`): that library is a heavy, general-purpose profiler, whereas the
 Profiler needs only a thin, fairness-specific slice, so we compute the representation metrics
 directly. Run the tests with `pytest tests/`.

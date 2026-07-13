@@ -19,10 +19,29 @@ MIN_SHARE_THRESHOLD = 0.05
 INTERSECTION_FLOOR = 0.01
 IMBALANCE_FLAG = 3.0
 MISSING_FLAG = 0.05
+REFERENCE_DEVIATION_FLAG = 0.05  # under-representation vs a reference baseline
 AGE_BANDS = [0, 18, 30, 45, 60, 75]  # left-closed edges; final band is "75+"
 MAX_DIMENSION_GROUPS = 50  # drop identifier/date-like columns (geography exempt)
 
 _DATE_RE = re.compile(r"\d{1,4}[/-]\d{1,2}[/-]\d{1,4}")
+
+# Tunable knobs (SPEC section 7); overridable per call via profile(opts=...).
+_DEFAULT_OPTS = {
+    "min_share": MIN_SHARE_THRESHOLD,
+    "intersection_floor": INTERSECTION_FLOOR,
+    "imbalance_flag": IMBALANCE_FLAG,
+    "missing_flag": MISSING_FLAG,
+    "reference_flag": REFERENCE_DEVIATION_FLAG,
+    "cross": None,       # [colA, colB] to force the intersection pair (SPEC 4)
+    "reference": None,   # {column: {group: expected_share}} baseline (SPEC 8)
+}
+
+
+def _resolve_opts(opts) -> dict:
+    o = dict(_DEFAULT_OPTS)
+    if opts:
+        o.update({k: v for k, v in opts.items() if v is not None})
+    return o
 
 
 def _r(x, dp: int = 0):
@@ -84,7 +103,7 @@ def _skewness(values: list[float]):
 
 # ── Per-dimension metrics (SPEC section 3) ──────────────────────────────────
 def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
-                    skewness=None) -> dict:
+                    skewness=None, min_share_threshold=MIN_SHARE_THRESHOLD) -> dict:
     """Given {label: count} for non-null values, compute the dimension metrics."""
     n_nonnull = sum(labels_counts.values())
     groups = []
@@ -106,7 +125,7 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
         H = -sum(p * math.log(p) for p in shares if p > 0)
         entropy_ratio = H / math.log(k)
 
-    under = [g["label"] for g in groups if g["share"] < MIN_SHARE_THRESHOLD]
+    under = [g["label"] for g in groups if g["share"] < min_share_threshold]
 
     return {
         "n_groups": k,
@@ -122,7 +141,8 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
     }
 
 
-def _dimension(df: pd.DataFrame, name: str, kind: str) -> dict:
+def _dimension(df: pd.DataFrame, name: str, kind: str,
+               min_share=MIN_SHARE_THRESHOLD) -> dict:
     col = df[name]
     n_total = len(df)
     skewness = None
@@ -139,7 +159,7 @@ def _dimension(df: pd.DataFrame, name: str, kind: str) -> dict:
             for b in bands:
                 if b is not None:
                     counts[b] = counts.get(b, 0) + 1
-            result = _analyze_groups(counts, n_total, null_count, skewness)
+            result = _analyze_groups(counts, n_total, null_count, skewness, min_share)
             result.update({"name": name, "kind": kind})
             return result
 
@@ -147,18 +167,29 @@ def _dimension(df: pd.DataFrame, name: str, kind: str) -> dict:
     null_count = int(col.isna().sum())
     vc = col.dropna().value_counts()
     counts = {label: int(c) for label, c in vc.items()}
-    result = _analyze_groups(counts, n_total, null_count, skewness)
+    result = _analyze_groups(counts, n_total, null_count, skewness, min_share)
     result.update({"name": name, "kind": kind})
     return result
 
 
 # ── Intersectional gaps (SPEC section 4) ────────────────────────────────────
-def _intersections(df: pd.DataFrame, dims: list[dict]) -> list[dict]:
+def _pick_cross(dims: list[dict], cross) -> tuple:
+    """Choose the two dimensions to cross: an explicit [colA, colB] if both are
+    detected, otherwise the first two (SPEC section 4)."""
+    if cross and len(cross) == 2:
+        by_name = {d["name"]: d for d in dims}
+        if cross[0] in by_name and cross[1] in by_name:
+            return by_name[cross[0]], by_name[cross[1]]
+    return dims[0], dims[1]
+
+
+def _intersections(df: pd.DataFrame, dims: list[dict],
+                   intersection_floor=INTERSECTION_FLOOR, cross=None) -> list[dict]:
     if len(dims) < 2:
         return []
-    a, b = dims[0], dims[1]
+    a, b = _pick_cross(dims, cross)
     n_total = len(df)
-    floor = INTERSECTION_FLOOR * n_total
+    floor = intersection_floor * n_total
 
     def labelize(name, kind):
         if kind == "age":
@@ -196,7 +227,38 @@ def _grade(score: int) -> str:
     return "F"
 
 
-def _build_flags(dimensions: list[dict], intersections: list[dict]) -> list[str]:
+def _apply_reference(dimensions: list[dict], reference: dict,
+                     reference_flag=REFERENCE_DEVIATION_FLAG) -> list[str]:
+    """Annotate each dimension with expected-vs-actual shares against a reference
+    baseline (SPEC section 8) and return under-representation flags."""
+    flags: list[str] = []
+    for d in dimensions:
+        ref = reference.get(d["name"])
+        if not ref:
+            continue
+        actual = {g["label"]: g["share"] for g in d["groups"]}
+        labels = set(actual) | set(ref)
+        groups = []
+        deviation = 0.0
+        for label in labels:
+            exp = ref.get(label, 0.0)
+            act = actual.get(label, 0.0)
+            delta = act - exp
+            deviation += abs(delta)
+            groups.append({"label": str(label), "expected": _r(exp, 4),
+                           "actual": _r(act, 4), "delta": _r(delta, 4)})
+            if exp - act >= reference_flag:
+                flags.append(
+                    f"{d['name']}: '{label}' under-represented vs reference "
+                    f"({act * 100:.1f}% vs {exp * 100:.1f}% expected)"
+                )
+        groups.sort(key=lambda g: (-abs(g["delta"]), g["label"]))
+        d["reference"] = {"deviation": _r(0.5 * deviation, 4), "groups": groups}
+    return flags
+
+
+def _build_flags(dimensions: list[dict], intersections: list[dict],
+                 imbalance_flag=IMBALANCE_FLAG, missing_flag=MISSING_FLAG) -> list[str]:
     flags: list[str] = []
     for d in dimensions:
         for g in d["groups"]:
@@ -205,14 +267,14 @@ def _build_flags(dimensions: list[dict], intersections: list[dict]) -> list[str]
                     f"{d['name']}: '{g['label']}' is under-represented "
                     f"({g['share'] * 100:.1f}%)"
                 )
-        if d["imbalance_ratio"] is not None and d["imbalance_ratio"] >= IMBALANCE_FLAG:
+        if d["imbalance_ratio"] is not None and d["imbalance_ratio"] >= imbalance_flag:
             flags.append(
                 f"{d['name']}: imbalance ratio {d['imbalance_ratio']:.1f}× "
                 f"between largest and smallest group"
             )
         elif d["imbalance_ratio"] is None and d["n_groups"] > 1:
             flags.append(f"{d['name']}: a subgroup is effectively absent (0 rows)")
-        if d["missing_pct"] >= MISSING_FLAG:
+        if d["missing_pct"] >= missing_flag:
             flags.append(
                 f"{d['name']}: {d['missing_pct'] * 100:.1f}% of values are missing"
             )
@@ -226,15 +288,65 @@ def _build_flags(dimensions: list[dict], intersections: list[dict]) -> list[str]
     return flags
 
 
-def profile(df: pd.DataFrame, overrides=None) -> dict:
+_REF_COLUMN_ALIASES = ("column", "dimension", "dim")
+_REF_GROUP_ALIASES = ("group", "value", "label", "category")
+_REF_SHARE_ALIASES = ("share", "expected", "expected_share", "proportion",
+                      "percent", "pct")
+
+
+def parse_reference(df: pd.DataFrame) -> dict:
+    """Parse a long-format reference baseline into {column: {group: share}}.
+
+    Expected headers (case-insensitive): a column identifier, a group/value, and
+    a share. Shares may be fractions (0.51) or percentages (51) - if any value
+    exceeds 1.5 the whole table is read as percentages. See SPEC section 8.
+    """
+    lower = {str(c).strip().lower(): c for c in df.columns}
+
+    def pick(aliases):
+        for a in aliases:
+            if a in lower:
+                return lower[a]
+        return None
+
+    col_c = pick(_REF_COLUMN_ALIASES)
+    grp_c = pick(_REF_GROUP_ALIASES)
+    shr_c = pick(_REF_SHARE_ALIASES)
+    if not (col_c and grp_c and shr_c):
+        raise ValueError("reference needs column, group, and share columns "
+                         "(e.g. headers: column,group,share)")
+
+    raw = []
+    for _, row in df.iterrows():
+        try:
+            share = float(row[shr_c])
+        except (TypeError, ValueError):
+            continue
+        raw.append((str(row[col_c]).strip(), str(row[grp_c]).strip(), share))
+
+    scale = 100.0 if any(s > 1.5 for _, _, s in raw) else 1.0
+    reference: dict = {}
+    for col, grp, share in raw:
+        reference.setdefault(col, {})[grp] = share / scale
+    return reference
+
+
+def profile(df: pd.DataFrame, overrides=None, opts=None) -> dict:
     """Profile a DataFrame for demographic representation. See SPEC section 6.
 
     `overrides` is an optional {column: kind} map (SPEC section 1) that forces a
     column's dimension when auto-detection misses or mislabels it.
+
+    `opts` is an optional dict of tunable knobs (SPEC section 7): `min_share`,
+    `intersection_floor`, `imbalance_flag`, `missing_flag`, `reference_flag`, a
+    `cross` pair [colA, colB] for the intersection (SPEC 4), and a `reference`
+    baseline {column: {group: expected_share}} (SPEC 8).
     """
     overrides = overrides or {}
+    o = _resolve_opts(opts)
     detected = detect_columns(df, overrides)
-    dimensions = [_dimension(df, d["name"], d["kind"]) for d in detected]
+    dimensions = [_dimension(df, d["name"], d["kind"], o["min_share"])
+                  for d in detected]
     # Drop identifier/date-like columns that exploded into many groups; geography
     # (cities, regions) legitimately has high cardinality, so it is exempt - as is
     # any column the user explicitly mapped (their intent overrides the heuristic).
@@ -244,7 +356,11 @@ def profile(df: pd.DataFrame, overrides=None) -> dict:
                   or d["n_groups"] <= MAX_DIMENSION_GROUPS]
     kept_names = {d["name"] for d in dimensions}
     detected = [d for d in detected if d["name"] in kept_names]
-    intersections = _intersections(df, detected)
+    intersections = _intersections(df, detected, o["intersection_floor"], o["cross"])
+
+    ref_flags = []
+    if o["reference"]:
+        ref_flags = _apply_reference(dimensions, o["reference"], o["reference_flag"])
 
     if dimensions:
         overall = _r(sum(d["dimension_score"] for d in dimensions) / len(dimensions))
@@ -258,5 +374,6 @@ def profile(df: pd.DataFrame, overrides=None) -> dict:
         "grade": _grade(overall),
         "dimensions": dimensions,
         "intersections": intersections,
-        "flags": _build_flags(dimensions, intersections),
+        "flags": _build_flags(dimensions, intersections,
+                              o["imbalance_flag"], o["missing_flag"]) + ref_flags,
     }

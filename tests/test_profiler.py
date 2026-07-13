@@ -11,7 +11,7 @@ import pytest
 
 from faircode import profile
 from faircode.detect import classify_name, detect_columns
-from faircode.profiler import _age_band, _age_to_numeric, _skewness
+from faircode.profiler import _age_band, _age_to_numeric, _skewness, parse_reference
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -142,6 +142,62 @@ def test_override_exempts_forced_column_from_cardinality_drop():
     assert profile(df)["dimensions"] == []  # dropped by default
     result = profile(df, overrides={"code": "race"})
     assert [d["name"] for d in result["dimensions"]] == ["code"]
+
+
+# ── Tunable thresholds (issue #63) ───────────────────────────────────────────
+def test_min_share_threshold_tunable():
+    df = pd.DataFrame({"race": ["White"] * 80 + ["Black"] * 10 + ["Asian"] * 10})
+    assert profile(df)["dimensions"][0]["under_represented"] == []
+    tuned = profile(df, opts={"min_share": 0.15})["dimensions"][0]
+    assert set(tuned["under_represented"]) == {"Asian", "Black"}
+
+
+def test_imbalance_flag_tunable():
+    df = pd.DataFrame({"sex": ["M"] * 80 + ["F"] * 20})  # ratio 4.0×
+    assert any("imbalance" in f for f in profile(df)["flags"])
+    assert not any("imbalance" in f
+                   for f in profile(df, opts={"imbalance_flag": 5.0})["flags"])
+
+
+# ── Choosable intersection pair (issue #58) ──────────────────────────────────
+def test_cross_selects_intersection_pair():
+    df = pd.DataFrame({
+        "sex": ["M", "F"] * 50,
+        "race": ["White", "Black"] * 50,
+        "age": [20, 80] * 50,
+    })
+    default = profile(df)["intersections"]
+    crossed = profile(df, opts={"cross": ["race", "age"]})["intersections"]
+    assert crossed[0]["dims"] == ["race", "age"]
+    assert default[0]["dims"] != ["race", "age"]  # first two were sex × race
+
+
+def test_cross_falls_back_when_column_missing():
+    df = pd.DataFrame({"sex": ["M", "F"] * 50, "race": ["White", "Black"] * 50})
+    inter = profile(df, opts={"cross": ["sex", "nonexistent"]})["intersections"]
+    assert inter[0]["dims"] == ["sex", "race"]  # fell back to first two
+
+
+# ── Reference baseline (issue #56) ───────────────────────────────────────────
+def test_parse_reference_fraction_and_percent():
+    frac = parse_reference(pd.DataFrame({"column": ["sex", "sex"],
+                                         "group": ["m", "f"], "share": [0.4, 0.6]}))
+    pct = parse_reference(pd.DataFrame({"column": ["sex", "sex"],
+                                        "group": ["m", "f"], "share": [40, 60]}))
+    assert frac == {"sex": {"m": 0.4, "f": 0.6}}
+    assert pct == {"sex": {"m": 0.4, "f": 0.6}}  # percentages normalized to fractions
+
+
+def test_reference_deviation_and_underrepresentation_flag():
+    df = pd.DataFrame({"sex": ["M"] * 70 + ["F"] * 30})   # 70/30 actual
+    ref = {"sex": {"M": 0.5, "F": 0.5}}
+    dim = profile(df, opts={"reference": ref})["dimensions"][0]
+    assert "reference" in dim
+    assert dim["reference"]["deviation"] == pytest.approx(0.20, abs=1e-9)
+    f = next(g for g in dim["reference"]["groups"] if g["label"] == "F")
+    assert f["expected"] == 0.5 and f["actual"] == pytest.approx(0.3)
+    flags = profile(df, opts={"reference": ref})["flags"]
+    assert any("'F' under-represented vs reference" in x for x in flags)
 
 
 def test_date_column_dropped_not_garbage():

@@ -144,6 +144,10 @@
       <div class="results-actions">
         <button class="action-btn" id="downloadHtmlBtn" type="button">⬇ Download report (HTML)</button>
         <button class="action-btn" id="copyJsonBtn" type="button">⧉ Copy as JSON</button>
+        <button class="action-btn" id="referenceBtn" type="button">⚖ Score vs reference…</button>
+        <button class="action-btn" id="referenceClearBtn" type="button" hidden>✕ Clear reference</button>
+        <input type="file" id="referenceInput" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+        <span class="reference-status" id="referenceStatus"></span>
       </div>
 
       <div class="flags-block" id="flagsBlock" hidden>
@@ -167,6 +171,15 @@
 
       <div class="intersections-block" id="intersectionsBlock" hidden>
         <h3 class="section-title">Intersectional gaps</h3>
+        <div class="cross-controls" id="crossControls">
+          <label>Cross
+            <select class="cross-select" id="crossA" aria-label="First intersection dimension"></select>
+          </label>
+          <span aria-hidden="true">×</span>
+          <label>
+            <select class="cross-select" id="crossB" aria-label="Second intersection dimension"></select>
+          </label>
+        </div>
         <p class="section-note" id="intersectionNote"></p>
         <div id="intersections"></div>
       </div>

@@ -22,9 +22,19 @@
   var mappingBlock = document.getElementById('mappingBlock');
   var mappingList = document.getElementById('mappingList');
 
+  var crossControls = document.getElementById('crossControls');
+  var crossA = document.getElementById('crossA');
+  var crossB = document.getElementById('crossB');
+  var referenceBtn = document.getElementById('referenceBtn');
+  var referenceClearBtn = document.getElementById('referenceClearBtn');
+  var referenceInput = document.getElementById('referenceInput');
+  var referenceStatus = document.getElementById('referenceStatus');
+
   var currentResult = null;
   var currentName = '';
   var currentTable = null;   // parsed table, kept so overrides can re-profile
+  var currentOverrides = {}; // column -> forced kind (issue #62)
+  var currentOpts = {};      // cross / reference / thresholds (issues #56, #58)
   var autoKinds = {};        // column -> auto-detected kind (for the mapping hints)
 
   // Kinds a column can be manually mapped to, plus Auto / Not-demographic.
@@ -117,6 +127,9 @@
         return showError('That CSV looks empty or has no data rows.');
       }
       currentTable = table;
+      currentOverrides = {};
+      currentOpts = {};
+      resetReference();
       var result = E.profile(table);
       autoKinds = {};
       result.dimensions.forEach(function (d) { autoKinds[d.name] = d.kind; });
@@ -126,6 +139,24 @@
     } catch (err) {
       showError('Could not profile that file: ' + err.message);
     }
+  }
+
+  // Re-run the engine with the current overrides + opts and re-render in place.
+  function reprofile(scroll) {
+    if (!currentTable) return;
+    try {
+      var result = E.profile(currentTable, currentOverrides, currentOpts);
+      errorEl.hidden = true;
+      render(result, currentName, scroll);
+    } catch (err) {
+      showError('Could not re-profile: ' + err.message);
+    }
+  }
+
+  function resetReference() {
+    referenceStatus.textContent = '';
+    referenceClearBtn.hidden = true;
+    referenceInput.value = '';
   }
 
   function showError(msg) {
@@ -189,7 +220,7 @@
     });
 
     // Intersections
-    renderIntersections(r.intersections);
+    renderIntersections(r);
 
     results.hidden = false;
     if (scroll) {
@@ -231,19 +262,42 @@
     if (d.missing_pct > 0) meta.push('missing ' + pct(d.missing_pct));
     if (d.skewness !== null) meta.push('skew ' + (d.skewness >= 0 ? '+' : '') + d.skewness.toFixed(2));
 
+    var ref = '';
+    if (d.reference) {
+      var refRows = d.reference.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
+        var dCls = g.delta < 0 ? 'under' : g.delta > 0 ? 'over' : '';
+        return '<div class="ref-row">' +
+          '<span class="ref-label" title="' + esc(g.label) + '">' + esc(g.label) + '</span>' +
+          '<span class="ref-vals">exp ' + pct(g.expected) + ' · act ' + pct(g.actual) + '</span>' +
+          '<span class="ref-delta ' + dCls + '">' +
+            (g.delta > 0 ? '+' : '') + (g.delta * 100).toFixed(1) + ' pp</span>' +
+          '</div>';
+      }).join('');
+      ref = '<div class="dim-reference"><div class="dim-reference-head">vs reference · ' +
+        'deviation ' + pct(d.reference.deviation) + '</div>' + refRows + '</div>';
+    }
+
     card.innerHTML = head + bars + more +
-      (meta.length ? '<div class="dim-meta">' + meta.join('  ·  ') + '</div>' : '');
+      (meta.length ? '<div class="dim-meta">' + meta.join('  ·  ') + '</div>' : '') + ref;
     return card;
   }
 
-  function renderIntersections(inters) {
+  function renderIntersections(r) {
     var block = document.getElementById('intersectionsBlock');
     var host = document.getElementById('intersections');
+    var note = document.getElementById('intersectionNote');
     host.innerHTML = '';
-    if (!inters.length) { block.hidden = true; return; }
-    var inter = inters[0];
-    document.getElementById('intersectionNote').textContent =
-      'Subgroups of ' + inter.dims[0] + ' × ' + inter.dims[1] +
+    // Need at least two dimensions before a cross is meaningful.
+    if (r.dimensions.length < 2) { block.hidden = true; return; }
+    block.hidden = false;
+    populateCrossSelects(r.dimensions);
+
+    if (!r.intersections.length) {
+      note.textContent = 'No empty or near-empty subgroups for the selected pair.';
+      return;
+    }
+    var inter = r.intersections[0];
+    note.textContent = 'Subgroups of ' + inter.dims[0] + ' × ' + inter.dims[1] +
       ' that are empty or near-empty:';
     var wrap = document.createElement('div');
     wrap.className = 'inter-cells';
@@ -254,7 +308,6 @@
       wrap.appendChild(el);
     });
     host.appendChild(wrap);
-    block.hidden = false;
   }
 
   // ── Column mapping (manual override, issue #62) ─────────────────────────
@@ -306,13 +359,53 @@
   // Delegated so it keeps working across re-renders of the list.
   mappingList.addEventListener('change', function (e) {
     if (!e.target.classList.contains('map-select') || !currentTable) return;
-    try {
-      var result = E.profile(currentTable, readOverrides());
-      errorEl.hidden = true;
-      render(result, currentName, false);
-    } catch (err) {
-      showError('Could not re-profile with that mapping: ' + err.message);
-    }
+    currentOverrides = readOverrides();
+    reprofile(false);
+  });
+
+  // ── Intersection cross-selectors (issue #58) ───────────────────────────
+  function populateCrossSelects(dims) {
+    var names = dims.map(function (d) { return d.name; });
+    var selA = currentOpts.cross ? currentOpts.cross[0] : names[0];
+    var selB = currentOpts.cross ? currentOpts.cross[1] : names[1];
+    [[crossA, selA], [crossB, selB]].forEach(function (pair) {
+      var sel = pair[0], chosen = pair[1];
+      sel.innerHTML = names.map(function (n) {
+        return '<option value="' + esc(n) + '"' + (n === chosen ? ' selected' : '') +
+          '>' + esc(n) + '</option>';
+      }).join('');
+    });
+  }
+
+  crossControls.addEventListener('change', function () {
+    if (!currentTable) return;
+    currentOpts.cross = [crossA.value, crossB.value];
+    reprofile(false);
+  });
+
+  // ── Reference baseline (issue #56) ──────────────────────────────────────
+  referenceBtn.addEventListener('click', function () { referenceInput.click(); });
+  referenceInput.addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        currentOpts.reference = E.parseReference(E.parseCSV(String(reader.result)));
+        referenceStatus.textContent = '⚖ scored vs ' + f.name;
+        referenceClearBtn.hidden = false;
+        reprofile(false);
+      } catch (err) {
+        showError('Could not read reference baseline: ' + err.message);
+      }
+    };
+    reader.onerror = function () { showError('Could not read the reference file.'); };
+    reader.readAsText(f);
+  });
+  referenceClearBtn.addEventListener('click', function () {
+    delete currentOpts.reference;
+    resetReference();
+    reprofile(false);
   });
 
   // ── Report export: "Download report (HTML)" / "Copy as JSON" ────────────

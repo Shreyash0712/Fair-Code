@@ -64,6 +64,11 @@ def to_terminal(result: dict) -> str:
             meta.append(f"skew {d['skewness']:+.2f}")
         if meta:
             add(f"  ({'  '.join(meta)})")
+        if d.get("reference"):
+            add(f"  reference (deviation {d['reference']['deviation'] * 100:.1f}%):")
+            for g in d["reference"]["groups"][:DISPLAY_GROUPS]:
+                add(f"    {g['label'][:16]:<16} exp {g['expected'] * 100:5.1f}%  "
+                    f"act {g['actual'] * 100:5.1f}%  ({g['delta'] * 100:+5.1f} pp)")
         add("")
 
     if result["flags"]:
@@ -72,6 +77,15 @@ def to_terminal(result: dict) -> str:
         add("=" * WIDTH)
         for f in result["flags"]:
             add(f"  ! {f}")
+        add("")
+
+    if result.get("proxy_hints"):
+        add("=" * WIDTH)
+        add("PROXY HINTS  (chi-squared association, informational)")
+        add("=" * WIDTH)
+        for h in result["proxy_hints"]:
+            add(f"  ~ {h['a']} ↔ {h['b']}  "
+                f"(χ² p={h['p_value']:.4g}, Cramér's V={h['cramers_v']:.2f})")
         add("")
 
     add("=" * WIDTH)
