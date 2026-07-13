@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 
+from faircode.significance import significance_report
+
 # ============================================================
 # HOSPITAL READMISSION BIAS AUDIT - FAIR MODEL
 # Dataset: Diabetes 130-US Hospitals (1999–2008)
@@ -202,20 +204,38 @@ print(f"\nModel Accuracy: {accuracy:.2%}\n")
 print("── High-Risk Flag Rate by Gender ────────────────────────")
 print(f"  Male patients      : {sex_flag[0]:.2%} flagged high-risk")
 print(f"  Female patients    : {sex_flag[1]:.2%} flagged high-risk")
-sex_gap = abs(sex_flag[0] - sex_flag[1]) * 100
-print(f"\n  New Fairness Gap (Gender): {sex_gap:.2f}%")
+sex_sig = significance_report(results[results['is_female'] == 0]['pred'],
+                              results[results['is_female'] == 1]['pred'])
+print(f"\n  New Fairness Gap (Gender): {sex_sig['gap']:.2%}")
+print(f"  95% CI: [{sex_sig['ci_low']:.2%}, {sex_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"  Permutation p-value: {sex_sig['p_value']:.4f} "
+      f"({'significant' if sex_sig['significant'] else 'not significant'} at α=0.05)")
+if sex_sig['small_sample_warning']:
+    print(f"  Small-sample warning: n={sex_sig['n_a']} vs {sex_sig['n_b']} (<30)")
 
 print("\n── High-Risk Flag Rate by Race ──────────────────────────")
 print(f"  Caucasian/Asian    : {race_flag[0]:.2%} flagged high-risk")
 print(f"  Other minorities   : {race_flag[1]:.2%} flagged high-risk")
-race_gap = abs(race_flag[0] - race_flag[1]) * 100
-print(f"\n  New Fairness Gap (Race): {race_gap:.2f}%")
+race_sig = significance_report(results[results['is_minority'] == 0]['pred'],
+                               results[results['is_minority'] == 1]['pred'])
+print(f"\n  New Fairness Gap (Race): {race_sig['gap']:.2%}")
+print(f"  95% CI: [{race_sig['ci_low']:.2%}, {race_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"  Permutation p-value: {race_sig['p_value']:.4f} "
+      f"({'significant' if race_sig['significant'] else 'not significant'} at α=0.05)")
+if race_sig['small_sample_warning']:
+    print(f"  Small-sample warning: n={race_sig['n_a']} vs {race_sig['n_b']} (<30)")
 
 print("\n── High-Risk Flag Rate by Age ───────────────────────────")
 print(f"  Under 70           : {age_flag[0]:.2%} flagged high-risk")
 print(f"  70+ (elderly)      : {age_flag[1]:.2%} flagged high-risk")
-age_gap = abs(age_flag[0] - age_flag[1]) * 100
-print(f"\n  New Fairness Gap (Age): {age_gap:.2f}%")
+age_sig = significance_report(results[results['is_elderly'] == 0]['pred'],
+                              results[results['is_elderly'] == 1]['pred'])
+print(f"\n  New Fairness Gap (Age): {age_sig['gap']:.2%}")
+print(f"  95% CI: [{age_sig['ci_low']:.2%}, {age_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"  Permutation p-value: {age_sig['p_value']:.4f} "
+      f"({'significant' if age_sig['significant'] else 'not significant'} at α=0.05)")
+if age_sig['small_sample_warning']:
+    print(f"  Small-sample warning: n={age_sig['n_a']} vs {age_sig['n_b']} (<30)")
 
 print("\n" + "=" * 62)
 print("WHAT CHANGED")

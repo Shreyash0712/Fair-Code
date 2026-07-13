@@ -4,6 +4,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+from faircode.significance import significance_report
+
 # ============================================================
 # INSURANCE DENIAL BIAS AUDIT - BIASED MODEL
 # Dataset: Insurance Claim Analysis: Demographic & Health
@@ -96,14 +98,30 @@ print(f"\nModel Accuracy: {accuracy:.2%}\n")
 print("── High-Cost Claim Flag Rate by Age Group ────────────")
 for group, rate in age_approval.items():
     print(f"  {group:<20} {rate:.2%}")
-age_gap = abs(age_approval.iloc[0] - age_approval.iloc[1])
-print(f"\n  Fairness Gap (Age):    {age_gap:.2%}")
+age_sig = significance_report(
+    df_test[df_test['age_group'] == 'Older (35+)']['prediction'],
+    df_test[df_test['age_group'] == 'Young (<35)']['prediction'],
+)
+print(f"\n  Fairness Gap (Age):    {age_sig['gap']:.2%}")
+print(f"  95% CI: [{age_sig['ci_low']:.2%}, {age_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"  Permutation p-value:   {age_sig['p_value']:.4f} "
+      f"({'significant' if age_sig['significant'] else 'not significant'} at α=0.05)")
+if age_sig['small_sample_warning']:
+    print(f"  Small-sample warning: n={age_sig['n_a']} vs {age_sig['n_b']} (<30)")
 
 print("\n── High-Cost Claim Flag Rate by Gender ───────────────")
 for group, rate in gender_approval.items():
     print(f"  {group:<20} {rate:.2%}")
-gender_gap = abs(gender_approval['male'] - gender_approval['female'])
-print(f"\n  Fairness Gap (Gender): {gender_gap:.2%}")
+gender_sig = significance_report(
+    df_test[df_test['gender'] == 'male']['prediction'],
+    df_test[df_test['gender'] == 'female']['prediction'],
+)
+print(f"\n  Fairness Gap (Gender): {gender_sig['gap']:.2%}")
+print(f"  95% CI: [{gender_sig['ci_low']:.2%}, {gender_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"  Permutation p-value:   {gender_sig['p_value']:.4f} "
+      f"({'significant' if gender_sig['significant'] else 'not significant'} at α=0.05)")
+if gender_sig['small_sample_warning']:
+    print(f"  Small-sample warning: n={gender_sig['n_a']} vs {gender_sig['n_b']} (<30)")
 
 print("\n" + "=" * 60)
 print("WHAT'S WRONG")

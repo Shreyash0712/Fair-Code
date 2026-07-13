@@ -127,7 +127,7 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 - [x] Bias detection utility library (`faircode/` module) - diagnostic representation profiler + CLI
 - [ ] AIF360 / Fairlearn integration examples
 - [ ] Intersectional bias notebook (auditing across multiple protected attributes simultaneously)
-- [ ] Statistical significance testing for fairness gaps
+- [x] Statistical significance testing for fairness gaps
 
 ---
 

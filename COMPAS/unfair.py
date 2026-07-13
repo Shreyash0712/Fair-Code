@@ -3,6 +3,8 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
+from faircode.significance import significance_report
+
 # 1. Load your uploaded file
 df = pd.read_csv(Path(__file__).parent / 'compas-scores-raw.csv')
 
@@ -28,10 +30,19 @@ model.fit(X_train, y_train)
 test_results = X_test.copy()
 test_results['prediction'] = model.predict(X_test)
 
-aa_rate = test_results[test_results['race_binary'] == 1]['prediction'].mean()
-c_rate = test_results[test_results['race_binary'] == 0]['prediction'].mean()
+aa_pred = test_results[test_results['race_binary'] == 1]['prediction']
+c_pred = test_results[test_results['race_binary'] == 0]['prediction']
+aa_rate = aa_pred.mean()
+c_rate = c_pred.mean()
+
+sig = significance_report(aa_pred, c_pred)
 
 print(f"--- BIASED MODEL RESULTS ---")
 print(f"Black Defendant High-Risk Rate: {aa_rate:.2%}")
 print(f"White Defendant High-Risk Rate: {c_rate:.2%}")
-print(f"Fairness Gap: {aa_rate - c_rate:.2%}")
+print(f"Fairness Gap: {sig['gap']:.2%}")
+print(f"95% CI: [{sig['ci_low']:.2%}, {sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"Permutation test p-value: {sig['p_value']:.4f} "
+      f"({'statistically significant' if sig['significant'] else 'not statistically significant'} at α=0.05)")
+if sig['small_sample_warning']:
+    print(f"Small-sample warning: n={sig['n_a']} vs {sig['n_b']} (<30) - interpret with caution")

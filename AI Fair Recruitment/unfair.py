@@ -3,6 +3,8 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
+from faircode.significance import significance_report
+
 # 1. Load the dataset
 df = pd.read_csv(Path(__file__).parent / 'AI_Fair_Recruitment_Dataset.csv')
 
@@ -27,12 +29,21 @@ test_results['prediction'] = model.predict(X_test)
 # Find the generated gender column
 male_col = [col for col in X_test.columns if 'male' in col.lower()][0]
 
-male_hire_rate = test_results[test_results[male_col] == 1]['prediction'].mean()
-female_hire_rate = test_results[test_results[male_col] == 0]['prediction'].mean()
+male_pred = test_results[test_results[male_col] == 1]['prediction']
+female_pred = test_results[test_results[male_col] == 0]['prediction']
+male_hire_rate = male_pred.mean()
+female_hire_rate = female_pred.mean()
+
+sig = significance_report(male_pred, female_pred)
 
 print("=" * 40)
 print("--- BIASED MODEL OUTPUT (unfair.jpg) ---")
 print(f"Male Candidate Hire Rate: {male_hire_rate:.2%}")
 print(f"Female Candidate Hire Rate: {female_hire_rate:.2%}")
-print(f"Original Fairness Gap: {abs(male_hire_rate - female_hire_rate):.2%}")
+print(f"Original Fairness Gap: {sig['gap']:.2%}")
+print(f"95% CI: [{sig['ci_low']:.2%}, {sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"Permutation test p-value: {sig['p_value']:.4f} "
+      f"({'statistically significant' if sig['significant'] else 'not statistically significant'} at α=0.05)")
+if sig['small_sample_warning']:
+    print(f"Small-sample warning: n={sig['n_a']} vs {sig['n_b']} (<30) - interpret with caution")
 print("=" * 40)

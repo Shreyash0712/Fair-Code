@@ -596,7 +596,7 @@ All projects use the same pipeline:
 |-----------|---------|
 | **Model** | Random Forest Classifier (`sklearn.ensemble.RandomForestClassifier`, `n_estimators=100`) - chosen for resistance to overfitting, feature importance interpretability, and SHAP compatibility |
 | **Split** | 80/20 train/test, `random_state=42` |
-| **Primary metric** | Demographic Parity - difference in positive prediction rates across demographic groups |
+| **Primary metric** | Demographic Parity - difference in positive prediction rates across demographic groups. Each gap is reported with a 95% bootstrap confidence interval and a permutation-test p-value (via `faircode.significance`) so real disparities can be told apart from sampling noise |
 | **Secondary metrics** | Equalized Odds (TPR + FPR parity), Disparate Impact Ratio (Four-Fifths Rule), SHAP feature attribution |
 | **Mitigation** | Pre-processing attribute removal - protected attributes and identified proxies are dropped before training |
 | **Proxy detection** | Chi-squared test (`scipy.stats.chi2_contingency`) - features with `p < 0.05` flagged as proxies. See [explainers/proxy-variables.md](explainers/proxy-variables.md) |

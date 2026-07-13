@@ -92,6 +92,9 @@ This is the biased baseline. It must:
 - include protected attributes in the model
 - use `random_state=42`
 - use an 80/20 train/test split
+- report the fairness gap with `significance_report` from `faircode.significance`
+  (`from faircode.significance import significance_report`), passing the two groups'
+  raw per-row predictions - do not reimplement the statistics
 - print results in this format:
 
 ```text
@@ -101,6 +104,8 @@ This is the biased baseline. It must:
 [Group B] [Outcome] Rate: XX.XX%
 
 Fairness Gap: XX.XX%
+95% CI: [XX.XX%, XX.XX%] (bootstrap, n=10,000 resamples)
+Permutation test p-value: X.XXXX (statistically significant at α=0.05)
 ```
 
 #### `fair.py`
@@ -110,6 +115,8 @@ This is the mitigated version. It must:
 - drop the protected attribute(s)
 - drop any proxy variables you identified
 - retrain on the remaining features
+- report the fairness gap with `significance_report` from `faircode.significance`,
+  the same way `unfair.py` does
 - print results in this format:
 
 ```text
@@ -119,6 +126,8 @@ This is the mitigated version. It must:
 [Group B] [Outcome] Rate: XX.XX%
 
 New Fairness Gap: XX.XX%
+95% CI: [XX.XX%, XX.XX%] (bootstrap, n=10,000 resamples)
+Permutation test p-value: X.XXXX (not statistically significant at α=0.05)
 ```
 
 ### Notebook expectations

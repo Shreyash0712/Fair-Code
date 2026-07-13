@@ -4,6 +4,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
+from faircode.significance import significance_report
+
 # Load dataset
 # Source: German Credit Risk dataset
 # https://www.kaggle.com/datasets/ppb00x/credit-risk-customers
@@ -68,13 +70,21 @@ results = X_test.copy()
 results['pred'] = predictions
 results['is_young'] = df.loc[X_test.index, 'is_young']
 
-young_rate = results[results['is_young'] == 1]['pred'].mean() * 100
-older_rate = results[results['is_young'] == 0]['pred'].mean() * 100
-gap = older_rate - young_rate
+young_pred = results[results['is_young'] == 1]['pred']
+older_pred = results[results['is_young'] == 0]['pred']
+young_rate = young_pred.mean() * 100
+older_rate = older_pred.mean() * 100
+
+sig = significance_report(older_pred, young_pred)
 
 print("--- BIASED MODEL RESULTS ---")
 print()
 print(f"Older Applicants (30+) Good Credit Rate: {older_rate:.2f}%")
 print(f"Young Applicants (<30) Good Credit Rate: {young_rate:.2f}%")
 print()
-print(f"Fairness Gap: {gap:.2f}%")
+print(f"Fairness Gap: {sig['gap']:.2%}")
+print(f"95% CI: [{sig['ci_low']:.2%}, {sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
+print(f"Permutation test p-value: {sig['p_value']:.4f} "
+      f"({'statistically significant' if sig['significant'] else 'not statistically significant'} at α=0.05)")
+if sig['small_sample_warning']:
+    print(f"Small-sample warning: n={sig['n_a']} vs {sig['n_b']} (<30) - interpret with caution")
