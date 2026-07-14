@@ -4,7 +4,7 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.4.0-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.0-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
@@ -12,24 +12,14 @@ All notable changes to Fair Code are documented here, newest first.
 
 ---
 
-## [1.4.0] - 14 Jul 2026
+## [1.3.0] - 13 Jul 2026
 ### Added
 - Audit 07 - Tenant Screening / Rental Application Bias (#68) - a new domain (housing) auditing the criminal-history / recidivism-risk scores that real tenant-screening products (CoreLogic, TransUnion SmartMove, RealPage) sell to landlords as a risk flag on rental applicants
   - **Dataset: [`Tenant Screening/tenant-screening-data.csv`](Tenant%20Screening/)** - NIJ's Recidivism Challenge Full Dataset (Georgia Dept. of Community Supervision, 25,835 records, public domain via DOJ/NIJ). A reframed source: there is no clean public per-applicant screening dataset, so the audit treats `Recidivism_Within_3years` as the risk flag a background-check algorithm hands a landlord. Rows where the original challenge withheld the label are filtered out before training. Dataset choice and reframing rationale posted on issue #68 per CONTRIBUTING §1
   - **Protected attribute: Race** (Black vs White) - single-attribute audit, so no intersectional report per CONTRIBUTING
   - **`Tenant Screening/unfair.py` / `fair.py`** - Random Forest (`n_estimators=100`, `random_state=42`, 80/20 split), gap reported with `significance_report`. Twelve proxies dropped in `fair.py`: `Prior_Arrest_Episodes_{Felony,Violent,Property,Drug,GunCharges}`, the matching `Prior_Conviction_Episodes_*` fields, `Gang_Affiliated` (criminal record as a proxy for race), and `Residence_Changes` (housing instability standing in for eviction history). All twelve differ by race at chi-squared p far below 0.05
   - **Result: race gap 7.17% → 5.07% (29% reduction).** The residual gap stays statistically significant (p=0.0007) - the honest finding: the bias lives in the label itself (re-arrest is a policed quantity), so no feature removal fully closes it
-  - **Notebook: [`07_tenant_screening_bias_audit.ipynb`](notebooks/07_tenant_screening_bias_audit.ipynb)** - the standard 8-section walkthrough, including a chi-squared proxy analysis with crosstab output
-### Changed
-- `README.md`: new results-table row (07) and full Tenant Screening project section; repository tree and audit count updated
-- `index.html` (docs site): new Project 07 card, nav + mobile-nav entries, ticker items, a Housing filter button, a completed roadmap entry (plus the previously-missing Healthcare Readmission roadmap entry), and meta-description domains extended to tenant screening
-- `ROADMAP.md`: Phase 3 now lists Tenant Screening as published (7 of 9 planned audits)
-- `CITATION.cff`: version `1.3.0` → `1.4.0`; release date updated to 2026-07-14; abstract extended to cover tenant-screening / housing bias
-
----
-
-## [1.3.0] - 13 Jul 2026
-### Added
+  - **Notebook: [`07_tenant_screening_bias_audit.ipynb`](notebooks/07_tenant_screening_bias_audit.ipynb)** - the standard 8-section walkthrough, including a chi-squared proxy analysis with crosstab output. Docs site (`index.html`) gains a Project 07 card, nav + ticker entries, and a Housing filter; `ROADMAP.md` Phase 3 lists it as published
 - Intersectional bias analysis - auditing two protected attributes at once, so the doubly-disadvantaged group at their intersection is measured directly instead of being averaged away into each single-axis gap (closes the roadmap's last open Phase 5 item)
   - **`intersectional_report()` in [`faircode/significance.py`](faircode/significance.py)** - takes an outcome and two boolean masks (each marking the disadvantaged side of one attribute), splits the population into the four `mask_a × mask_b` quadrants, and compares the doubly-disadvantaged cell against the baseline cell with the same bootstrap CI + permutation p-value the single-axis audits already use. Also returns each attribute's marginal gap (what it would report on its own), a `superadditive` flag (true when the compounded gap exceeds the sum of the two marginals), and per-quadrant rates/sizes so a thin intersection cell is visible before the small-sample warning fires. Pure numpy/pandas, no new dependencies
   - **Wired into the three audits that already track 2+ protected attributes**, as a new printed block after the existing single-attribute output in both `unfair.py` and `fair.py`: Insurance Denial (age × sex), Benefits Denial (sex × race), Healthcare Readmission (sex × race). COMPAS, AI Fair Recruitment, and German Credit Lending track one attribute each and are unchanged - there is nothing to cross
