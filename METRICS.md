@@ -5,7 +5,7 @@
 ![Stars](https://img.shields.io/badge/Stars-27-brightgreen?style=flat-square&logo=github)
 ![Contributors](https://img.shields.io/badge/Contributors-7-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-8-orange?style=flat-square)
-![Explainers](https://img.shields.io/badge/Explainers-23-blueviolet?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-28-blueviolet?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.
@@ -47,7 +47,7 @@ Weekly snapshot of project health. Updated every Friday.
 | Social reach | ~10K | 10K/mo | Q3 2026 |
 | Issues closed | - | Track weekly | Ongoing |
 | Code audits | 6 | 8+ | End of 2026 |
-| Explainers | 23 | 30+ | End of 2026 |
+| Explainers | 28 | 30+ | End of 2026 |
 
 ---
 

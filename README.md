@@ -192,7 +192,9 @@ Fair-Code/
 │   ├── confounding-variable.md
 │   ├── predictive-parity.md
 │   ├── false-positives-vs-false-negatives.md
-│   └── supervised-learning.md
+│   ├── supervised-learning.md
+│   ├── unsupervised-learning.md
+│   └── model-drift.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -823,6 +825,8 @@ directly. Run the tests with `pytest tests/`.
 - [x] Explainer: What Is Predictive Parity?
 - [x] Explainer: False Positives vs. False Negatives in Medical Risk Models
 - [x] Explainer: What Is Supervised Learning?
+- [x] Explainer: What Is Unsupervised Learning?
+- [x] Explainer: What Is Model Drift?
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
@@ -849,7 +853,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Forks | 8+ |
 | Combined Social Reach (Instagram + LinkedIn) | ~10K |
 | Code Audits Published | 6 |
-| Explainers Published | 25 |
+| Explainers Published | 28 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

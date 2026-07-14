@@ -4,11 +4,35 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.0-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.1-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.3.1] - 14 Jul 2026
+### Added
+- Explainer: What Is Unsupervised Learning? - `unsupervised-learning.md` created (contributed by @AnayDhawan, #35/#74), added to `index.html`, `README.md`, and `CONTRIBUTING.md`
+  - Full explainer on learning structure from unlabelled data: with no `y` to score against, a clustering algorithm has no concept of protected groups, yet can still sort people along demographic lines as a side effect of the features it is given
+  - Real-world proof anchored to Audit 04 (Benefits Denial): running k-means (`k=2`) on the UCI Adult Census file with `sex`, `race`, and `native.country` excluded from the feature set still recovers a strong sex split (one cluster 89.3% male) and a real race split (Black applicants at more than 2x the rate between clusters). National origin is kept as an honest counterexample - it lands at essentially the same rate in both clusters (10.2% vs 10.7%) - rather than overclaiming
+  - Detection code: `cluster_without_protected_attributes()` and `check_cluster_demographic_skew()` - k-means on a deliberately protected-attribute-free feature set, paired with a post-hoc crosstab of cluster assignment against each protected attribute
+  - Four numbered limitations (no ground truth to evaluate against, `k` and distance metric as assumptions, disparate impact harder to audit without labels, dimensionality reduction erasing the very signal an audit needs), cross-links to proxy-variables, proxy-entanglement, ml-bias, and supervised-learning, and three further reading citations (ProPublica mortgage-algorithm investigation, Chierichetti et al. 2017 Fair Clustering, Barocas, Hardt & Narayanan)
+  - Roadmap item added on the website
+- Explainer: What Is Model Drift? - `model-drift.md` created (contributed by @AnayDhawan, #36/#75), added to `index.html`, `README.md`, and `CONTRIBUTING.md`
+  - Full explainer on the operational, over-time side of distribution shift: a model that clears a bias audit at launch can drift back into an unfair state while sitting still, with no code change, no retraining, and no alert, unless someone monitors it. Distinguishes data drift (`P(X)` moves) from concept drift (`P(Y|X)` moves) because they need different fixes
+  - Scoped explicitly against the existing `distribution-shift.md`: that explainer covers the one-shot reference-vs-current taxonomy (covariate/label/concept) with a single KS/chi-squared test; this one covers ongoing rolling-window monitoring of an already-deployed model
+  - Real-world proof anchored to Audit 03 (German Credit Lending): re-measuring the age fairness gap across five sequential 200-row windows shows it swinging from 4.3% to 15.1%, versus the audit's single 6.39% snapshot - the instability a rolling view catches and a one-shot audit cannot. PSI on three features flags `credit_amount` (0.119) as the feature that moved most, ahead of `age` (0.096)
+  - Detection code: `population_stability_index()`, `page_hinkley_test()` (change-point detection), and `rolling_fairness_gap()` - numpy/pandas, no new dependencies
+  - Five numbered limitations (row order is not real time, data vs concept drift need different fixes, monitoring infrastructure is the real bottleneck, threshold choices are judgment calls, small windows inflate both PSI and the gap), cross-links to distribution-shift, feedback-loop-bias, and supervised-learning, and three further reading citations (Roberts et al. 2021, Gama et al. 2014, Page 1954)
+  - Roadmap item added on the website
+### Changed
+- `README.md`: `unsupervised-learning.md` and `model-drift.md` added to the explainers table, repository structure tree, and What's Next checklist; Traction explainer count updated to 28
+- `CONTRIBUTING.md`: both explainers added to the existing explainers table
+- `assets/explainers-data.js`: both explainers added so the website's Explainers grid, search, and count pick them up
+- `METRICS.md`: explainer count updated to 28
+- `CITATION.cff`: version `1.3.0` → `1.3.1`; release date updated to 2026-07-14
 
 ---
 

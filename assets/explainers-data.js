@@ -181,4 +181,18 @@ window.FAIR_CODE_EXPLAINERS = [
     summary: 'See how a model turns labeled examples into a decision rule by walking through the AI Fair Recruitment audit\'s train/test split and fit step directly. Includes detection code that compares the gap in a dataset\'s labels against the gap in a trained model\'s own predictions.',
     tags: ['explainability', 'data'],
   },
+  {
+    slug: 'unsupervised-learning',
+    title: 'What Is Unsupervised Learning?',
+    subtitle: 'It found the split on its own, because the split was already in the data',
+    summary: 'See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.',
+    tags: ['detection', 'explainability'],
+  },
+  {
+    slug: 'model-drift',
+    title: 'What Is Model Drift?',
+    subtitle: 'A fairness audit is a photograph of a moving room',
+    summary: 'Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.',
+    tags: ['detection', 'data'],
+  },
 ];

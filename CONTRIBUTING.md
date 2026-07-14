@@ -289,6 +289,8 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `predictive-parity.md` | Why an equally trustworthy positive prediction across groups can still hide an unequal false-positive burden |
 | `false-positives-vs-false-negatives.md` | Why the direction of a model's error matters in medicine, and why false negatives cluster in historically undertreated groups |
 | `supervised-learning.md` | How a model turns labeled examples into a decision rule, and why it reproduces whatever pattern - fair or not - sits in the labels it's trained on |
+| `unsupervised-learning.md` | How k-means clustering recovers a demographic split with no label and no protected attribute in the feature set, purely from correlated proxy features |
+| `model-drift.md` | Why a fairness gap measured once at launch can drift after deployment, and how rolling-window monitoring (PSI, Page-Hinkley) catches what a single audit snapshot misses |
 
 ### A good explainer should include
 
