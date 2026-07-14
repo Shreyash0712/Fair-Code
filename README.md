@@ -654,6 +654,7 @@ features = [
 | [What Is Predictive Parity?](explainers/predictive-parity.md) | Why the ProPublica vs Northpointe COMPAS dispute was really two correct fairness checks that cannot both hold when base rates differ |
 | [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) | Why the direction of a model's error matters in medicine, and why false negatives cluster in historically undertreated groups even when overall accuracy looks fine |
 | [What Is Supervised Learning?](explainers/supervised-learning.md) | How a model turns labeled examples into a decision rule, and why it reproduces whatever pattern - fair or not - sits in the labels it's trained on |
+| [What Is Unsupervised Learning?](explainers/unsupervised-learning.md) | How k-means clustering on the Benefits Denial dataset recovers a strong sex split and a real race split without sex, race, or national origin ever being part of the feature set |
 
 ---
 
@@ -847,7 +848,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Forks | 8+ |
 | Combined Social Reach (Instagram + LinkedIn) | ~10K |
 | Code Audits Published | 6 |
-| Explainers Published | 24 |
+| Explainers Published | 25 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 
