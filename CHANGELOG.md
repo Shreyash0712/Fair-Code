@@ -4,11 +4,27 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.0-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.4.0-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.4.0] - 14 Jul 2026
+### Added
+- Audit 07 - Tenant Screening / Rental Application Bias (#68) - a new domain (housing) auditing the criminal-history / recidivism-risk scores that real tenant-screening products (CoreLogic, TransUnion SmartMove, RealPage) sell to landlords as a risk flag on rental applicants
+  - **Dataset: [`Tenant Screening/tenant-screening-data.csv`](Tenant%20Screening/)** - NIJ's Recidivism Challenge Full Dataset (Georgia Dept. of Community Supervision, 25,835 records, public domain via DOJ/NIJ). A reframed source: there is no clean public per-applicant screening dataset, so the audit treats `Recidivism_Within_3years` as the risk flag a background-check algorithm hands a landlord. Rows where the original challenge withheld the label are filtered out before training. Dataset choice and reframing rationale posted on issue #68 per CONTRIBUTING §1
+  - **Protected attribute: Race** (Black vs White) - single-attribute audit, so no intersectional report per CONTRIBUTING
+  - **`Tenant Screening/unfair.py` / `fair.py`** - Random Forest (`n_estimators=100`, `random_state=42`, 80/20 split), gap reported with `significance_report`. Twelve proxies dropped in `fair.py`: `Prior_Arrest_Episodes_{Felony,Violent,Property,Drug,GunCharges}`, the matching `Prior_Conviction_Episodes_*` fields, `Gang_Affiliated` (criminal record as a proxy for race), and `Residence_Changes` (housing instability standing in for eviction history). All twelve differ by race at chi-squared p far below 0.05
+  - **Result: race gap 7.17% → 5.07% (29% reduction).** The residual gap stays statistically significant (p=0.0007) - the honest finding: the bias lives in the label itself (re-arrest is a policed quantity), so no feature removal fully closes it
+  - **Notebook: [`07_tenant_screening_bias_audit.ipynb`](notebooks/07_tenant_screening_bias_audit.ipynb)** - the standard 8-section walkthrough, including a chi-squared proxy analysis with crosstab output
+### Changed
+- `README.md`: new results-table row (07) and full Tenant Screening project section; repository tree and audit count updated
+- `index.html` (docs site): new Project 07 card, nav + mobile-nav entries, ticker items, a Housing filter button, a completed roadmap entry (plus the previously-missing Healthcare Readmission roadmap entry), and meta-description domains extended to tenant screening
+- `ROADMAP.md`: Phase 3 now lists Tenant Screening as published (7 of 9 planned audits)
+- `CITATION.cff`: version `1.3.0` → `1.4.0`; release date updated to 2026-07-14; abstract extended to cover tenant-screening / housing bias
 
 ---
 

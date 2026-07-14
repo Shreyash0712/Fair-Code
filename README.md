@@ -86,6 +86,7 @@ Each audit ships as both a pair of Python scripts (`unfair.py` / `fair.py`) for 
 | 06 | [Healthcare Readmission](#06--healthcare-readmission--clinical-bias) | Race, Gender, Age | Payer Code, Discharge Disposition, Medical Specialty, Prior Inpatient | Gender: 0.02% → 0.04% | **+100% ↑** |
 | ↳  | | | | Race: 0.08% → 0.06% | **25%** |
 | ↳  | | | | Age: 0.28% → 0.09% | **68%** |
+| 07 | [Tenant Screening](#07--tenant-screening--rental-application-bias) | Race | Prior Arrest/Conviction Episodes, Gang Affiliated, Residence Changes | Race: 7.17% → 5.07% | **29%** |
 
 ---
 
@@ -93,7 +94,7 @@ Each audit ships as both a pair of Python scripts (`unfair.py` / `fair.py`) for 
 
 Fair Code has a particular focus on bias in healthcare AI - because the consequences there are not financial or professional. They are clinical.
 
-Three of the six audits are healthcare or welfare-system models. Each demonstrates the same pattern: an algorithm trained on historical health data learns to penalise patients not for their medical risk, but for the structural inequalities baked into their access to care.
+Three of the seven audits are healthcare or welfare-system models. Each demonstrates the same pattern: an algorithm trained on historical health data learns to penalise patients not for their medical risk, but for the structural inequalities baked into their access to care.
 
 **Key healthcare audits:**
 
@@ -138,6 +139,7 @@ Fair-Code/
 ├── Insurance Denial/
 ├── Benefits Denial/
 ├── Healthcare Readmission/
+├── Tenant Screening/
 │
 ├── notebooks/
 │   ├── 01_compas_bias_audit.ipynb
@@ -145,7 +147,8 @@ Fair-Code/
 │   ├── 03_german_credit_bias_audit.ipynb
 │   ├── 04_insurance_denial_bias_audit.ipynb
 │   ├── 05_benefits_denial_bias_audit.ipynb
-│   └── 06_healthcare_readmission_bias_audit.ipynb
+│   ├── 06_healthcare_readmission_bias_audit.ipynb
+│   └── 07_tenant_screening_bias_audit.ipynb
 │
 ├── faircode/                            # Open Dataset Profiler - CLI + engine
 │   ├── SPEC.md                          #   analysis spec shared with the web port
@@ -547,6 +550,77 @@ features = [
 > **Key insight:** Healthcare readmission models don't need race or gender to discriminate by them. Payer code, discharge destination, and prior inpatient visits are the `occupation` and `relationship` of clinical AI - variables that look like neutral operational data but encode structural inequalities in insurance, geography, and access to preventive care. The causal direction matters: lower SNF access creates readmission risk. The patient does not bring the risk to the gap - the gap creates the risk.
 
 📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
+
+---
+
+### 07 · Tenant Screening - Rental Application Bias
+
+> *"A tenant-screening company buys a criminal-history risk score and hands the landlord a high-risk flag on the applicant - a flag that fires 7 points more often for Black applicants than white ones, before the landlord reads a single word of the application."*
+
+**Dataset:** `tenant-screening-data.csv` - NIJ's Recidivism Challenge Full Dataset, Georgia Dept. of Community Supervision (25,835 records) · [DOJ/NIJ source](https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk)
+
+Automated tenant screening is a documented engine of housing discrimination. Real screening products (CoreLogic, TransUnion SmartMove, RealPage) buy criminal-history and recidivism-risk signals and surface them to landlords as a risk flag on rental applicants. There is no clean public per-applicant screening dataset - the industry's scoring data is proprietary - so this audit uses a real, public criminal-justice dataset and treats `Recidivism_Within_3years` as exactly that flag: the output a background-check product hands a landlord to approve or deny a lease. Rows where the original challenge withheld the label are dropped before training.
+
+#### The Problem - `unfair.py`
+
+Trained with `Race` directly **and** twelve criminal-history / housing proxies that carry the same racial signal through record-keeping that sounds neutral.
+
+| Group | High-Risk Flag Rate |
+|-------|:-------------------:|
+| Black applicants | 67.05% |
+| White applicants | 59.88% |
+| **Fairness Gap (Race)** | **7.17%** |
+
+95% CI [4.50%, 9.81%] · permutation p = 0.0000 · statistically significant
+
+#### Proxy Variables
+
+Every candidate proxy differs by race at p far below 0.05 (chi-squared test of independence), with prior violent-arrest and gun-charge history the strongest.
+
+```python
+from scipy.stats import chi2_contingency
+
+# Arrest / conviction episode counts track over-policing, not race-neutral risk
+for feat in ['Prior_Arrest_Episodes_Violent',    # chi2=540.0  p=1.0e-116
+             'Prior_Arrest_Episodes_GunCharges',  # chi2=377.0  p=5.6e-84
+             'Prior_Conviction_Episodes_Viol',    # chi2=322.3  p=4.5e-72
+             'Gang_Affiliated',                    # chi2=167.2  p=3.1e-38
+             'Residence_Changes']:                 # chi2= 55.8  p=4.6e-12
+    chi2, p, _, _ = chi2_contingency(pd.crosstab(df[feat], df['Race']))
+    print(f'{feat:<35} chi2={chi2:7.1f}  p={p:.1e}')
+
+# Gang-affiliated label rate by race - a discretionary record applied unevenly
+# Black: 20.0%   White: 13.3%
+print(df.groupby('Race')['Gang_Affiliated'].apply(lambda s: (s == True).mean()).round(3))
+```
+
+#### The Fix - `fair.py`
+
+Dropped `Race` and all twelve proxies. Retained only features a screener could defend as non-criminal-history signal.
+
+```python
+# THE FIX: drop race and every criminal-history / housing proxy
+features = [
+    'Gender', 'Age_at_Release', 'Education_Level', 'Prison_Offense',
+    'Prison_Years', 'Percent_Days_Employed', 'Dependents',
+    'Supervision_Risk_Score_First',
+    # Race                        removed ✓ (protected attribute)
+    # Prior_Arrest_Episodes_*     removed ✓ (proxy: arrest counts encode over-policing)
+    # Prior_Conviction_Episodes_* removed ✓ (proxy: conviction history compounds it)
+    # Gang_Affiliated             removed ✓ (proxy: a record label applied unevenly by race)
+    # Residence_Changes           removed ✓ (proxy: housing instability ~ eviction history)
+]
+```
+
+| Gap | Before | After | Reduction |
+|-----|:------:|:-----:|:---------:|
+| Race | 7.17% | 5.07% | **29%** |
+
+**Result: 29% reduction in the race gap. The residual gap stays statistically significant (p = 0.0007).**
+
+> **Key insight:** Removing `Race` from a tenant-screening model does almost nothing, because the score is built out of criminal-history counts - and those counts are not a race-neutral measure of risk. Prior arrest and conviction episodes measure how often the system has stopped, charged, and convicted a person, and over-policing means Black applicants carry more of them for the same behaviour. Dropping race and all twelve proxies only cuts the gap from 7.17% to 5.07%, and it stays significant - because the residual bias lives in the label itself. The model is trained to predict re-arrest, and re-arrest is a policed quantity. When the target is downstream of the same enforcement that produced the proxies, no feature removal fully closes the gap. The real remedy is not a cleaner feature set - it is questioning whether a re-arrest-derived score belongs in a housing decision at all.
+
+📓 **[Full notebook walkthrough →](notebooks/07_tenant_screening_bias_audit.ipynb)**
 
 ---
 

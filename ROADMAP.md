@@ -82,7 +82,7 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 
 ## Phase 3 - Code Audits 🔄 In Progress
 
-**Status: 6 of 8 planned audits published**
+**Status: 7 of 9 planned audits published**
 
 Each audit follows the same pipeline: train a biased model → measure the fairness gap → remove proxies → retrain → measure again.
 
@@ -92,6 +92,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 - [x] Insurance Denial - Healthcare Bias
 - [x] Benefits Denial - Welfare Eligibility Bias
 - [x] Healthcare Readmission - Clinical Bias
+- [x] Tenant Screening - Rental Application Bias
 - [ ] HMDA Mortgage Lending Bias
 - [ ] Facial Recognition Accuracy Gaps (MIT Gender Shades methodology)
 - [ ] LLM bias audit
