@@ -25,4 +25,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://thefaircode.xyz/sitemap.xml
+Sitemap: https://www.thefaircode.xyz/sitemap.xml
