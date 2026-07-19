@@ -4,11 +4,29 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.1-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.2-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.3.2] - 20 Jul 2026
+### Added
+- Explainer: What Is Selection Bias? - `selection-bias.md` created, added to `index.html`, `README.md`, `CONTRIBUTING.md`, and `ROADMAP.md`
+  - Full explainer on the earlier-stage sibling of sampling bias: a dataset can look perfectly balanced on every demographic check available and still be biased, because the process that decided whether a unit became a row at all - getting hospitalized, getting arrested, getting approved for a loan - depended on the outcome being studied. Frames this as conditioning on a collider (Berkson's paradox) rather than a representation problem, and scopes itself explicitly against the existing `sampling-bias.md`, which already lists "selection bias" as one row in its representation-problems table
+  - Real-world proof anchored to Audit 03 (German Credit Lending): `credit_customers.csv`'s `class` column takes only `good` (700 rows) and `bad` (300 rows) across all 1,000 rows, with zero rows for a rejected-before-underwriting applicant, because a turned-down applicant never generates a repayment outcome to record. Named as the classic "reject inference" problem in credit-scoring literature - the audit's 7.16% -> 1.89% proxy-variable fix (Audit 03) describes bias only among the population that already cleared the original approval gate, a limitation neither `unfair.py` nor `fair.py` can see
+  - Detection code: `simulate_selection_bias()`, a from-scratch reproduction of Berkson's paradox (two independent features become correlated purely from conditioning on a shared downstream selection gate), and `check_outcome_rate_against_reference()`, a lightweight check against an external reference rate - framed honestly as the only test available, since the excluded population left no row to inspect directly
+  - Five numbered limitations (invisible from inside the sample, blurry line against sampling bias, statistical corrections rest on unverifiable assumptions, a skewed base rate is a hint not a verdict, fixing the upstream gate is usually outside the model builder's control), cross-links to sampling-bias, label-bias, confounding-variable, and distribution-shift, and three further reading citations (Berkson 1946, Hand & Henley 1997, Heckman 1979)
+  - Roadmap item added on the website
+### Changed
+- `scripts/build_explainers.py` run to regenerate `explainers/selection-bias.html`, `assets/explainers-data.js`, and `sitemap.xml` from the new `assets/explainers-data.json` entry
+- `README.md`: `selection-bias.md` added to the explainers table and What's Next checklist; Traction explainer count updated to 29
+- `ROADMAP.md`: Phase 1 checklist gains `selection-bias.md` plus five prior explainers that were missing from the list (predictive-parity, false-positives-vs-false-negatives, supervised-learning, unsupervised-learning, model-drift); traction table explainer count updated to 29; "last updated" and "current traction" dates refreshed to July 2026
+- `CONTRIBUTING.md`: existing explainers table gains a `selection-bias.md` row
+- `METRICS.md`: explainer count updated to 29
+- `CITATION.cff`: version `1.3.1` → `1.3.2`; release date updated to 2026-07-20
 
 ---
 

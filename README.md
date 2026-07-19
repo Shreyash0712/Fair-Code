@@ -658,6 +658,7 @@ features = [
 | [What Is Supervised Learning?](explainers/supervised-learning.md) | How a model turns labeled examples into a decision rule, and why it reproduces whatever pattern - fair or not - sits in the labels it's trained on |
 | [What Is Unsupervised Learning?](explainers/unsupervised-learning.md) | How k-means clustering on the Benefits Denial dataset recovers a strong sex split and a real race split without sex, race, or national origin ever being part of the feature set |
 | [What Is Model Drift?](explainers/model-drift.md) | Why a fairness gap measured once at launch isn't guaranteed to hold months later, and how rolling-window monitoring (PSI, Page-Hinkley) catches the drift a single audit snapshot can miss |
+| [What Is Selection Bias?](explainers/selection-bias.md) | Why the process that decides who enters a dataset at all can bias a model before any protected attribute or proxy is even considered - and why the German Credit Lending dataset's 700/300 split contains zero rejected applicants |
 
 ---
 
@@ -827,6 +828,7 @@ directly. Run the tests with `pytest tests/`.
 - [x] Explainer: What Is Supervised Learning?
 - [x] Explainer: What Is Unsupervised Learning?
 - [x] Explainer: What Is Model Drift?
+- [x] Explainer: What Is Selection Bias?
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
@@ -853,7 +855,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Forks | 8+ |
 | Combined Social Reach (Instagram + LinkedIn) | ~10K |
 | Code Audits Published | 6 |
-| Explainers Published | 28 |
+| Explainers Published | 29 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

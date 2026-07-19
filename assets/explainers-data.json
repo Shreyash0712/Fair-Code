@@ -194,5 +194,12 @@
     "subtitle": "A fairness audit is a photograph of a moving room",
     "summary": "Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.",
     "tags": ["detection", "data"]
+  },
+  {
+    "slug": "selection-bias",
+    "title": "What Is Selection Bias?",
+    "subtitle": "A dataset does not remember the people who were turned away before it was collected.",
+    "summary": "Learn why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy variable is even considered. See why the German Credit Lending dataset's 700/300 good/bad split contains zero rejected applicants, and why that reject-inference gap survives Audit 03's proxy-variable fix untouched. Includes a Berkson's-paradox simulation as detection code.",
+    "tags": ["data", "detection"]
   }
 ]

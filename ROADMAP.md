@@ -10,7 +10,7 @@
 
 This is the public roadmap for Fair Code. It tracks what has been built, what is actively in progress, and what comes next.
 
-*Last updated: June 2026*
+*Last updated: July 2026*
 
 [Where We Are](#where-we-are) · Phase 1 · Phase 2 · Phase 3 · Phase 4 · Phase 5 · [Content Schedule](#content-schedule) · [How to Contribute](#how-to-contribute)
 
@@ -22,11 +22,11 @@ This is the public roadmap for Fair Code. It tracks what has been built, what is
 
 Fair Code is an open-source responsible AI platform explaining algorithmic bias, fairness, and AI accountability through code audits, explainers, healthcare-bias case studies, and contributor-led GitHub documentation.
 
-**Current traction (June 2026):**
+**Current traction (July 2026):**
 
 | Stars | Contributors | Forks | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 27+ | 7+ | 8+ | 10K+ | 6 | 22 | ✅ every push/PR |
+| 27+ | 7+ | 8+ | 10K+ | 6 | 29 | ✅ every push/PR |
 
 ---
 
@@ -59,6 +59,12 @@ Build the foundational vocabulary and explain core fairness concepts clearly eno
 - [x] What Is Distribution Shift
 - [x] The Biggest Myth About AI Objectivity
 - [x] What Is a Confounding Variable?
+- [x] What Is Predictive Parity?
+- [x] False Positives vs. False Negatives in Medical Risk Models
+- [x] What Is Supervised Learning?
+- [x] What Is Unsupervised Learning?
+- [x] What Is Model Drift?
+- [x] What Is Selection Bias?
 
 ---
 
