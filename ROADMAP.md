@@ -26,7 +26,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 27+ | 7+ | 8+ | 10K+ | 6 | 29 | ✅ every push/PR |
+| 37+ | 8+ | 13+ | 16K+ | 7 | 29 | ✅ every push/PR |
 
 ---
 
@@ -79,10 +79,10 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 - [x] Healthcare Readmission bias audit
 - [x] Jupyter notebooks for all three healthcare audits
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
-- [ ] Explainer: False Positives and False Negatives in Medical Risk Models
-- [ ] Case study write-up: Insurance Denial Bias (standalone explainer page)
-- [ ] Case study write-up: Benefits Denial Bias (standalone explainer page)
-- [ ] Case study write-up: Healthcare Readmission Bias (standalone explainer page)
+- [x] Explainer: False Positives and False Negatives in Medical Risk Models
+- [x] Case study write-up: Insurance Denial Bias 
+- [x] Case study write-up: Benefits Denial Bias (standalone 
+- [x] Case study write-up: Healthcare Readmission Bias 
 
 ---
 
@@ -101,7 +101,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 - [x] Tenant Screening - Rental Application Bias
 - [ ] HMDA Mortgage Lending Bias
 - [ ] Facial Recognition Accuracy Gaps (MIT Gender Shades methodology)
-- [ ] LLM bias audit
+- [x] LLM bias audit
 
 ---
 
@@ -118,8 +118,8 @@ Goal: grow to 10+ contributors with quality-controlled contributions.
 - [x] CI pipeline (all audit scripts run on push/PR)
 - [x] Good-first-issue and help-wanted labels
 - [x] First-interaction workflow (greets new contributors)
-- [ ] 10–15 labelled issues open at all times
-- [ ] Contributor list in README
+- [x] 10–15 labelled issues open at all times
+- [x] Contributor list in README
 - [ ] METRICS.md tracking contributor growth weekly
 
 ---
@@ -134,7 +134,7 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 - [x] Bias detection utility library (`faircode/` module) - diagnostic representation profiler + CLI
 - [x] Profiler: two-dataset comparison for representation drift (`faircode compare`, PSI)
 - [x] Profiler: manual column mapping, reference-population baseline, choosable intersection pair, tunable thresholds, and chi-squared proxy hints
-- [ ] AIF360 / Fairlearn integration examples
+- [x] AIF360 / Fairlearn integration examples
 - [x] Intersectional bias notebook (auditing across multiple protected attributes simultaneously)
 - [x] Statistical significance testing for fairness gaps
 

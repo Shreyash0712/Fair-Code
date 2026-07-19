@@ -866,9 +866,20 @@ Tracked weekly in [METRICS.md](METRICS.md).
 
 Thanks to everyone who has contributed audits, explainers, or documentation to Fair Code.
 
-<!-- Contributors are listed automatically via GitHub's contributor graph. To add yourself here, open a PR and add your GitHub handle below. -->
+| Contributor | Contribution |
+|---|---|
+| [@AaravvSharma1](https://github.com/AaravvSharma1) | Audit: German Credit Lending Bias |
+| [@evanjain-dot](https://github.com/evanjain-dot) | Audit: Sampling Bias · Explainer: Counterfactual Fairness · Explainer: Reinforcement Learning |
+| [@shwetagupta1234](https://github.com/shwetagupta1234) | Explainer: SHAP Values |
+| [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev) | Explainer: Equalized Odds |
+| [@Rajveerx11](https://github.com/Rajveerx11) | Explainer: Disparate Impact (The 80% Rule) |
+| [@sofiya-iii](https://github.com/sofiya-iii) | Explainer: Calibration |
+| [@cannotdoit13](https://github.com/cannotdoit13) | Standardized dataset paths and added CI to run all audits |
+| [@Shreyash0712](https://github.com/Shreyash0712) | Explainer: Why AI Hallucinates · first-interaction workflow and audits-workflow fixes |
+| [@propcgamer20-png](https://github.com/propcgamer20-png) | Explainer: Predictive Parity |
+| [@AnayDhawan](https://github.com/AnayDhawan) | Explainer: Unsupervised Learning · Explainer: Model Drift |
 
-See the full contributor list on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
+To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 
 ---
 
