@@ -1,0 +1,51 @@
+# Fair Code
+
+> Fair Code exposes and fixes bias in real-world AI systems - criminal justice, hiring, lending, healthcare, welfare eligibility, tenant screening. Open-source audits with measurable results, up to 97% bias reduction.
+
+Created and maintained by Yash Kewlani ([github.com/yakew7](https://github.com/yakew7)). Source: [github.com/yakew7/Fair-Code](https://github.com/yakew7/Fair-Code).
+
+## Audits
+
+- [COMPAS](https://www.thefaircode.xyz/#projects): Criminal justice recidivism scoring. ProPublica's public dataset, 70,000+ records.
+- [AI Hiring](https://www.thefaircode.xyz/#projects): Women hired 20.9% less than equally qualified men in a hiring model.
+- [German Credit Lending](https://www.thefaircode.xyz/#projects): A lending model rates young applicants as bad credit risks, learning age from job tenure.
+- [Insurance Denial](https://www.thefaircode.xyz/#projects): A healthcare AI flags older patients for high-cost claims; BMI, smoking, and diabetic status encode race.
+- [Benefits Denial](https://www.thefaircode.xyz/#projects): An automated welfare means-test flags male applicants as ineligible based on marital status.
+- [Healthcare Readmission](https://www.thefaircode.xyz/#projects): A hospital readmission model uses payer code and discharge destination as proxies for insurance access.
+- [Tenant Screening](https://www.thefaircode.xyz/#projects): A rental screening model uses criminal history in ways that encode race and over-policing.
+
+## Tools
+
+- [Open Dataset Profiler](https://www.thefaircode.xyz/profiler.html): Profiles any dataset for bias risk before modeling.
+
+## Explainers
+
+- [What Is Selection Bias?](https://www.thefaircode.xyz/explainers/selection-bias.html)
+- [Proxy Variables](https://www.thefaircode.xyz/explainers/proxy-variables.html)
+- [Proxy Entanglement](https://www.thefaircode.xyz/explainers/proxy-entanglement.html)
+- [Disparate Impact](https://www.thefaircode.xyz/explainers/disparate-impact.html)
+- [Disparate Treatment](https://www.thefaircode.xyz/explainers/disparate-treatment.html)
+- [Demographic Parity](https://www.thefaircode.xyz/explainers/demographic-parity.html)
+- [Equalized Odds](https://www.thefaircode.xyz/explainers/equalized-odds.html)
+- [Predictive Parity](https://www.thefaircode.xyz/explainers/predictive-parity.html)
+- [Individual Fairness](https://www.thefaircode.xyz/explainers/individual-fairness.html)
+- [Counterfactual Fairness](https://www.thefaircode.xyz/explainers/counterfactual-fairness.html)
+- [Fairness Metric Conflicts](https://www.thefaircode.xyz/explainers/fairness-metric-conflicts.html)
+- [Calibration](https://www.thefaircode.xyz/explainers/calibration.html)
+- [Sampling Bias](https://www.thefaircode.xyz/explainers/sampling-bias.html)
+- [Label Bias](https://www.thefaircode.xyz/explainers/label-bias.html)
+- [Data Leakage](https://www.thefaircode.xyz/explainers/data-leakage.html)
+- [Confounding Variable](https://www.thefaircode.xyz/explainers/confounding-variable.html)
+- [Model Drift](https://www.thefaircode.xyz/explainers/model-drift.html)
+- [Distribution Shift](https://www.thefaircode.xyz/explainers/distribution-shift.html)
+- [Feedback Loop Bias](https://www.thefaircode.xyz/explainers/feedback-loop-bias.html)
+- [False Positives vs False Negatives](https://www.thefaircode.xyz/explainers/false-positives-vs-false-negatives.html)
+- [SHAP Values](https://www.thefaircode.xyz/explainers/shap-values.html)
+- [How AI Detects Patterns](https://www.thefaircode.xyz/explainers/how-ai-detects-patterns.html)
+- [Supervised Learning](https://www.thefaircode.xyz/explainers/supervised-learning.html)
+- [Unsupervised Learning](https://www.thefaircode.xyz/explainers/unsupervised-learning.html)
+- [Reinforcement Learning](https://www.thefaircode.xyz/explainers/reinforcement-learning.html)
+- [Neural Networks](https://www.thefaircode.xyz/explainers/neural-networks.html)
+- [ML Bias](https://www.thefaircode.xyz/explainers/ml-bias.html)
+- [AI Objectivity Myth](https://www.thefaircode.xyz/explainers/ai-objectivity-myth.html)
+- [AI Hallucinations](https://www.thefaircode.xyz/explainers/ai-hallucinations.html)
