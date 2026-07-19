@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equalized Odds · Fair Code</title>
+<meta name="description" content="See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/equalized-odds.html">
+<meta property="og:title" content="Equalized Odds · Fair Code">
+<meta property="og:description" content="See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/equalized-odds.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Equalized Odds · Fair Code">
+<meta name="twitter:description" content="See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "Equalized Odds",
+  "description": "See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.",
+  "url": "https://thefaircode.xyz/explainers/equalized-odds.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/equalized-odds.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Equalized Odds</h1>
+      <p class="explainer-lede">A fairness metric that checks error rates, not just accuracy.</p>
+      <p class="explainer-lede">See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.</p>
+    </section>
+
+    <article class="explainer-content"><h1 id="explainer-what-is-equalized-odds">Explainer: What is Equalized Odds?</h1>
+<blockquote><p><em>The fairness metric that catches a model treating two groups differently - even when overall accuracy looks fine.</em></p></blockquote>
+<hr>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Equalized Odds</strong> is a fairness metric that requires a model to make equally accurate decisions for every demographic group - meaning its true positive rate <em>and</em> false positive rate must be the same across protected groups like race, gender, or age.</p>
+<hr>
+<h2 id="why-this-matters">Why This Matters</h2>
+<p>Most people check model accuracy and call it done. This misses the problem entirely.</p>
+<p>A model can be 90% accurate overall while still making systematically different <em>types</em> of mistakes for different groups. It might correctly identify qualified candidates in one group at 91%, while only correctly identifying them in another group at 69%. Same model. Same task. Different outcomes - depending on who you are.</p>
+<p>This matters because the two types of errors a model makes are not morally equivalent:</p>
+<ul><li><strong>False negatives</strong> (missing someone who should have been flagged) can mean a qualified person is rejected, a sick patient goes undiagnosed, or a creditworthy borrower is denied a loan.</li><li><strong>False positives</strong> (flagging someone who shouldn&#x27;t have been) can mean an innocent person is detained, an unqualified applicant is passed through, or a healthy patient is over-treated.</li></ul>
+<p>If those errors fall unevenly across demographic groups, the model is discriminating - regardless of what its accuracy score says.</p>
+<p>This shows up in exactly the systems where it can&#x27;t afford to:</p>
+<ul><li>hiring pipelines</li><li>loan and credit scoring</li><li>insurance risk assessments</li><li>healthcare triage</li><li>criminal justice risk tools</li></ul>
+<hr>
+<h2 id="real-world-proof-compas-analysis">Real-World Proof: COMPAS Analysis</h2>
+<p>We can demonstrate this directly using the <a href="https://github.com/propublica/compas-analysis" target="_blank" rel="noreferrer noopener">ProPublica COMPAS dataset</a>.</p>
+<p>COMPAS is a risk assessment tool deployed across 46 US states. Judges use its scores to make bail, sentencing, and parole decisions. It doesn&#x27;t just need to be accurate - it needs to be <em>equally</em> accurate for every defendant, regardless of race.</p>
+<h3 id="what-we-measured">What We Measured</h3>
+<p>After training a classifier on the COMPAS dataset, we measured true positive rate (TPR) and false positive rate (FPR) broken down by race:</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Group</th><th>True Positive Rate</th><th>False Positive Rate</th></tr></thead><tbody><tr><td>Black Defendants</td><td>0.89</td><td>0.31</td></tr><tr><td>White Defendants</td><td>0.67</td><td>0.11</td></tr><tr><td><strong>Gap</strong></td><td><strong>0.22</strong></td><td><strong>0.20</strong></td></tr></tbody></table></div>
+<p>Interpretation:</p>
+<ul><li>Black defendants who <em>will</em> reoffend are correctly flagged at a higher rate - but</li><li>Black defendants who <em>won&#x27;t</em> reoffend are also incorrectly flagged at nearly three times the rate of white defendants</li></ul>
+<p>The model isn&#x27;t just wrong more often for Black defendants. It&#x27;s wrong in a specific <em>direction</em> - over-flagging them as high-risk. Equalized Odds catches this because it checks both error types, not just overall accuracy.</p>
+<hr>
+<h2 id="how-to-detect-it-in-python">How to Detect It in Python</h2>
+<pre><code class="language-python">from fairlearn.metrics import MetricFrame, true_positive_rate, false_positive_rate
+import pandas as pd
+
+# Load your data
+# y_true  = ground truth labels
+# y_pred  = model predictions
+# groups  = protected attribute (e.g. race, gender)
+
+metrics = {
+    &quot;TPR&quot;: true_positive_rate,
+    &quot;FPR&quot;: false_positive_rate
+}
+
+frame = MetricFrame(
+    metrics=metrics,
+    y_true=y_true,
+    y_pred=y_pred,
+    sensitive_features=groups
+)
+
+print(frame.by_group)
+print(&quot;\nDifferences:&quot;)
+print(frame.difference())</code></pre>
+<p>Example output:</p>
+<pre><code>                  TPR   FPR
+Black Defendants  0.89  0.31
+White Defendants  0.67  0.11
+
+Differences:
+TPR    0.22
+FPR    0.20</code></pre>
+<p>Large differences in either metric indicate an Equalized Odds violation. Run this on every protected attribute in your dataset before deployment.</p>
+<p>Install dependency:</p>
+<pre><code class="language-bash">pip install fairlearn</code></pre>
+<hr>
+<h2 id="the-math">The Math</h2>
+<p>Equalized Odds requires two conditions to hold simultaneously:</p>
+<p><strong>Equal True Positive Rate:</strong></p>
+<p>P(Ŷ = 1 | Y = 1, A = a) = P(Ŷ = 1 | Y = 1, A = b)</p>
+<p><strong>Equal False Positive Rate:</strong></p>
+<p>P(Ŷ = 1 | Y = 0, A = a) = P(Ŷ = 1 | Y = 0, A = b)</p>
+<p>Where:</p>
+<ul><li>Ŷ = model prediction</li><li>Y = true label</li><li>A = protected attribute (race, gender, age, etc.)</li></ul>
+<p>Both must hold. A model that satisfies one but not the other is still violating Equalized Odds.</p>
+<hr>
+<h2 id="limitations-trade-offs">Limitations / Trade-offs</h2>
+<p>Equalized Odds is useful, but it isn&#x27;t a complete solution on its own.</p>
+<h3 id="it-may-reduce-overall-accuracy">It may reduce overall accuracy</h3>
+<p>Enforcing equal error rates across groups often requires adjusting decision thresholds per group, which can lower aggregate accuracy. There is a real trade-off between group fairness and individual predictive performance.</p>
+<h3 id="it-conflicts-with-calibration">It conflicts with calibration</h3>
+<p>A calibrated model ensures its predicted probabilities are consistent across groups - a 70% risk score means 70% chance of the outcome, for any group. It has been mathematically proven that a model cannot simultaneously satisfy Equalized Odds and be perfectly calibrated, unless base rates are equal across groups. In most real-world datasets, they aren&#x27;t.</p>
+<h3 id="it-conflicts-with-demographic-parity">It conflicts with Demographic Parity</h3>
+<p>Demographic Parity requires equal positive prediction rates across groups regardless of ground truth. Equalized Odds requires equal accuracy conditional on ground truth. These two definitions cannot both be satisfied at once when base rates differ - which is almost always.</p>
+<h3 id="it-doesn-t-fix-the-upstream-problem">It doesn&#x27;t fix the upstream problem</h3>
+<p>Equalized Odds is a post-hoc measurement. It tells you the model is biased - but it doesn&#x27;t fix why. If the training data reflects historical discrimination (over-policing, hiring bias, discriminatory lending), the model will learn those patterns even after you correct for error rates. Measuring Equalized Odds is a starting point, not an endpoint.</p>
+<hr>
+<h2 id="the-bigger-picture">The Bigger Picture</h2>
+<p>Equalized Odds violations exist because our models are trained on data generated by unequal systems. A criminal justice dataset carries decades of over-policing. A hiring dataset carries decades of gender and racial exclusion. A healthcare dataset carries the structural inequalities of the American insurance system.</p>
+<p>A model trained on that data learns those inequalities - and unless you actively measure both types of errors across every protected group, the bias remains hidden behind an accuracy score that looks fine.</p>
+<p><strong>Equalized Odds is not a cure. It&#x27;s a diagnostic. Run it before you deploy.</strong></p>
+<hr>
+<h2 id="related-concepts">Related Concepts</h2>
+<h3 id="equal-opportunity">Equal Opportunity</h3>
+<p>A relaxed version of Equalized Odds. Requires only equal true positive rates - not equal false positive rates. Appropriate when false negatives carry more moral weight than false positives (e.g. missing a qualified candidate), but it lets false positive disparities go unchecked.</p>
+<h3 id="demographic-parity">Demographic Parity</h3>
+<p>Requires equal positive prediction rates regardless of ground truth. Unlike Equalized Odds, it doesn&#x27;t account for whether the model&#x27;s decisions are correct - only whether they&#x27;re equally distributed. Conflicts with Equalized Odds when base rates differ across groups.</p>
+<h3 id="calibration">Calibration</h3>
+<p>Requires that predicted probability scores have a consistent meaning across groups. A model can be perfectly calibrated and still violate Equalized Odds. These two definitions capture different aspects of fairness, and both should be checked.</p>
+<h3 id="proxy-variables">Proxy Variables</h3>
+<p>Even after correcting for Equalized Odds, models can still encode protected attributes through proxy variables - features like zip code, custody status, or employment tenure that correlate with race, age, or class in the training data. Equalized Odds doesn&#x27;t detect these; proxy variable auditing does. See the <a href="proxy-variables.html">proxy variables explainer</a>.</p>
+<hr>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-compas"><code>COMPAS/</code></a> - Full COMPAS analysis: biased model → fair model → 71% gap reduction. Equalized Odds violations visible in the raw model outputs.</li><li><a href="proxy-variables.html"><code>explainers/proxy-variables.md</code></a> - Why AI stays biased even after you remove protected attributes</li><li><a href="shap-values.html"><code>explainers/shap-values.md</code></a> - How to see exactly what drove an AI decision - and use that to catch bias</li></ul>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://arxiv.org/abs/1610.02413" target="_blank" rel="noreferrer noopener">Hardt, Price, Srebro (2016): Equality of Opportunity in Supervised Learning</a> - the paper that formally defined Equalized Odds</li><li><a href="https://arxiv.org/abs/1703.00056" target="_blank" rel="noreferrer noopener">Chouldechova (2017): Fair Prediction with Disparate Impact</a> - the mathematical proof that calibration and Equalized Odds conflict when base rates differ</li><li><a href="https://fairlearn.org/v0.8/user_guide/fairness_in_machine_learning.html" target="_blank" rel="noreferrer noopener">Fairlearn documentation</a></li><li><a href="https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing" target="_blank" rel="noreferrer noopener">ProPublica: Machine Bias (2016)</a> - the original COMPAS investigation</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

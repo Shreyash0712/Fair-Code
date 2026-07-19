@@ -1,271 +1,198 @@
-window.FAIR_CODE_EXPLAINERS = [
+[
   {
     "slug": "proxy-variables",
     "title": "Proxy Variables",
     "subtitle": "Why removing race alone does not remove bias.",
     "summary": "Learn how correlated features like zip code, custody status, and employment history can smuggle protected attributes back into a model.",
-    "tags": [
-      "detection",
-      "data",
-      "explainability"
-    ]
+    "tags": ["detection", "data", "explainability"]
   },
   {
     "slug": "equalized-odds",
     "title": "Equalized Odds",
     "subtitle": "A fairness metric that checks error rates, not just accuracy.",
     "summary": "See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "sampling-bias",
     "title": "Sampling Bias",
     "subtitle": "When your dataset does not reflect the world it claims to describe.",
     "summary": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
-    "tags": [
-      "data"
-    ]
+    "tags": ["data"]
   },
   {
     "slug": "shap-values",
     "title": "SHAP Values",
     "subtitle": "Explain model decisions feature by feature.",
     "summary": "Use SHAP to trace which inputs pushed a prediction up or down, and where explanation can still be misleading.",
-    "tags": [
-      "explainability"
-    ]
+    "tags": ["explainability"]
   },
   {
     "slug": "disparate-impact",
     "title": "Disparate Impact",
     "subtitle": "When outcomes differ even without explicit intent.",
     "summary": "Measure whether a model or policy produces unequal results across groups, even when the protected attribute is hidden.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "disparate-treatment",
     "title": "Disparate Treatment",
     "subtitle": "Direct discrimination instead of proxy discrimination.",
     "summary": "Look at the difference between explicitly using protected attributes and indirectly encoding them through features.",
-    "tags": [
-      "metrics",
-      "detection"
-    ]
+    "tags": ["metrics", "detection"]
   },
   {
     "slug": "fairness-metric-conflicts",
     "title": "Fairness Metric Conflicts",
     "subtitle": "Why one fairness definition often breaks another.",
     "summary": "Understand the trade-offs between demographic parity, calibration, and equalized odds before choosing a metric.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "calibration",
     "title": "Calibration",
     "subtitle": "When a model score actually means what it says.",
     "summary": "Check whether predicted probabilities match real-world frequencies across groups and where calibration can still fail.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "demographic-parity",
     "title": "Demographic Parity",
     "subtitle": "Equal positive rates across groups.",
     "summary": "Learn when demographic parity is useful, where it breaks down, and why it can conflict with other fairness goals.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "feedback-loop-bias",
     "title": "Feedback Loop Bias",
     "subtitle": "Bias that gets stronger after deployment.",
     "summary": "See how model outputs feed back into future data and amplify unfairness over time.",
-    "tags": [
-      "data"
-    ]
+    "tags": ["data"]
   },
   {
     "slug": "label-bias",
     "title": "Label Bias",
     "subtitle": "When the target itself is already skewed.",
     "summary": "Explore how historical decisions, biased raters, and unequal reporting can corrupt your labels before training even starts.",
-    "tags": [
-      "data"
-    ]
+    "tags": ["data"]
   },
   {
     "slug": "individual-fairness",
     "title": "Individual Fairness",
     "subtitle": "Similar people should get similar outcomes.",
     "summary": "Understand the promise and difficulty of fairness definitions that focus on person-by-person consistency.",
-    "tags": [
-      "metrics"
-    ]
+    "tags": ["metrics"]
   },
   {
     "slug": "counterfactual-fairness",
     "title": "Counterfactual Fairness",
     "subtitle": "Would the outcome change if identity changed?",
     "summary": "Use counterfactual reasoning to ask whether a model would behave differently under a hypothetical protected attribute.",
-    "tags": [
-      "explainability"
-    ]
+    "tags": ["explainability"]
   },
   {
     "slug": "neural-networks",
     "title": "Neural Networks",
     "subtitle": "How complex models can hide simple bias.",
     "summary": "Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.",
-    "tags": [
-      "explainability"
-    ]
+    "tags": ["explainability"]
   },
   {
     "slug": "ai-hallucinations",
     "title": "AI Hallucinations",
     "subtitle": "Confident outputs that are still wrong.",
     "summary": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
-    "tags": [
-      "explainability"
-    ]
+    "tags": ["explainability"]
   },
   {
     "slug": "reinforcement-learning",
     "title": "Reinforcement Learning",
     "subtitle": "When reward signals shape real-world policy.",
     "summary": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
-    "tags": [
-      "explainability",
-      "data"
-    ]
+    "tags": ["explainability", "data"]
   },
   {
     "slug": "proxy-entanglement",
     "title": "Proxy Entanglement",
     "subtitle": "When proxies form clusters instead of single features.",
     "summary": "Explore how correlated proxy bundles can keep bias alive even after individual features are removed.",
-    "tags": [
-      "detection",
-      "data",
-      "explainability"
-    ]
+    "tags": ["detection", "data", "explainability"]
   },
   {
     "slug": "ml-bias",
     "title": "What Is Machine Learning Bias?",
     "subtitle": "Four entry points. One pipeline. Measurable everywhere.",
     "summary": "Understand how bias enters AI systems through training data, labels, proxy variables, and feedback loops - with detection code and real examples from every audit in this repo.",
-    "tags": [
-      "detection",
-      "data",
-      "explainability"
-    ]
+    "tags": ["detection", "data", "explainability"]
   },
   {
     "slug": "data-leakage",
     "title": "What Is Data Leakage?",
     "subtitle": "When the model has already seen the answer sheet.",
     "summary": "Data leakage contaminates a model's training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.",
-    "tags": [
-      "data",
-      "detection"
-    ]
+    "tags": ["data", "detection"]
   },
   {
     "slug": "how-ai-detects-patterns",
     "title": "How AI Detects Patterns",
     "subtitle": "A model can't tell a cause from a proxy",
     "summary": "Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.",
-    "tags": [
-      "explainability"
-    ]
+    "tags": ["explainability"]
   },
   {
     "slug": "distribution-shift",
     "title": "Distribution Shift",
     "subtitle": "A fairness audit is only valid for the data it was run on",
     "summary": "Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.",
-    "tags": [
-      "data",
-      "detection"
-    ]
+    "tags": ["data", "detection"]
   },
   {
     "slug": "ai-objectivity-myth",
     "title": "The Biggest Myth About AI Objectivity",
     "subtitle": "\"It's just math\" is not a defense",
     "summary": "Learn why statistical models trained on biased history reproduce that bias regardless of intent. See how COMPAS's \"neutral\" risk score hid an 86.77% fairness gap until the right proxies were found.",
-    "tags": [
-      "data",
-      "explainability"
-    ]
+    "tags": ["data", "explainability"]
   },
   {
     "slug": "confounding-variable",
     "title": "Confounding Variable",
     "subtitle": "When a hidden cause makes two things look connected.",
     "summary": "Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.",
-    "tags": [
-      "detection",
-      "data"
-    ]
+    "tags": ["detection", "data"]
   },
   {
     "slug": "predictive-parity",
     "title": "Predictive Parity",
     "subtitle": "Equally trustworthy is not the same as equally fair",
     "summary": "Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.",
-    "tags": [
-      "metrics",
-      "detection"
-    ]
+    "tags": ["metrics", "detection"]
   },
   {
     "slug": "false-positives-vs-false-negatives",
     "title": "False Positives vs. False Negatives in Medical Risk Models",
     "subtitle": "When a missed high-risk flag costs more than a false alarm",
     "summary": "Learn why a single accuracy or AUC number can hide two very different kinds of mistakes, and why a missed diagnosis and a false alarm are almost never equally costly. See how one global decision threshold can produce equal overall accuracy while still leaving very different false negative rates across demographic groups.",
-    "tags": [
-      "metrics",
-      "detection"
-    ]
+    "tags": ["metrics", "detection"]
   },
   {
     "slug": "supervised-learning",
     "title": "What Is Supervised Learning?",
     "subtitle": "Teaching a model to reproduce exactly what it was shown",
     "summary": "See how a model turns labeled examples into a decision rule by walking through the AI Fair Recruitment audit's train/test split and fit step directly. Includes detection code that compares the gap in a dataset's labels against the gap in a trained model's own predictions.",
-    "tags": [
-      "explainability",
-      "data"
-    ]
+    "tags": ["explainability", "data"]
   },
   {
     "slug": "unsupervised-learning",
     "title": "What Is Unsupervised Learning?",
     "subtitle": "It found the split on its own, because the split was already in the data",
     "summary": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
-    "tags": [
-      "detection",
-      "explainability"
-    ]
+    "tags": ["detection", "explainability"]
   },
   {
     "slug": "model-drift",
     "title": "What Is Model Drift?",
     "subtitle": "A fairness audit is a photograph of a moving room",
     "summary": "Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.",
-    "tags": [
-      "detection",
-      "data"
-    ]
+    "tags": ["detection", "data"]
   }
-];
+]

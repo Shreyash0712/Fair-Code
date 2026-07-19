@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How AI Detects Patterns · Fair Code</title>
+<meta name="description" content="Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/how-ai-detects-patterns.html">
+<meta property="og:title" content="How AI Detects Patterns · Fair Code">
+<meta property="og:description" content="Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/how-ai-detects-patterns.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How AI Detects Patterns · Fair Code">
+<meta name="twitter:description" content="Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "How AI Detects Patterns",
+  "description": "Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.",
+  "url": "https://thefaircode.xyz/explainers/how-ai-detects-patterns.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/how-ai-detects-patterns.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">How AI Detects Patterns</h1>
+      <p class="explainer-lede">A model can&#x27;t tell a cause from a proxy</p>
+      <p class="explainer-lede">Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>A model doesn&#x27;t know what a &quot;pattern&quot; is - it only knows which numbers tend to move together, and it will use any number that moves together with the target, including the ones that encode race, sex, or age.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Pattern detection</strong> in machine learning is the process by which a model finds statistical correlations between input features and an outcome, weighting and combining those correlations to produce a prediction - with no built-in distinction between a causal pattern and a discriminatory one.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>Every audit in this repo runs on the same underlying mechanism: a Random Forest Classifier finds patterns in <code>unfair.py</code> and the exact same patterns, minus a few columns, in <code>fair.py</code>. The gap between those two runs is the entire story of algorithmic bias. In hiring, lending, healthcare, and criminal justice, the &quot;pattern&quot; the model found was often a historical record of who got hired, approved, treated, or detained - not a measure of who deserved to be.</p>
+<p>The non-obvious part is this: pattern detection has no concept of &quot;should.&quot; A Random Forest does not know that <code>CustodyStatus</code> reflects decades of over-policing rather than individual criminality. It only knows that <code>CustodyStatus</code> and <code>race</code> move together, and that both move together with the recidivism label. From the model&#x27;s point of view, a proxy and a cause look identical - both are just columns with high feature importance.</p>
+<h2 id="how-pattern-detection-works">How Pattern Detection Works</h2>
+<p>A Random Forest Classifier - the model used across every audit in this repo - detects patterns through three mechanisms working together.</p>
+<h3 id="1-splitting-on-feature-thresholds">1. Splitting on feature thresholds</h3>
+<p>Each decision tree in the forest repeatedly asks yes/no questions about feature values: &quot;Is <code>employment</code> ≥ 7 years?&quot;, &quot;Is <code>payer_code</code> == Medicaid?&quot;. A split is chosen because it best separates the training examples by outcome. The tree does not ask whether the split is <em>fair</em> - only whether it is <em>informative</em>.</p>
+<h3 id="2-aggregating-across-many-trees">2. Aggregating across many trees</h3>
+<p>A single tree overfits to noise. A forest of 100 trees (<code>n_estimators=100</code>, as used throughout this repo), each trained on a random subset of data and features, averages out that noise. What survives the averaging are the patterns that are <em>consistently</em> useful - which includes consistent societal patterns, not just consistent physical ones.</p>
+<h3 id="3-ranking-features-by-importance">3. Ranking features by importance</h3>
+<p>After training, each feature gets an importance score based on how much it improved splits across the forest. In the COMPAS audit, <code>race</code> and <code>CustodyStatus</code> both score highly - not because the model was told they matter, but because they correlated with the recidivism label in the training data.</p>
+<pre><code class="language-python"># Feature importance after training on COMPAS data
+importances = pd.Series(model.feature_importances_, index=X.columns)
+print(importances.sort_values(ascending=False).head())
+
+# CustodyStatus    0.31
+# race             0.18
+# Sex_Code_Text    0.09
+# ...</code></pre>
+<p>A high importance score tells you the model relied on that feature. It does not tell you <em>why</em> the feature and the outcome are correlated - that requires the proxy analysis covered in <a href="proxy-variables.html">proxy-variables.md</a>.</p>
+<h2 id="concrete-example-compas-audit-01">Concrete Example: COMPAS - Audit 01</h2>
+<p>The COMPAS dataset gives a Random Forest two protected-adjacent features: <code>race</code> and <code>CustodyStatus</code>. Trained on these alongside other inputs, the model produces an 87.16% high-risk flag rate for Black defendants versus 0.40% for White defendants - an 86.77% fairness gap.</p>
+<p>The pattern the model found was real, in the sense that it exists in the data. Black defendants in this dataset genuinely were flagged at higher rates historically. But the pattern is not a measure of who is more likely to reoffend - it is a measure of who was more likely to be <em>flagged</em> by a system already shaped by over-policing.</p>
+<pre><code class="language-python"># unfair.py pattern: race and CustodyStatus both carry strong signal
+X = pd.get_dummies(df[[&#x27;Sex_Code_Text&#x27;, &#x27;MaritalStatus&#x27;, &#x27;race&#x27;, &#x27;CustodyStatus&#x27;]])
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)</code></pre>
+<p>When <code>race</code> is dropped, the gap barely moves - <code>CustodyStatus</code> alone reconstructs most of the pattern, because it correlates with <code>race</code> at 0.31 importance even on its own. Only when both <code>race</code> and <code>CustodyStatus</code> are removed does the gap fall to 15.69%, a 71% reduction. The pattern the model was detecting was never really about behavior - it was about which neighborhoods got patrolled.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>The following functions inspect what patterns a trained model relied on, and flag features whose importance may be inflated by correlation with a protected attribute.</p>
+<pre><code class="language-python">import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from scipy.stats import chi2_contingency, pearsonr
+
+def get_pattern_reliance(model, feature_names, top_n=10):
+    &quot;&quot;&quot;
+    Return the top N features by importance from a trained
+    RandomForestClassifier, paired with their importance scores.
+
+    Parameters:
+        model: a fitted RandomForestClassifier
+        feature_names: list of column names matching the training matrix
+        top_n: how many top features to return
+
+    Returns:
+        pandas.Series of feature importances, sorted descending
+    &quot;&quot;&quot;
+    importances = pd.Series(model.feature_importances_, index=feature_names)
+    return importances.sort_values(ascending=False).head(top_n)
+
+
+def flag_correlated_patterns(df, protected_attr, candidate_features, threshold=0.05):
+    &quot;&quot;&quot;
+    For each candidate feature, test correlation with the protected
+    attribute. Categorical features use chi-squared; continuous
+    features use Pearson correlation. Flags features with p &lt; threshold
+    as potentially encoding the same pattern as the protected attribute.
+
+    Parameters:
+        df: pandas.DataFrame containing both the candidate features
+            and the protected attribute
+        protected_attr: column name of the protected attribute
+        candidate_features: list of column names to test
+        threshold: p-value cutoff for flagging (default 0.05)
+
+    Returns:
+        dict mapping feature name -&gt; (test_used, p_value, flagged: bool)
+    &quot;&quot;&quot;
+    results = {}
+    for feature in candidate_features:
+        if pd.api.types.is_numeric_dtype(df[feature]) and df[feature].nunique() &gt; 10:
+            corr, p = pearsonr(df[feature], df[protected_attr].astype(&quot;category&quot;).cat.codes)
+            results[feature] = (&quot;pearson&quot;, p, p &lt; threshold)
+        else:
+            table = pd.crosstab(df[feature], df[protected_attr])
+            _, p, _, _ = chi2_contingency(table)
+            results[feature] = (&quot;chi2&quot;, p, p &lt; threshold)
+    return results
+
+
+# Usage example
+# importances = get_pattern_reliance(model, X_train.columns)
+# flags = flag_correlated_patterns(df, &quot;race&quot;, [&quot;CustodyStatus&quot;, &quot;Sex_Code_Text&quot;])</code></pre>
+<h2 id="limitations-and-trade-offs">Limitations and Trade-offs</h2>
+<h3 id="1-importance-scores-show-reliance-not-causation">1. Importance scores show reliance, not causation</h3>
+<p>A high feature importance score means the model used that feature heavily. It does not mean the feature <em>causes</em> the outcome. <code>CustodyStatus</code> and recidivism are correlated through a shared history of policing patterns, not through a direct causal link from custody status to future behavior. Distinguishing correlation from causation requires domain knowledge the model does not have.</p>
+<h3 id="2-removing-high-importance-features-can-shift-the-pattern-elsewhere">2. Removing high-importance features can shift the pattern elsewhere</h3>
+<p>When a strongly relied-upon feature is dropped, the forest does not simply &quot;give up&quot; on the pattern - it redistributes importance to the next most correlated feature. This is exactly what happens with <code>CustodyStatus</code> after <code>race</code> is dropped in the COMPAS audit. Pattern detection at the feature level must be paired with cluster-level analysis (see <a href="proxy-entanglement.html">proxy-entanglement.md</a>).</p>
+<h3 id="3-small-subgroups-produce-unstable-importance-estimates">3. Small subgroups produce unstable importance estimates</h3>
+<p>In datasets with small demographic subgroups - such as the Asian and Hispanic groups in the Healthcare Readmission audit - feature importance and correlation statistics are sensitive to sample size. A pattern that looks strong in a subgroup of a few hundred records may not replicate at scale, and a pattern that looks weak may simply be underpowered.</p>
+<h3 id="4-pattern-detection-cannot-tell-you-which-patterns-are-legitimate">4. Pattern detection cannot tell you which patterns are legitimate</h3>
+<p>A Random Forest treats <code>education.num</code> and <code>relationship</code> identically: both are columns with non-zero importance. Whether <code>education.num</code> is a legitimate signal for income prediction and <code>relationship</code> is an illegitimate proxy for sex is a question the algorithm has no way to answer. That judgment has to come from the proxy analysis step, performed by a human, before training.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="proxy-variables.html">What Is a Proxy Variable?</a> - explains why patterns the model detects can carry protected-class signal even when the protected column itself is removed.</li><li><a href="neural-networks.html">What Happens Inside a Neural Network?</a> - covers pattern detection in a different model family, where patterns are encoded as learned weights rather than tree splits.</li><li><a href="shap-values.html">What Are SHAP Values?</a> - a more granular way to inspect which patterns drove a single prediction, not just the model as a whole.</li><li><a href="proxy-entanglement.html">What Is Proxy Entanglement?</a> - what happens when a detected pattern is spread across multiple correlated features instead of concentrated in one.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-compas"><code>COMPAS/</code></a> - the clearest example of a model detecting a pattern (race-correlated custody history) that mirrors a discriminatory outcome rather than a behavioral one.</li><li><a href="../index.html#project-readmission"><code>Healthcare Readmission/</code></a> - shows pattern detection across an entangled cluster of administrative features, where no single feature&#x27;s importance score tells the full story.</li><li><a href="../index.html#project-hiring"><code>AI Fair Recruitment/</code></a> - shows a clean before/after where the patterns driving 97.3% of the fairness gap were concentrated in just two features (<code>gender</code>, <code>age</code>).</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://link.springer.com/article/10.1023/A:1010933404324" target="_blank" rel="noreferrer noopener">Breiman (2001): Random Forests, <em>Machine Learning</em> 45(1)</a> - the original paper describing how random forests aggregate split-based pattern detection across trees.</li><li><a href="https://arxiv.org/abs/1705.07874" target="_blank" rel="noreferrer noopener">Lundberg &amp; Lee (2017): A Unified Approach to Interpreting Model Predictions, <em>NeurIPS</em></a> - formal grounding for SHAP, the standard tool for inspecting which patterns a model used on a per-prediction basis.</li><li><a href="https://fairmlbook.org" target="_blank" rel="noreferrer noopener">Barocas, Hardt &amp; Narayanan: <em>Fairness and Machine Learning</em></a> - chapter on classification covers the gap between statistical pattern detection and causal or normative justification.</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

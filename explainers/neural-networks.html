@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks · Fair Code</title>
+<meta name="description" content="Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/neural-networks.html">
+<meta property="og:title" content="Neural Networks · Fair Code">
+<meta property="og:description" content="Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/neural-networks.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Neural Networks · Fair Code">
+<meta name="twitter:description" content="Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "Neural Networks",
+  "description": "Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.",
+  "url": "https://thefaircode.xyz/explainers/neural-networks.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/neural-networks.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Neural Networks</h1>
+      <p class="explainer-lede">How complex models can hide simple bias.</p>
+      <p class="explainer-lede">Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.</p>
+    </section>
+
+    <article class="explainer-content"><h1 id="explainer-what-happens-inside-a-neural-network">Explainer: What Happens Inside a Neural Network?</h1>
+<blockquote><p><em>The reason a model can redline a neighborhood, deny a loan, or flag a face - without anyone writing a single rule to do it.</em></p></blockquote>
+<hr>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p>A <strong>neural network</strong> is a stack of mathematical layers that repeatedly transforms an input (a resume, a face, a credit application) into a prediction - learning which patterns to amplify and which to ignore by adjusting millions of internal weights during training.</p>
+<hr>
+<h2 id="why-this-matters">Why This Matters</h2>
+<p>Most people treat neural networks as black boxes. You put data in, a decision comes out, and what happens in between is someone else&#x27;s problem.</p>
+<p>That attitude is how algorithmic bias gets deployed at scale.</p>
+<p>The network doesn&#x27;t discriminate by accident. It discriminates because of what it learned - from data that reflected a stratified world - and understanding <em>how</em> it learns is the only way to understand <em>what</em> it learns. You can&#x27;t audit what you don&#x27;t understand.</p>
+<p>This explainer is not theory. It&#x27;s the mechanics, so you can follow what the models in this repo are actually doing when they deny someone bail or reject a job application.</p>
+<hr>
+<h2 id="the-three-part-loop-every-network-runs">The Three-Part Loop Every Network Runs</h2>
+<p>Every neural network - from a two-layer hiring classifier to a billion-parameter language model - runs the same fundamental loop:</p>
+<pre><code>Forward pass  →  Compute loss  →  Backward pass (update weights)</code></pre>
+<p>Repeat this thousands of times on your training data, and the network learns. The tragedy is that &quot;learns&quot; means &quot;learns to replicate patterns in the training data&quot; - including patterns that encode race, gender, or class.</p>
+<hr>
+<h2 id="part-1-the-forward-pass">Part 1: The Forward Pass</h2>
+<p>The forward pass is how the network turns an input into a prediction.</p>
+<h3 id="neurons-and-weights">Neurons and Weights</h3>
+<p>Each neuron takes a set of inputs, multiplies each by a <strong>weight</strong>, sums them, then passes the result through an <strong>activation function</strong>.</p>
+<pre><code class="language-python">import numpy as np
+
+def neuron(inputs, weights, bias):
+    &quot;&quot;&quot;
+    One neuron. One decision unit.
+    inputs: feature values [age, zip_code, credit_score, ...]
+    weights: learned importance of each feature
+    bias: a learned offset
+    &quot;&quot;&quot;
+    z = np.dot(inputs, weights) + bias   # weighted sum
+    return relu(z)                        # activation function
+
+def relu(z):
+    &quot;&quot;&quot;
+    ReLU: the most common activation function.
+    Passes positive signals through. Kills negative ones.
+    &quot;&quot;&quot;
+    return max(0, z)</code></pre>
+<p>The weight is everything. A high weight on <code>zip_code</code> means the network has learned that zip code is predictive - not because zip codes are fair inputs, but because zip codes correlate with whatever outcome existed in the training data, which was shaped by decades of redlining.</p>
+<h3 id="layers">Layers</h3>
+<p>A single neuron can only draw a straight line through the data. Layers stack neurons in sequence, letting each layer learn more abstract representations of the input.</p>
+<pre><code>Input Layer        Hidden Layer 1      Hidden Layer 2      Output Layer
+─────────────      ──────────────      ──────────────      ────────────
+[age          ]    [pattern_A    ]     [pattern_X    ]     
+[zip_code     ] →  [pattern_B    ]  →  [pattern_Y    ]  →  [high_risk: 0.87]
+[custody_status]   [pattern_C    ]     [pattern_Z    ]     
+[marital_status]</code></pre>
+<p>By the final layer, the network has compressed raw input features into an abstract representation it uses to make the prediction. The problem: that representation can be heavily contaminated by proxy variables without any indication in the output.</p>
+<hr>
+<h2 id="part-2-computing-loss">Part 2: Computing Loss</h2>
+<p>After a forward pass, the network has a prediction. It compares that prediction to the true label using a <strong>loss function</strong>.</p>
+<pre><code class="language-python">def binary_cross_entropy(y_true, y_pred):
+    &quot;&quot;&quot;
+    The standard loss function for binary classification.
+    Returns a number that measures how wrong the prediction was.
+    Closer to 0 = better. Higher = worse.
+    &quot;&quot;&quot;
+    epsilon = 1e-9  # prevent log(0)
+    return -(y_true * np.log(y_pred + epsilon) +
+             (1 - y_true) * np.log(1 - y_pred + epsilon))
+
+# Example:
+# True label: 1 (reoffended)
+# Prediction: 0.87 (model is fairly confident)
+loss = binary_cross_entropy(y_true=1, y_pred=0.87)
+# → loss ≈ 0.14  (small - model was mostly right)
+
+# True label: 0 (did NOT reoffend)
+# Prediction: 0.87 (model is still confident, but wrong)
+loss = binary_cross_entropy(y_true=0, y_pred=0.87)
+# → loss ≈ 2.04  (large - model was badly wrong)</code></pre>
+<p>The network&#x27;s only goal is to minimize this number across all training examples. It has no concept of fairness. It doesn&#x27;t know it&#x27;s making bail decisions. It will learn whatever pattern drives that number down - including racial proxies.</p>
+<hr>
+<h2 id="part-3-the-backward-pass-backpropagation">Part 3: The Backward Pass (Backpropagation)</h2>
+<p>This is where the network learns. After computing the loss, it works backwards through every layer, calculating how much each weight contributed to the error and nudging it in the direction that reduces loss.</p>
+<pre><code class="language-python">def gradient_descent_step(weights, gradients, learning_rate=0.01):
+    &quot;&quot;&quot;
+    Update every weight by a small amount in the direction that reduces loss.
+    This is the core of how a network learns.
+    &quot;&quot;&quot;
+    return weights - learning_rate * gradients</code></pre>
+<p>Repeat this across thousands of training examples and the weights converge - the network has &quot;learned.&quot; What it&#x27;s actually done is encode statistical patterns from the training data into its weights. If those patterns are biased, the weights are biased. If you then deploy the model, you&#x27;ve deployed the bias.</p>
+<hr>
+<h2 id="real-world-proof-hiring-bias">Real-World Proof: Hiring Bias</h2>
+<p>We tested this directly using the <a href="../index.html#project-hiring">AI Fair Recruitment dataset</a>.</p>
+<h3 id="what-we-did">What We Did</h3>
+<p><strong>Step 1 - Biased model (gender + proxy <code>age</code> included):</strong></p>
+<pre><code class="language-python">features = [
+    &#x27;gender&#x27;,
+    &#x27;age&#x27;,            # proxy: women enter/exit workforce differently due to caregiving
+    &#x27;experience_years&#x27;,
+    &#x27;technical_score&#x27;,
+    &#x27;communication_score&#x27;
+]</code></pre>
+<p><strong>Results:</strong></p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Group</th><th>Hire Rate</th></tr></thead><tbody><tr><td>Male candidates</td><td>61.2%</td></tr><tr><td>Female candidates</td><td>40.3%</td></tr><tr><td><strong>Fairness gap</strong></td><td><strong>20.9%</strong></td></tr></tbody></table></div>
+<p>The network didn&#x27;t contain a rule that said &quot;prefer men.&quot; It learned from historical hiring data in which men were hired more. The weights encoded that pattern. The bias was invisible - buried in floating-point numbers across hidden layers.</p>
+<hr>
+<p><strong>Step 2 - Remove gender + proxy (our fix):</strong></p>
+<pre><code class="language-python">features = [
+    # gender removed ✓
+    # age removed ✓  (proxy: encodes gender via caregiving gap)
+    &#x27;experience_years&#x27;,
+    &#x27;technical_score&#x27;,
+    &#x27;communication_score&#x27;
+]</code></pre>
+<p><strong>Results:</strong></p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Group</th><th>Hire Rate</th></tr></thead><tbody><tr><td>Male candidates</td><td>54.1%</td></tr><tr><td>Female candidates</td><td>54.0%</td></tr><tr><td><strong>Fairness gap</strong></td><td><strong>0.1%</strong></td></tr></tbody></table></div>
+<h3 id="summary">Summary</h3>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Approach</th><th>Fairness Gap</th><th>Reduction</th></tr></thead><tbody><tr><td>Biased model</td><td>20.9%</td><td>-</td></tr><tr><td>Remove gender only</td><td>~18%</td><td>Minimal</td></tr><tr><td>Remove gender + proxy</td><td>0.1%</td><td><strong>99.5%</strong></td></tr></tbody></table></div>
+<p><strong>The network&#x27;s architecture didn&#x27;t change. The training procedure didn&#x27;t change. Only the inputs changed - and the bias disappeared.</strong></p>
+<hr>
+<h2 id="how-to-inspect-what-a-network-learned">How to Inspect What a Network Learned</h2>
+<p>Neural networks are not fully interpretable, but you can probe them.</p>
+<h3 id="shap-values-attributing-predictions-to-features">SHAP Values: Attributing Predictions to Features</h3>
+<p>SHAP (SHapley Additive exPlanations) decomposes any prediction into a contribution from each input feature.</p>
+<pre><code class="language-python">import shap
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# For one prediction, SHAP tells you:
+# age contributed +0.34 to the high-risk score
+# zip_code contributed +0.28
+# custody_status contributed +0.19
+# ...</code></pre>
+<p>If a protected attribute or its known proxy appears at the top of the SHAP rankings, the model is using it - regardless of what the feature list says it&#x27;s &quot;supposed&quot; to be doing.</p>
+<h3 id="feature-importance-coarser-but-faster">Feature Importance: Coarser But Faster</h3>
+<pre><code class="language-python">import pandas as pd
+
+importances = pd.Series(
+    model.feature_importances_,
+    index=X_train.columns
+).sort_values(ascending=False)
+
+print(importances)
+# custody_status      0.31   ← if this is high, you have a proxy problem
+# zip_code            0.27
+# marital_status      0.18
+# ...</code></pre>
+<p>Any feature at the top that you know correlates with a protected attribute is a proxy variable. Remove it and retrain.</p>
+<hr>
+<h2 id="the-architecture-in-one-diagram">The Architecture in One Diagram</h2>
+<pre><code>RAW FEATURES             HIDDEN LAYERS              PREDICTION
+────────────────         ───────────────────────    ──────────────────────
+age ──────────────┐
+zip_code ─────────┤      [weighted sum]    [weighted sum]
+custody_status ───┼──→   [   + bias  ] →  [   + bias  ] →  0.87 (high-risk)
+marital_status ───┤      [    relu   ]    [    relu   ]
+sex ──────────────┘
+                          ↑                ↑
+                          learned from     learned from
+                          training data    training data
+
+                   ←────────────────────────────────────
+                         backpropagation adjusts all
+                         these weights to minimize loss</code></pre>
+<p>The network has no fairness objective. It has one objective: minimize loss on the training set. If the training set encodes historical discrimination, minimizing loss means learning that discrimination.</p>
+<hr>
+<h2 id="the-bigger-picture">The Bigger Picture</h2>
+<p>Neural networks are not neutral calculators. They are compression algorithms for historical patterns. Feed them data from a world shaped by redlining, over-policing, occupational segregation, and lending exclusion - and they will compress those patterns into their weights and reproduce them as predictions.</p>
+<p>The architecture is not the problem. The weights are the problem. And the weights are determined by the data.</p>
+<p>This is why the work in this repository matters: not to fix the math, but to fix the inputs. Remove the protected attributes. Audit every remaining feature for correlation with those attributes. Retrain. Measure the gap again.</p>
+<p><strong>A neural network will learn exactly what you teach it. The question is whether you&#x27;re paying attention to what that is.</strong></p>
+<hr>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-hiring"><code>Ai Fair Recrutment Dataset/</code></a> - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy</li><li><a href="../index.html#project-credit"><code>German Credit Lending/</code></a> - Lending bias: 73.6% gap reduction after removing age + employment tenure proxy</li><li><a href="../index.html#project-insurance"><code>Insurance Denial/</code></a> - Healthcare bias: 60–72% reduction after removing BMI, smoker status, and diabetic status as proxies</li><li><a href="../index.html#project-benefits"><code>Benefits Denial/</code></a> - Welfare eligibility: 46–88% gap reduction across race, sex, and national origin</li></ul>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noreferrer noopener">3Blue1Brown: Neural Networks (YouTube, 2017)</a> - the best visual introduction to how networks learn</li><li><a href="https://www.deeplearningbook.org/" target="_blank" rel="noreferrer noopener">Goodfellow, Bengio &amp; Courville: Deep Learning (MIT Press)</a> - the canonical textbook, free online</li><li><a href="https://arxiv.org/abs/1705.07874" target="_blank" rel="noreferrer noopener">Lundberg &amp; Lee: A Unified Approach to Interpreting Model Predictions (NeurIPS, 2017)</a> - the SHAP paper</li><li><a href="https://fairmlbook.org/" target="_blank" rel="noreferrer noopener">Barocas &amp; Hardt: Fairness and Machine Learning</a> - the standard reference for algorithmic fairness</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

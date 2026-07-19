@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confounding Variable · Fair Code</title>
+<meta name="description" content="Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/confounding-variable.html">
+<meta property="og:title" content="Confounding Variable · Fair Code">
+<meta property="og:description" content="Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/confounding-variable.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Confounding Variable · Fair Code">
+<meta name="twitter:description" content="Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "Confounding Variable",
+  "description": "Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.",
+  "url": "https://thefaircode.xyz/explainers/confounding-variable.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/confounding-variable.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Confounding Variable</h1>
+      <p class="explainer-lede">When a hidden cause makes two things look connected.</p>
+      <p class="explainer-lede">Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.</p>
+    </section>
+
+    <article class="explainer-content"><h1 id="explainer-what-is-a-confounding-variable">Explainer: What Is a Confounding Variable?</h1>
+<blockquote><p><em>The hidden cause that makes two things look connected when neither caused the other - and the reason removing a protected attribute from a model rarely removes the bias it produces.</em></p></blockquote>
+<hr>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>A confounding variable</strong> is a third variable that independently causes both an input feature and an outcome, creating a spurious statistical association between them that persists - and can dominate a model - even after the protected attribute is removed.</p>
+<hr>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>A model can appear to make a perfectly legitimate prediction - custody history predicts recidivism, healthcare cost predicts medical need, zip code predicts creditworthiness - while all of it is driven by a confounder the model never directly touches. When that confounder correlates with a protected attribute, the model inherits the discrimination and produces biased outcomes without ever using race, sex, or age explicitly.</p>
+<p>Confounding is the mechanism behind some of the most consequential algorithmic bias failures on record. COMPAS assigned higher risk scores to Black defendants partly because <code>CustodyStatus</code> - a feature treated as a legitimate predictor of recidivism - correlates with both race (due to historical over-policing) and the recidivism label (due to differential surveillance). The pattern was statistically real. Its interpretation as a measure of individual risk was not.</p>
+<p>This matters in practice:</p>
+<ul><li><strong>Auditors</strong> who check only feature importance will see <code>CustodyStatus</code> ranked highly and conclude it is a legitimate predictor. It predicts the label - but only because it encodes race and differential surveillance, not individual propensity.</li><li><strong>Engineers</strong> who drop the protected attribute will see no improvement because the confounding path runs through <code>CustodyStatus</code>, which stays in the feature set.</li><li><strong>Courts</strong> that accept statistical association as proof of predictive validity are accepting a spurious correlation as a fairness defense.</li></ul>
+<hr>
+<h2 id="confounders-vs-proxy-variables-the-key-distinction">Confounders vs. Proxy Variables: The Key Distinction</h2>
+<p>These two concepts are routinely conflated. They are not the same.</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th></th><th>Proxy Variable</th><th>Confounding Variable</th></tr></thead><tbody><tr><td><strong>Mechanism</strong></td><td>Encodes the protected attribute as a feature</td><td>Independently causes both the feature and the outcome</td></tr><tr><td><strong>Causal direction</strong></td><td>Protected attribute → proxy → prediction</td><td>Confounder → feature AND confounder → outcome</td></tr><tr><td><strong>Fix</strong></td><td>Remove the proxy</td><td>Remove or statistically adjust for the confounder</td></tr><tr><td><strong>Example in this repo</strong></td><td><code>zip_code</code> encodes race</td><td>Over-policing causes elevated <code>CustodyStatus</code> AND inflated recidivism labels for Black defendants</td></tr></tbody></table></div>
+<p>A proxy smuggles the protected attribute into the model through a correlated feature. A confounder creates a real statistical association between a feature and an outcome - but one that is entirely or partly driven by a third variable, not by the feature itself.</p>
+<p>In practice, the same variable often plays both roles simultaneously. <code>CustodyStatus</code> in COMPAS is a proxy (it correlates with race) and a confounder (over-policing independently elevated custody records and generated more surveillance-driven recidivism labels). Treating it as only one or the other misses half the problem.</p>
+<hr>
+<h2 id="concrete-example-compas-and-custodystatus">Concrete Example: COMPAS and CustodyStatus</h2>
+<p>The COMPAS audit in this repo trains a Random Forest to predict recidivism. The biased model&#x27;s Black/White fairness gap - the percentage-point difference in defendants flagged as high risk - is <strong>86.77%</strong>.</p>
+<p>The standard naive fix is to drop <code>race</code>:</p>
+<pre><code class="language-python"># unfair.py: features include race + CustodyStatus + priors_count + charge_degree + age
+# Black/White fairness gap: 86.77%
+
+# Drop race only, retrain:
+features_no_race = [&#x27;age&#x27;, &#x27;priors_count&#x27;, &#x27;CustodyStatus&#x27;, &#x27;charge_degree&#x27;]
+# Black/White fairness gap: still ~84% - dropping race alone changes almost nothing</code></pre>
+<p>The reason: <code>race</code> was not the direct driver. The confounding path runs through <code>CustodyStatus</code>:</p>
+<pre><code>Over-policing (systemic) ──→ CustodyStatus (elevated for Black defendants)
+                         ──→ Recidivism label (inflated by differential surveillance)</code></pre>
+<p>Both arrows are caused by the same systemic factor. <code>CustodyStatus</code> is associated with the recidivism label not because custody history is a reliable individual risk signal, but because the same structural forces that produce elevated custody records also produce more recidivism label events - through monitoring, not through behavior.</p>
+<p>Removing both <code>race</code> and <code>CustodyStatus</code> breaks this path:</p>
+<pre><code class="language-python"># fair.py: features include only priors_count + charge_degree + age
+# Black/White fairness gap: 15.69% - 71% reduction</code></pre>
+<p>The residual 15.69% reflects other confounding paths (differential bail rates, charge severity distributions, surveillance-driven label noise) that require changes upstream of the model to eliminate entirely.</p>
+<hr>
+<h2 id="detection-code">Detection Code</h2>
+<p>The standard statistical approach is stratified analysis: check whether the association between a feature and the outcome disappears or reverses within strata of the confounder. A marginal association that weakens substantially after stratification is the signature of confounding - known in extreme cases as Simpson&#x27;s Paradox.</p>
+<pre><code class="language-python">import pandas as pd
+from scipy.stats import chi2_contingency
+
+
+def check_confounding(df, feature_col, outcome_col, confounder_col, protected_col=None):
+    &quot;&quot;&quot;
+    Test whether a candidate confounder explains the association
+    between a feature and an outcome.
+
+    Steps:
+    1. Compute the marginal association (feature vs. outcome, ignoring confounder).
+    2. Compute stratified associations (feature vs. outcome within each confounder level).
+    3. Optionally test whether the confounder associates with a protected attribute.
+
+    A large marginal chi-squared that shrinks or disappears within strata
+    indicates confounding. A large confounder-vs-protected chi-squared confirms
+    the confounder is a vector for protected-attribute bias.
+
+    df             : DataFrame with all relevant columns
+    feature_col    : candidate predictor feature
+    outcome_col    : model prediction or ground-truth label
+    confounder_col : variable suspected of confounding the feature→outcome path
+    protected_col  : protected attribute to check for confounder correlation (optional)
+    &quot;&quot;&quot;
+    results = {}
+
+    # Step 1 - marginal association
+    ct_marginal = pd.crosstab(df[feature_col], df[outcome_col])
+    chi2_m, p_m, _, _ = chi2_contingency(ct_marginal)
+    results[&quot;marginal&quot;] = {
+        &quot;chi2&quot;: round(chi2_m, 3),
+        &quot;p_value&quot;: round(p_m, 4),
+        &quot;associated&quot;: p_m &lt; 0.05,
+    }
+
+    # Step 2 - stratified associations
+    strata = {}
+    for level, group in df.groupby(confounder_col):
+        ct = pd.crosstab(group[feature_col], group[outcome_col])
+        if ct.shape[0] &gt; 1 and ct.shape[1] &gt; 1:
+            chi2_s, p_s, _, _ = chi2_contingency(ct)
+            strata[level] = {
+                &quot;chi2&quot;: round(chi2_s, 3),
+                &quot;p_value&quot;: round(p_s, 4),
+                &quot;associated&quot;: p_s &lt; 0.05,
+                &quot;n&quot;: len(group),
+            }
+    results[&quot;stratified&quot;] = strata
+
+    # Step 3 - confounder vs. protected attribute (optional)
+    if protected_col:
+        ct_prot = pd.crosstab(df[confounder_col], df[protected_col])
+        chi2_p, p_p, _, _ = chi2_contingency(ct_prot)
+        results[&quot;confounder_vs_protected&quot;] = {
+            &quot;chi2&quot;: round(chi2_p, 3),
+            &quot;p_value&quot;: round(p_p, 4),
+            &quot;associated&quot;: p_p &lt; 0.05,
+        }
+
+    return results</code></pre>
+<h3 id="applying-it-to-the-compas-audit">Applying it to the COMPAS audit</h3>
+<pre><code class="language-python"># Load the COMPAS dataset and generate predictions from unfair.py
+result = check_confounding(
+    df=df,
+    feature_col=&quot;CustodyStatus&quot;,
+    outcome_col=&quot;prediction&quot;,      # model&#x27;s high-risk flag
+    confounder_col=&quot;race&quot;,
+    protected_col=&quot;race&quot;,
+)
+
+print(result[&quot;marginal&quot;])
+# {&#x27;chi2&#x27;: 412.7, &#x27;p_value&#x27;: 0.0, &#x27;associated&#x27;: True}
+# Strong marginal association - CustodyStatus predicts the model output.
+
+print(result[&quot;confounder_vs_protected&quot;])
+# {&#x27;chi2&#x27;: 389.2, &#x27;p_value&#x27;: 0.0, &#x27;associated&#x27;: True}
+# CustodyStatus is also strongly associated with race.
+# Both arms of the confounding path are confirmed.
+
+# Within racial strata, the CustodyStatus → prediction association weakens -
+# confirming that part of the marginal association runs through race, not through
+# individual risk.</code></pre>
+<p>For continuous features, replace <code>chi2_contingency</code> with a Pearson correlation or partial correlation controlling for the confounder.</p>
+<hr>
+<h2 id="limitations">Limitations</h2>
+<p>1. <strong>Stratified analysis cannot distinguish confounding from effect modification.</strong> If a feature has a genuinely different causal effect on the outcome across strata - not just a different baseline - that is effect modification, not confounding. The two require different handling. Conflating them produces wrong adjustments.</p>
+<p>2. <strong>You can only condition on observed confounders.</strong> If the confounder is unmeasured - historical policing intensity, neighbourhood-level surveillance, differential healthcare access - no statistical adjustment removes its effect. Causal inference methods (instrumental variables, propensity score matching, difference-in-differences) can partially address unmeasured confounding but require strong, often untestable assumptions about the causal structure.</p>
+<p>3. <strong>Conditioning on a collider opens new bias.</strong> A collider is a variable caused by both the feature and the outcome - the reverse of a confounder. Controlling for a collider introduces a spurious association rather than removing one. Correctly distinguishing confounders from colliders requires a causal graph (a DAG), not statistical testing alone. Chi-squared tests cannot tell you which direction the arrows point.</p>
+<p>4. <strong>Confounder removal reduces but does not eliminate bias.</strong> Removing <code>CustodyStatus</code> from COMPAS cuts the fairness gap from 86.77% to 15.69% - a 71% reduction. The remaining gap reflects additional confounding paths that cannot be closed by feature removal without changing the label generation process itself.</p>
+<p>5. <strong>Adjustment can introduce its own distortions.</strong> Propensity score methods and inverse probability weighting reduce confounding but amplify variance, especially in small subgroups. In high-stakes settings, an overcorrected model may perform worse for the groups it was adjusted to protect.</p>
+<hr>
+<h2 id="related-concepts">Related Concepts</h2>
+<h3 id="proxy-variables">Proxy Variables</h3>
+<p>A proxy variable directly encodes a protected attribute as a feature; a confounder independently causes both the feature and the outcome. In practice, the same variable can act as both simultaneously - as <code>CustodyStatus</code> does in COMPAS. Identifying which role dominates determines the correct mitigation strategy. See <a href="proxy-variables.html">proxy-variables.md</a>.</p>
+<h3 id="counterfactual-fairness">Counterfactual Fairness</h3>
+<p>Counterfactual fairness asks whether a model&#x27;s decision would change if the protected attribute changed, holding everything else constant. Confounders make this question structurally hard: if <code>CustodyStatus</code> is partly caused by race (via systemic over-policing), you cannot change race while holding <code>CustodyStatus</code> fixed - the two are causally entangled. Answering counterfactual questions correctly requires a full causal graph. See <a href="counterfactual-fairness.html">counterfactual-fairness.md</a>.</p>
+<h3 id="disparate-impact">Disparate Impact</h3>
+<p>Disparate impact measures unequal selection rates across groups. Confounding is one of the primary mechanisms that generates disparate impact even without explicit use of the protected attribute: the confounder drives both the feature and the outcome, and the association carries the protected-attribute signal forward. Removing the protected attribute while leaving confounders in place leaves the disparate impact intact. See <a href="disparate-impact.html">disparate-impact.md</a>.</p>
+<h3 id="feedback-loop-bias">Feedback Loop Bias</h3>
+<p>When a confounded model is deployed and its outputs influence future labels - recidivism surveillance, credit monitoring, healthcare resource allocation - the confounding strengthens across retraining cycles. The model&#x27;s outputs become part of the data-generating process, reinforcing the spurious association with each iteration. See <a href="feedback-loop-bias.html">feedback-loop-bias.md</a>.</p>
+<hr>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-compas"><code>COMPAS/</code></a> - the primary worked example. <code>CustodyStatus</code> confounds the race→recidivism path, driving 71% of the Black/White fairness gap. Removing it alongside <code>race</code> reduces the gap from 86.77% to 15.69%.</li><li><a href="../index.html#project-benefits"><code>Benefits Denial/</code></a> - <code>relationship</code> and <code>marital-status</code> act as confounders for sex: historical gender norms independently elevated male-coded relationship statuses and income levels in the census data, creating a spurious association the model amplifies.</li><li><a href="../index.html#project-readmission"><code>Healthcare Readmission/</code></a> - <code>payer_code</code> is confounded by race: differential insurance access is caused by structural factors that also independently predict readmission risk, not only by individual health status.</li></ul>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://doi.org/10.1017/CBO9780511803161" target="_blank" rel="noreferrer noopener">Pearl, J. (2009). <em>Causality: Models, Reasoning and Inference</em> (2nd ed.). Cambridge University Press.</a> - the foundational text on causal graphs, the do-calculus, and the formal definitions of confounders, mediators, and colliders that underpin modern causal fairness work.</li><li><a href="https://doi.org/10.1126/science.aax2342" target="_blank" rel="noreferrer noopener">Obermeyer, Z., Powers, B., Vogeli, C., &amp; Mullainathan, S. (2019). Dissecting racial bias in an algorithm used to manage the health of populations. <em>Science</em>, 366(6464), 447–453.</a> - a documented case of confounding-driven racial bias: healthcare cost (the proxy label) was confounded by differential access, making Black patients appear healthier than white patients with the same conditions, and the algorithm allocated less care as a result.</li><li><a href="https://doi.org/10.1214/12-AOS1058" target="_blank" rel="noreferrer noopener">VanderWeele, T. J., &amp; Shpitser, I. (2013). On the definition of a confounder. <em>Annals of Statistics</em>, 41(1), 196–220.</a> - a rigorous definition of confounding that distinguishes it from colliders and mediators, resolving long-standing disagreements in the epidemiological and statistical literature that carry directly into algorithmic fairness auditing.</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

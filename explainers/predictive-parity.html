@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive Parity · Fair Code</title>
+<meta name="description" content="Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/predictive-parity.html">
+<meta property="og:title" content="Predictive Parity · Fair Code">
+<meta property="og:description" content="Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/predictive-parity.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Predictive Parity · Fair Code">
+<meta name="twitter:description" content="Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "Predictive Parity",
+  "description": "Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.",
+  "url": "https://thefaircode.xyz/explainers/predictive-parity.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/predictive-parity.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Predictive Parity</h1>
+      <p class="explainer-lede">Equally trustworthy is not the same as equally fair</p>
+      <p class="explainer-lede">Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.</p>
+    </section>
+
+    <article class="explainer-content"><h1 id="what-is-predictive-parity">What Is Predictive Parity?</h1>
+<blockquote><p><em>COMPAS&#x27;s defenders and its critics ran fairness checks on the same defendants and reached opposite verdicts - because predictive parity and equalized odds are both legitimate, and when base rates differ, they mathematically cannot both hold.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Predictive parity</strong> is satisfied when the Positive Predictive Value, the share of positively-flagged cases that are actually positive, is equal across groups, so a &quot;high risk&quot; label carries the same real-world meaning no matter who receives it.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>Algorithmic risk scores decide who gets held before trial, whose insurance claim gets flagged for review, and whose loan application gets extra scrutiny. Over 1M+ people are assessed by COMPAS-style recidivism tools every year, and 46 US states have used one in criminal sentencing. When a vendor says a &quot;high risk&quot; flag is trustworthy, predictive parity is usually the claim being made: given the flag, the predicted outcome holds up at the same rate for every group.</p>
+<p>The non-obvious part is that &quot;trustworthy for everyone&quot; is not the same fairness property as &quot;fair to everyone.&quot; A score can satisfy predictive parity perfectly and still send one group to jail on false pretenses far more often than another. Which group bears that cost depends on the false positive rate, a completely different metric, and the two cannot both be balanced unless the underlying base rates already match.</p>
+<h2 id="predictive-parity-vs-equalized-odds">Predictive Parity vs Equalized Odds</h2>
+<p>Predictive parity is a <strong>sufficiency</strong> metric: it conditions on the <em>prediction</em> and asks whether that prediction means the same thing across groups. Equalized Odds (see <a href="equalized-odds.html">explainers/equalized-odds.md</a>) is a <strong>separation</strong> metric: it conditions on the <em>true outcome</em> and asks whether error rates match.</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Metric</th><th>Conditions on</th><th>Question it asks</th></tr></thead><tbody><tr><td>Demographic Parity</td><td>nothing (prior)</td><td>Are positive predictions handed out at the same rate?</td></tr><tr><td>Equalized Odds</td><td>true label</td><td>Given the actual outcome, are error rates equal?</td></tr><tr><td>Predictive Parity</td><td>predicted label</td><td>Given a positive prediction, is it equally trustworthy?</td></tr></tbody></table></div>
+<pre><code>PPV(group) = TP(group) / (TP(group) + FP(group))
+
+Predictive Parity holds when:  PPV(group a) ≈ PPV(group b)</code></pre>
+<p>Chouldechova (2017) proved the mechanism algebraically: if predictive parity holds but the base rate of the outcome differs between two groups, the false positive rate and false negative rate cannot be equal across those same groups. It is not a modeling flaw. It is an identity that follows directly from the definitions once base rates diverge.</p>
+<h2 id="concrete-example-compas-audit-01">Concrete Example: COMPAS - Audit 01</h2>
+<p>The <a href="../index.html#project-compas">COMPAS</a> audit in this repo uses the same ProPublica recidivism dataset at the center of the 2016 &quot;Machine Bias&quot; investigation, where race is the protected attribute and the target is two-year re-offense.</p>
+<p>ProPublica and Northpointe (COMPAS&#x27;s vendor) checked different fairness criteria on that dataset and both were internally correct. ProPublica&#x27;s reading, an error-rate check, found the false positive rate for Black defendants was roughly double that of white defendants: Black defendants who did not reoffend were flagged high-risk far more often. Northpointe&#x27;s reading, a predictive-parity check, found PPV was close across race: a &quot;high risk&quot; label corresponded to actual reoffending at a similar rate for both groups. Northpointe presented that second result as proof the tool was not biased.</p>
+<pre><code class="language-python"># Approximating each side&#x27;s check on a COMPAS-style dataframe
+compas[&quot;flagged_high_risk&quot;] = (compas[&quot;decile_score&quot;] &gt;= 7).astype(int)
+
+ppv_by_race, gap = predictive_parity_gap(
+    compas, y_true=&quot;two_year_recid&quot;, y_pred=&quot;flagged_high_risk&quot;, group_col=&quot;race&quot;
+)</code></pre>
+<p>Both readings are correct and both cannot hold simultaneously once the two racial groups in the dataset have different recidivism base rates, which they do. Satisfying predictive parity here did nothing to close the false-positive gap ProPublica measured; the two metrics were trading off against each other the entire time, exactly as Chouldechova&#x27;s proof predicts.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>Compute Positive Predictive Value per group, then pair it with a base-rate check, since a small PPV gap next to a large base-rate gap is the signature Chouldechova identified.</p>
+<pre><code class="language-python">import pandas as pd
+
+
+def predictive_parity_gap(df: pd.DataFrame, y_true: str, y_pred: str, group_col: str):
+    &quot;&quot;&quot;
+    Computes Positive Predictive Value (PPV) per group and the resulting
+    predictive-parity gap.
+
+    Parameters:
+        df: dataframe containing predictions and outcomes
+        y_true: column name of the ground-truth binary label
+        y_pred: column name of the model&#x27;s binary prediction
+        group_col: column name of the protected attribute
+
+    Returns:
+        (dict of PPV by group, float gap between the max and min PPV)
+    &quot;&quot;&quot;
+    ppv_by_group = {}
+    for group, sub in df.groupby(group_col):
+        predicted_positive = sub[sub[y_pred] == 1]
+        if len(predicted_positive) == 0:
+            ppv_by_group[group] = float(&quot;nan&quot;)
+            continue
+        true_positives = (predicted_positive[y_true] == 1).sum()
+        ppv_by_group[group] = true_positives / len(predicted_positive)
+
+    gap = max(ppv_by_group.values()) - min(ppv_by_group.values())
+
+    print(&quot;PPV by group:&quot;)
+    for g, v in ppv_by_group.items():
+        print(f&quot;  {g}: {v:.2%}&quot;)
+    print(f&quot;Predictive Parity Gap: {gap:.2%}&quot;)
+
+    return ppv_by_group, gap
+
+
+def base_rate_gap(df: pd.DataFrame, y_true: str, group_col: str):
+    &quot;&quot;&quot;
+    Computes the true prevalence of the positive outcome per group.
+    A large gap here next to a small PPV gap indicates the Chouldechova
+    trade-off is active: predictive parity is being bought at the cost
+    of unequal error rates.
+    &quot;&quot;&quot;
+    rates = df.groupby(group_col)[y_true].mean()
+    print(&quot;Base rate (true prevalence) by group:&quot;)
+    print(rates)
+    return rates.max() - rates.min()
+
+
+# Usage example
+# predictive_parity_gap(compas_df, y_true=&quot;two_year_recid&quot;, y_pred=&quot;flagged_high_risk&quot;, group_col=&quot;race&quot;)
+# base_rate_gap(compas_df, y_true=&quot;two_year_recid&quot;, group_col=&quot;race&quot;)</code></pre>
+<h2 id="limitations-and-trade-offs">Limitations and Trade-offs</h2>
+<h3 id="1-it-cannot-be-satisfied-alongside-equalized-odds-when-base-rates-differ">1. It cannot be satisfied alongside Equalized Odds when base rates differ</h3>
+<p>This is not a modeling choice, it is Chouldechova&#x27;s impossibility result. If your domain has meaningfully different base rates across groups, you have to pick which metric to optimize for and be explicit about why.</p>
+<h3 id="2-a-close-ppv-does-not-mean-the-harm-is-evenly-distributed">2. A close PPV does not mean the harm is evenly distributed</h3>
+<p>As the COMPAS case shows, predictive parity can hold while one group absorbs a much larger false-positive rate. Reporting PPV alone, without the accompanying false-positive and false-negative rates, can make a system look fairer than the people affected by it actually experience.</p>
+<h3 id="3-small-subgroups-produce-noisy-ppv-estimates">3. Small subgroups produce noisy PPV estimates</h3>
+<p>PPV is computed only over the positively-predicted subset. If a group is small or rarely flagged positive, the denominator shrinks and the estimate becomes unstable. A large-looking gap in a small subgroup may be sampling noise rather than a real disparity, and a small gap can hide real disparity in a subgroup too small to measure reliably.</p>
+<h3 id="4-it-says-nothing-about-where-the-threshold-is-set">4. It says nothing about where the threshold is set</h3>
+<p>Predictive parity is a property of the decision threshold that produced the predictions, not a property of the underlying score. Moving the threshold up or down can shift PPV without changing whether the underlying risk score itself is fair, so a system can be re-tuned to pass a predictive-parity check without addressing the base-rate disparity driving it.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="equalized-odds.html">What is Equalized Odds?</a> - the error-rate metric predictive parity trades off against once base rates diverge.</li><li><a href="demographic-parity.html">What is Demographic Parity?</a> - the simpler, prior-only metric that ignores ground truth entirely, unlike predictive parity&#x27;s reliance on it.</li><li><a href="fairness-metric-conflicts.html">Why Fairness Metrics Conflict</a> - the full impossibility-theorem write-up that this explainer&#x27;s COMPAS case is a worked instance of.</li><li><a href="disparate-impact.html">What is Disparate Impact?</a> - a rate-based legal threshold that, like predictive parity, can be satisfied while a different fairness property is violated.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-compas"><code>COMPAS/</code></a> - the audit built on the same ProPublica dataset behind the real-world predictive-parity dispute described above.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing" target="_blank" rel="noreferrer noopener">Angwin, J. et al. (2016): Machine Bias</a> - the original ProPublica investigation that surfaced the COMPAS false-positive disparity.</li><li><a href="https://arxiv.org/abs/1610.07524" target="_blank" rel="noreferrer noopener">Chouldechova, A. (2017): Fair Prediction with Disparate Impact</a> - the algebraic proof that predictive parity and error-rate balance conflict when base rates differ.</li><li>Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores, ITCS 2017 - an independent impossibility result reaching the same conclusion via a different route.</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is Model Drift? · Fair Code</title>
+<meta name="description" content="Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.">
+<link rel="canonical" href="https://thefaircode.xyz/explainers/model-drift.html">
+<meta property="og:title" content="What Is Model Drift? · Fair Code">
+<meta property="og:description" content="Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://thefaircode.xyz/explainers/model-drift.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What Is Model Drift? · Fair Code">
+<meta name="twitter:description" content="Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "What Is Model Drift?",
+  "description": "Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.",
+  "url": "https://thefaircode.xyz/explainers/model-drift.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/model-drift.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">What Is Model Drift?</h1>
+      <p class="explainer-lede">A fairness audit is a photograph of a moving room</p>
+      <p class="explainer-lede">Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>A fairness audit is a photograph. Model drift is what happens to the room after the shutter closes.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Model drift</strong> is the ongoing process by which a deployed model&#x27;s real-world accuracy and fairness gap change over calendar time, because the population it scores, or the relationship between that population&#x27;s features and outcomes, keeps moving after the model was trained and audited.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>Every audit in this repo reports a fairness gap as a single number: run <code>unfair.py</code>, get a gap, run <code>fair.py</code>, get a smaller gap, done. That number is true at the moment it was measured, on the data available at that moment. It says nothing about whether the same gap holds six months later. A benefits-eligibility model, a lending model, or a hiring model that clears a bias audit at launch can drift back into an unfair state purely by sitting still while the world around it keeps changing, with no code change, no retraining event, and no alert, unless someone is deliberately watching for it over time.</p>
+<p>This is the practical, operational side of <a href="distribution-shift.html">What Is Distribution Shift?</a>. That explainer catalogs <em>why</em> a training distribution and a deployment distribution can diverge, covariate shift, label shift, concept drift, as a taxonomy, compared with a single reference snapshot against a single current snapshot. Model drift is what that divergence looks like from inside a production system that has to decide, on an ongoing basis and without a labeled &quot;reference period&quot; handed to it in advance, whether now is the moment performance has degraded enough to act on.</p>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="two-ways-a-model-can-go-stale">Two Ways a Model Can Go Stale</h3>
+<p>A deployed model can drift in two distinct ways, and they call for different fixes:</p>
+<ul><li><strong>Data drift</strong>: the incoming feature distribution <code>P(X)</code> shifts, an applicant pool getting older, an economy sliding into recession, a labour market changing shape, while the model&#x27;s learned relationship between features and outcome would still be valid if the input mix hadn&#x27;t moved.</li><li><strong>Concept drift</strong>: the relationship between features and outcome <code>P(Y|X)</code> itself changes. The same income and debt levels that predicted low default risk in a boom predict something different in a downturn. Input data can look identical while what it <em>means</em> has changed underneath the model.</li></ul>
+<p>Conflating the two leads to the wrong fix: retraining on fresh data corrects data drift but does nothing for concept drift if the fresh data isn&#x27;t representative of the new relationship yet, and vice versa.</p>
+<h3 id="from-a-single-snapshot-to-a-monitoring-problem">From a Single Snapshot to a Monitoring Problem</h3>
+<p>Distribution-shift detection, as covered elsewhere in this repo, compares one reference period against one current period with a KS test or a chi-squared test. That answers &quot;has this specific pair of snapshots diverged,&quot; which is exactly right for a one-time before/after comparison. Model drift monitoring asks a different question: watching a metric across a rolling sequence of windows, when does it become clear that a real, sustained change is underway rather than ordinary noise between two arbitrary snapshots. That calls for two additional tools: the <strong>Population Stability Index (PSI)</strong>, a standard industry metric for how much a single feature&#x27;s distribution has moved between two windows, and a <strong>change-point test</strong> like Page-Hinkley, built to flag the moment a stream of values shifts to a new mean rather than just fluctuating around the old one.</p>
+<h2 id="concrete-example-german-credit-lending-audit-03">Concrete Example: German Credit Lending - Audit 03</h2>
+<p>The German Credit Lending dataset has no timestamp column, it is a static, single-release academic dataset of 1,000 applicants, so there is no genuinely chronological split available. What follows treats row order as a stand-in for arrival order, which is a real limitation named explicitly below, not a claim that this specific file exhibits true calendar drift.</p>
+<p>Splitting the 1,000 rows into five sequential windows of 200 and re-measuring the age-based fairness gap (<code>age &lt; 30</code> vs <code>30+</code>, good-credit rate) in each window shows the gap is not a fixed number:</p>
+<p>| Window | Good-credit rate | Share under 30 | Fairness gap (older - younger) | |:-:|:-:|:-:|:-:| | 1 | 71.5% | 33.5% | 4.3% | | 2 | 74.5% | 40.0% | 11.7% | | 3 | 65.5% | 38.5% | 13.6% | | 4 | 69.0% | 38.5% | 15.1% | | 5 | 69.5% | 35.0% | 10.2% |</p>
+<p>The original <code>unfair.py</code> audit reports a single 6.39% gap from one random 80/20 split, not statistically significant at n=1,000 (<code>p=0.348</code>). That one number sits inside a range that swings from 4.3% to 15.1% depending on which 200-row slice happens to get measured. A single audit run can land near either end of that range purely by chance of which rows fall in the test set, which is exactly the instability a rolling-window view is built to catch and a one-shot snapshot cannot.</p>
+<p>Running PSI between the first and last windows on three features gives a concrete read on which ones actually moved:</p>
+<p>| Feature | PSI (window 1 vs window 5) | Read | |---|:-:|---| | <code>age</code> | 0.096 | borderline, just under the conventional 0.10 &quot;no significant shift&quot; cutoff | | <code>credit_amount</code> | 0.119 | moderate shift | | <code>duration</code> | 0.045 | no meaningful shift |</p>
+<p><code>credit_amount</code> is the feature that moved the most between the two windows, ahead of <code>age</code> itself, which is the kind of result a rolling PSI check surfaces and a single covariate-shift test run only once would not necessarily have been pointed at.</p>
+<h2 id="detection-code">Detection Code</h2>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+
+
+def population_stability_index(reference, current, bins=10):
+    &quot;&quot;&quot;
+    Computes the Population Stability Index (PSI) between a reference window
+    and a current window of a single continuous feature. PSI &lt; 0.1 is
+    conventionally read as no significant shift, 0.1-0.25 as a moderate
+    shift worth investigating, and &gt; 0.25 as a shift large enough to
+    warrant retraining or review.
+
+    Parameters:
+        reference: array-like of the feature&#x27;s values in the reference window.
+        current: array-like of the feature&#x27;s values in the current window.
+        bins: number of quantile bins to compare across (default 10).
+
+    Returns:
+        float PSI value. Higher means more distributional movement.
+    &quot;&quot;&quot;
+    breakpoints = np.quantile(reference, np.linspace(0, 1, bins + 1))
+    breakpoints[0], breakpoints[-1] = -np.inf, np.inf
+
+    ref_counts, _ = np.histogram(reference, bins=breakpoints)
+    cur_counts, _ = np.histogram(current, bins=breakpoints)
+
+    ref_pct = np.where(ref_counts == 0, 0.0001, ref_counts / len(reference))
+    cur_pct = np.where(cur_counts == 0, 0.0001, cur_counts / len(current))
+
+    return float(np.sum((cur_pct - ref_pct) * np.log(cur_pct / ref_pct)))
+
+
+def page_hinkley_test(values, delta=0.005, threshold=5.0):
+    &quot;&quot;&quot;
+    Runs the Page-Hinkley change-point test over a sequence of values (e.g.
+    a rolling fairness gap or accuracy measurement, one value per time
+    window), and returns the index of the first point where a sustained
+    change from the running mean is detected, if any.
+
+    Parameters:
+        values: sequence of scalar metric values in time order.
+        delta: allowed slack around the running mean before it counts
+            toward drift (guards against flagging ordinary noise).
+        threshold: cumulative deviation required to declare a change point.
+
+    Returns:
+        index of the detected change point, or None if no change was flagged.
+    &quot;&quot;&quot;
+    running_mean = values[0]
+    cumulative = 0.0
+    min_cumulative = 0.0
+
+    for i, value in enumerate(values):
+        running_mean += (value - running_mean) / (i + 1)
+        cumulative += value - running_mean - delta
+        min_cumulative = min(min_cumulative, cumulative)
+
+        if cumulative - min_cumulative &gt; threshold:
+            return i
+
+    return None
+
+
+def rolling_fairness_gap(df, protected_col, label_col, n_windows=5):
+    &quot;&quot;&quot;
+    Splits a DataFrame into n_windows sequential windows (by row order, a
+    stand-in for time order when no real timestamp exists) and computes the
+    fairness gap in each, to check whether a single-snapshot gap is stable
+    or whether it swings across the deployment period.
+
+    Parameters:
+        df: DataFrame containing protected_col and label_col.
+        protected_col: boolean/0-1 column flagging the disadvantaged group.
+        label_col: 0/1 outcome column.
+        n_windows: number of equal-sized sequential windows.
+
+    Returns:
+        list of per-window fairness gaps (float, one per window).
+    &quot;&quot;&quot;
+    window_size = len(df) // n_windows
+    gaps = []
+    for i in range(n_windows):
+        window = df.iloc[i * window_size:(i + 1) * window_size]
+        rate_disadvantaged = window[window[protected_col] == 1][label_col].mean()
+        rate_baseline = window[window[protected_col] == 0][label_col].mean()
+        gaps.append(abs(rate_baseline - rate_disadvantaged))
+    return gaps
+
+# Usage example
+# gaps = rolling_fairness_gap(df, &#x27;is_young&#x27;, &#x27;target&#x27;, n_windows=5)
+# change_point = page_hinkley_test(gaps)
+# psi_age = population_stability_index(df[&#x27;age&#x27;].iloc[:200], df[&#x27;age&#x27;].iloc[800:])</code></pre>
+<h2 id="limitations-and-trade-offs">Limitations and Trade-offs</h2>
+<h3 id="1-row-order-is-not-real-time">1. Row Order Is Not Real Time</h3>
+<p>The concrete example above uses row position as a proxy for arrival order because the dataset carries no timestamp. That is a demonstration of the <em>method</em>, not evidence that this specific 1,000-row academic release drifts in real deployment. Applying this to a real system requires an actual timestamp column; treating an arbitrary static file&#x27;s row order as calendar time is a mistake this explainer is careful not to make more of than the data supports.</p>
+<h3 id="2-data-drift-and-concept-drift-need-different-fixes">2. Data Drift and Concept Drift Need Different Fixes</h3>
+<p>Retraining on fresh data corrects data drift, a changed input mix, but does nothing for concept drift, a changed relationship, and can even make concept drift worse if the fresh data reflects a new but still-discriminatory process. Knowing which one is happening (see distribution-shift.md&#x27;s covariate/label/concept breakdown) has to come before choosing a response, not after.</p>
+<h3 id="3-monitoring-infrastructure-is-the-bottleneck-not-the-math">3. Monitoring Infrastructure Is the Bottleneck, Not the Math</h3>
+<p>PSI and Page-Hinkley are both cheap to compute. The actual obstacle to catching drift in most real deployments is that nobody is running them on a schedule against fresh production data with a maintained reference window. The gap between &quot;drift is mathematically detectable&quot; and &quot;someone is actually watching for it&quot; is where fairness harm accumulates silently.</p>
+<h3 id="4-threshold-choices-are-judgment-calls">4. Threshold Choices Are Judgment Calls</h3>
+<p>PSI&#x27;s 0.1/0.25 cutoffs and Page-Hinkley&#x27;s <code>delta</code>/<code>threshold</code> parameters are conventions, not laws of nature. A threshold tuned to catch subtle drift early will also fire on ordinary sampling noise; a threshold tuned to avoid false alarms will miss slow, gradual drift until it has already caused real harm. There is no setting that is simultaneously most sensitive and least noisy.</p>
+<h3 id="5-small-windows-inflate-both-psi-and-the-fairness-gap">5. Small Windows Inflate Both PSI and the Fairness Gap</h3>
+<p>With only 200 rows per window here, and a youth subgroup that is a minority of that already-small window, both the PSI values and the fairness gaps above carry real sampling noise. A production system with a much smaller daily volume than this dataset&#x27;s windows would need wider windows or a longer accumulation period before either statistic can be trusted.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="distribution-shift.html">What Is Distribution Shift?</a> - the taxonomy (covariate shift, label shift, concept drift) and the one-shot reference-vs-current statistical tests this explainer&#x27;s rolling, over-time monitoring builds on top of.</li><li><a href="feedback-loop-bias.html">What Is Feedback Loop Bias?</a> - what happens when a drifted model is retrained on its own recent (already-biased) outputs rather than on fresh ground truth, compounding drift across cycles instead of correcting it.</li><li><a href="supervised-learning.html">What Is Supervised Learning?</a> - describes the learned mapping this explainer covers the expiration of, once the population it was trained on stops matching the population it is scoring.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-credit"><code>German Credit Lending/</code></a> - the anchor for this explainer: its <code>unfair.py</code> age/employment fairness gap re-measured across five sequential windows instead of one snapshot, and checked with PSI on three features.</li><li><a href="../index.html#project-readmission"><code>Healthcare Readmission/</code></a> - already used by distribution-shift.md as a decade-spanning, multi-hospital dataset; the same year field there is a candidate for a genuinely time-ordered (rather than row-order-proxy) rolling drift check.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://doi.org/10.1038/s42256-021-00307-0" target="_blank" rel="noreferrer noopener">Roberts et al. (2021): Common Pitfalls and Recommendations for Using Machine Learning to Detect and Prognosticate for COVID-19 Using Chest Radiographs and CT Scans, Nature Machine Intelligence 3, 199-217</a> - a systematic review that screened 2,212 studies down to 61 meeting basic quality criteria, and found none of the resulting models fit for clinical use, in large part because models trained on one hospital&#x27;s scanner and patient population failed to generalise once evaluated outside it.</li><li><a href="https://dl.acm.org/doi/10.1145/2523813" target="_blank" rel="noreferrer noopener">Gama et al. (2014): A Survey on Concept Drift Adaptation, ACM Computing Surveys 46(4)</a> - the standard survey of concept drift detection and adaptation methods, including the change-point approach used above.</li><li><a href="https://www.jstor.org/stable/2333009" target="_blank" rel="noreferrer noopener">Page (1954): Continuous Inspection Schemes, Biometrika 41(1/2)</a> - the original statistical process control paper the Page-Hinkley test is named for.</li></ul>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -50,7 +50,7 @@
     const baseWithoutExt = basename.replace(/\.md$/i, '');
 
     if (/\.md$/i.test(basename) && explainers.some(entry => entry.slug === baseWithoutExt)) {
-      return `explainer.html?slug=${encodeURIComponent(baseWithoutExt)}${suffix}`;
+      return `explainers/${encodeURIComponent(baseWithoutExt)}.html${suffix}`;
     }
 
     if (projectAnchors[cleanPath] || projectAnchors[basename]) {
@@ -59,7 +59,7 @@
     }
 
     if (/\.md$/i.test(basename)) {
-      return `explainer.html?slug=${encodeURIComponent(baseWithoutExt)}${suffix}`;
+      return `explainers/${encodeURIComponent(baseWithoutExt)}.html${suffix}`;
     }
 
     return url.startsWith('../') ? cleanPath : url;
@@ -240,7 +240,7 @@
       const label = String(index + 1).padStart(2, '0');
       return `
         <article class="explainer-card reveal" data-explainer-tags="${escapeHtml(tags)}" data-explainer-text="${escapeHtml(`${entry.title} ${entry.subtitle} ${entry.summary} ${tags}`)}">
-          <a class="explainer-card-link" href="explainer.html?slug=${encodeURIComponent(entry.slug)}" aria-label="Open ${escapeHtml(entry.title)} explainer">
+          <a class="explainer-card-link" href="explainers/${encodeURIComponent(entry.slug)}.html" aria-label="Open ${escapeHtml(entry.title)} explainer">
             <div class="explainer-card-top">
               <div>
                 <div class="explainer-num">Explainer - ${label}</div>

@@ -4,115 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fair Code Explainer</title>
-<meta name="description" content="Open explainer from Fair Code.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=explainers/proxy-variables.html">
 <script>
   (function () {
-    const saved = localStorage.getItem('fc-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('slug') || 'proxy-variables';
+    window.location.replace('explainers/' + encodeURIComponent(slug) + '.html' + window.location.hash);
   })();
 </script>
-<link rel="stylesheet" href="assets/explainers.css">
-<style>
-  :root {
-    --bg: #f4f1e8;
-    --surface: #ebe7d9;
-    --border: #d9d3c0;
-    --border2: #bdb59c;
-    --accent: #a63a22;
-    --accent3: #2f6b4f;
-    --text: #36321f;
-    --muted: #7d7459;
-    --white: #1d1910;
-    --bias-track-bg: #e2dcc9;
-
-    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
-    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
-  }
-
-  html[data-theme="dark"] {
-    --bg: #15130d;
-    --surface: #1c1912;
-    --border: #2e2a1f;
-    --border2: #443e2d;
-    --accent: #cf6f49;
-    --accent3: #79b294;
-    --text: #cfc7b0;
-    --muted: #8d8367;
-    --white: #f1e9d4;
-    --bias-track-bg: #242013;
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.3s, color 0.3s;
-  }
-  a { color: inherit; }
-  ::selection { background: var(--accent); color: var(--bg); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-</style>
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
-<script>
-  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
 </head>
-<body class="explainer-page">
-  <main class="explainer-shell" data-explainer-shell>
-    <div class="explainer-topbar">
-      <a class="explainer-back" href="index.html#explainers">← Back to explainers</a>
-      <div class="explainer-topbar-actions">
-        <a class="explainer-source" data-explainer-source href="https://github.com/yakew7/Fair-Code" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
-      </div>
-    </div>
-
-    <section class="explainer-hero">
-      <div class="explainer-kicker">Explainer</div>
-      <h1 class="explainer-headline" data-explainer-title>Loading…</h1>
-      <p class="explainer-lede" data-explainer-subtitle></p>
-      <p class="explainer-lede" data-explainer-summary></p>
-    </section>
-
-    <p class="explainer-status" data-explainer-status>Loading explainer...</p>
-    <article class="explainer-content" data-explainer-content></article>
-  </main>
-
-  <script src="assets/explainers-data.js"></script>
-  <script src="assets/explainers-ui.js"></script>
-  <script>
-    (function () {
-      const toggle = document.getElementById('explainerThemeToggle');
-      const html = document.documentElement;
-
-      function syncTheme() {
-        const current = html.getAttribute('data-theme') || 'dark';
-        toggle.textContent = current === 'light' ? '☾' : '☀';
-        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
-      }
-
-      syncTheme();
-
-      toggle.addEventListener('click', () => {
-        const current = html.getAttribute('data-theme') || 'dark';
-        const next = current === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('fc-theme', next);
-        syncTheme();
-      });
-    })();
-  </script>
+<body>
+  <p>Redirecting to <a href="explainers/proxy-variables.html">the explainer page</a>…</p>
 </body>
 </html>
