@@ -21,20 +21,6 @@
 
 ---
 
-## Star History
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=Fair-Code%2FFair-Code&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Fair-Code/Fair-Code&type=date&theme=dark&legend=top-left&sealed_token=DpWhUfgsPTqDN2hiQzuOnjp1htkjKfItN3EIgIMXKAgNMkWqoLG9XaeE_1cWmPZCH8O9Y_POQ30_SDG8VFq9R_TDf2ltp7lHOR6zl6rRBF2EZF7MMOJ0n_1iqIxJrliWLk2mWpW01LGyAvBat23iGhRyslYOkn_AwCkkeDxqvaIXtWKrrsO3IiHaK38H" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Fair-Code/Fair-Code&type=date&legend=top-left&sealed_token=DpWhUfgsPTqDN2hiQzuOnjp1htkjKfItN3EIgIMXKAgNMkWqoLG9XaeE_1cWmPZCH8O9Y_POQ30_SDG8VFq9R_TDf2ltp7lHOR6zl6rRBF2EZF7MMOJ0n_1iqIxJrliWLk2mWpW01LGyAvBat23iGhRyslYOkn_AwCkkeDxqvaIXtWKrrsO3IiHaK38H" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Fair-Code/Fair-Code&type=date&legend=top-left&sealed_token=DpWhUfgsPTqDN2hiQzuOnjp1htkjKfItN3EIgIMXKAgNMkWqoLG9XaeE_1cWmPZCH8O9Y_POQ30_SDG8VFq9R_TDf2ltp7lHOR6zl6rRBF2EZF7MMOJ0n_1iqIxJrliWLk2mWpW01LGyAvBat23iGhRyslYOkn_AwCkkeDxqvaIXtWKrrsO3IiHaK38H" />
- </picture>
-</a>
-
----
-
 ## Contents
 
 - [What This Is](#what-this-is)
