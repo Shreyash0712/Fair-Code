@@ -12,7 +12,24 @@ All notable changes to Fair Code are documented here, newest first.
 
 ---
 
-## [1.3.3] - 21 Jul 2026
+## [1.3.4] - 21 Jul 2026
+### Added
+- Explainer: What Is Automation Bias? - `automation-bias.md` created, added to `index.html`, `README.md`, `CONTRIBUTING.md`, and `ROADMAP.md`
+  - Full explainer on the cognitive tendency to defer to automated systems - covering omission and commission errors, default acceptance, and authority transfer
+  - Real-world proof anchored to Audit 01 (COMPAS): the 86.77% fairness gap was not just a statistical problem - it became a civil-rights problem because judges in multiple states treated the score as dispositive, with the Wisconsin Supreme Court's *State v. Loomis* (2016) ruling on COMPAS use at sentencing as the legal case study
+  - Detection code: `automation_bias_audit()` - measures overall human-model agreement rate, override rates by protected group, and whether final human decisions produce a *larger* fairness gap than the model alone (disparity amplification)
+  - Six mitigation strategies (friction by design, counterfactual display, blind review first, disagreement logging, calibrated thresholds per group, human-in-the-loop training) with honest limitations on each
+  - Four numbered limitations, cross-links to ml-bias, proxy-variables, label-bias, confounding-variable, and ai-objectivity-myth, and four further reading citations (Goddard et al. 2012, Skitka et al. 1999, Obermeyer et al. 2019, *State v. Loomis*)
+  - Roadmap item added on the website
+### Changed
+- `README.md`: `automation-bias.md` added to the explainers table, repository structure tree, and What's Next checklist; Traction explainer count updated to 30
+- `CONTRIBUTING.md`: `automation-bias.md` added to the existing explainers table
+- `ROADMAP.md`: Phase 1 checklist gains `automation-bias.md`
+- `assets/explainers-data.json`: automation-bias entry added so the website's Explainers grid, search, and count pick it up
+
+---
+
+
 ### Added
 - `llms.txt` at the site root - a plain-text index of audits, tools, and explainers for AI assistants and crawlers to read directly, following the [llmstxt.org](https://llmstxt.org) convention
 - `Person` schema (author + founder, name "Yash Kewlani") and a `<meta name="author">` tag added to the homepage and all 29 explainer pages, so structured data and AI grounding have an unambiguous, machine-readable attribution source instead of guessing from the GitHub handle

@@ -292,6 +292,7 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `unsupervised-learning.md` | How k-means clustering recovers a demographic split with no label and no protected attribute in the feature set, purely from correlated proxy features |
 | `model-drift.md` | Why a fairness gap measured once at launch can drift after deployment, and how rolling-window monitoring (PSI, Page-Hinkley) catches what a single audit snapshot misses |
 | `selection-bias.md` | Why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy variable is even considered, with a Berkson's-paradox simulation and the German Credit Lending reject-inference gap as proof |
+| `automation-bias.md` | Why judges, recruiters, and clinicians defer to AI scores even when biased - and how automation bias amplifies disparities beyond the model alone, with detection code for disparity amplification in human-in-the-loop decisions |
 
 ### A good explainer should include
 

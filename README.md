@@ -184,6 +184,7 @@ Fair-Code/
 │   ├── unsupervised-learning.md
 │   ├── model-drift.md
 │   └── selection-bias.md
+│   └── automation-bias.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -648,8 +649,9 @@ features = [
 | [What Is Unsupervised Learning?](explainers/unsupervised-learning.md) | How k-means clustering on the Benefits Denial dataset recovers a strong sex split and a real race split without sex, race, or national origin ever being part of the feature set |
 | [What Is Model Drift?](explainers/model-drift.md) | Why a fairness gap measured once at launch isn't guaranteed to hold months later, and how rolling-window monitoring (PSI, Page-Hinkley) catches the drift a single audit snapshot can miss |
 | [What Is Selection Bias?](explainers/selection-bias.md) | Why the process that decides who enters a dataset at all can bias a model before any protected attribute or proxy is even considered - and why the German Credit Lending dataset's 700/300 split contains zero rejected applicants |
+| [What Is Automation Bias?](explainers/automation-bias.md) | Why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces |
 
----
+ ---
 
 ## Methodology
 
@@ -818,6 +820,7 @@ directly. Run the tests with `pytest tests/`.
 - [x] Explainer: What Is Unsupervised Learning?
 - [x] Explainer: What Is Model Drift?
 - [x] Explainer: What Is Selection Bias?
+- [x] Explainer: What Is Automation Bias?
 - [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
@@ -845,7 +848,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Watching | 7 |
 | Combined Social Reach (Instagram + LinkedIn) | ~16K |
 | Code Audits Published | 7 |
-| Explainers Published | 29 |
+| Explainers Published | 30 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 
