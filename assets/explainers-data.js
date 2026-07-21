@@ -277,5 +277,16 @@ window.FAIR_CODE_EXPLAINERS = [
       "data",
       "detection"
     ]
+  },
+  {
+    "slug": "automation-bias",
+    "title": "What Is Automation Bias?",
+    "subtitle": "When humans defer to algorithms, bias gets automated too.",
+    "summary": "Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.",
+    "tags": [
+      "detection",
+      "metrics",
+      "explainability"
+    ]
   }
 ];
