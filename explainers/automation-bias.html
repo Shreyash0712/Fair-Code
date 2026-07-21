@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is Automation Bias? · Fair Code</title>
+<meta name="description" content="Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.">
+<link rel="canonical" href="https://www.thefaircode.xyz/explainers/automation-bias.html">
+<meta property="og:title" content="What Is Automation Bias? · Fair Code">
+<meta property="og:description" content="Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.">
+<meta property="og:type" content="article">
+<meta name="author" content="Yash Kewlani">
+<meta property="og:url" content="https://www.thefaircode.xyz/explainers/automation-bias.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What Is Automation Bias? · Fair Code">
+<meta name="twitter:description" content="Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const saved = localStorage.getItem('fc-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "author": {
+    "@type": "Person",
+    "name": "Yash Kewlani",
+    "url": "https://github.com/yakew7"
+  },
+  "name": "What Is Automation Bias?",
+  "description": "Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.",
+  "url": "https://www.thefaircode.xyz/explainers/automation-bias.html",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Fair Code Explainers",
+    "url": "https://www.thefaircode.xyz/index.html#explainers"
+  }
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/automation-bias.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">What Is Automation Bias?</h1>
+      <p class="explainer-lede">When humans defer to algorithms, bias gets automated too.</p>
+      <p class="explainer-lede">Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.</p>
+    </section>
+
+    <article class="explainer-content"><h1 id="what-is-automation-bias">What Is Automation Bias?</h1>
+<blockquote><p><em>The tendency to trust an AI recommendation more than human judgment - even when the AI is wrong.</em></p></blockquote>
+<hr>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Automation bias</strong> is the cognitive tendency to defer to automated systems, treating their outputs as more objective, accurate, or authoritative than human judgment - even when the automation is known to be fallible, biased, or trained on flawed data.</p>
+<hr>
+<h2 id="why-it-matters">Why This Matters</h2>
+<p>Automation bias is the bridge between a model&#x27;s statistical unfairness and its real-world harm. A model can have a documented 15% fairness gap, but if every decision-maker treats its output as a verdict rather than a signal, that gap becomes a discriminatory outcome at scale.</p>
+<p>This is not a theoretical risk. It has been documented in:</p>
+<ul><li><strong>Clinical decision support</strong>: Physicians override correct clinical judgment to follow AI alerts that are wrong 30-50% of the time</li><li><strong>Criminal sentencing</strong>: Judges follow algorithmic risk scores even when they privately disagree, because &quot;the computer says so&quot;</li><li><strong>Hiring</strong>: Recruiters filter resumes by AI rank without reviewing the underlying profiles</li><li><strong>Loan underwriting</strong>: Officers approve or deny based on score thresholds they cannot explain or contest</li></ul>
+<p>The bias in the model is a <em>statistical</em> problem. Automation bias is the <em>human</em> problem that lets it leave the lab.</p>
+<hr>
+<h2 id="common-manifestations">Common Manifestations</h2>
+<table><thead><tr><th>Pattern</th><th>Description</th><th>Real-World Consequence</th></tr></thead><tbody>
+<tr><td><strong>Omission error</strong></td><td>Failing to act because the system didn&#x27;t flag it</td><td>High-risk patient discharged because no alert fired</td></tr>
+<tr><td><strong>Commission error</strong></td><td>Acting on a system recommendation that contradicts evidence</td><td>Denying a qualified applicant because the score said &quot;high risk&quot;</td></tr>
+<tr><td><strong>Default acceptance</strong></td><td>Treating the default output as the decision</td><td>Auto-approving or auto-denying based on threshold without review</td></tr>
+<tr><td><strong>Authority transfer</strong></td><td>&quot;The algorithm is objective&quot; becomes a shield against accountability</td><td>No appeal path because &quot;the math decided&quot;</td></tr>
+</tbody></table>
+<hr>
+<h2 id="real-world-proof-compas-in-the-courtroom">Real-World Proof: COMPAS in the Courtroom</h2>
+<p>The COMPAS risk assessment is the canonical example. ProPublica&#x27;s 2016 analysis showed:</p>
+<ul><li>Black defendants were flagged high-risk at <strong>87%</strong> vs <strong>0.4%</strong> for white defendants</li><li>The fairness gap was <strong>86.77%</strong> before mitigation</li></ul>
+<p>But the deeper problem was not just the score - it was how the score was used. Judges in multiple states treated COMPAS as a sentencing guideline rather than a risk indicator. The Wisconsin Supreme Court (<em>State v. Loomis</em>, 2016) ruled that COMPAS could be used at sentencing <em>if</em> the court was informed of its limitations. In practice, the score was often treated as dispositive.</p>
+<blockquote><p><strong>Key insight</strong>: A biased model with no automation bias is a research artifact. A biased model with automation bias is a civil rights violation.</p></blockquote>
+<hr>
+<h2 id="why-humans-defer-to-machines">Why Humans Defer to Machines</h2>
+<h3 id="1-perceived-objectivity">1. Perceived Objectivity</h3>
+<p>&quot;The algorithm doesn&#x27;t have prejudices.&quot; This confuses <em>lack of intent</em> with <em>lack of bias</em>. A model trained on biased data encodes that bias mathematically - it does not &quot;remove&quot; it.</p>
+<h3 id="2-cognitive-offloading">2. Cognitive Offloading</h3>
+<p>High-stakes decisions are mentally taxing. An AI score offers a cognitive shortcut: a single number that feels like a conclusion.</p>
+<h3 id="3-accountability-diffusion">3. Accountability Diffusion</h3>
+<p>&quot;If the algorithm recommended it, it&#x27;s not my fault.&quot; This is the moral hazard of automated decision support - it creates a responsibility gap.</p>
+<h3 id="4-complexity-theater">4. Complexity Theater</h3>
+<p>Black-box models (neural nets, gradient boosting) are presented as too complex to question. The opacity becomes a feature, not a bug - it discourages challenge.</p>
+<hr>
+<h2 id="detection-code">Detection Code: Measuring Automation Bias in Practice</h2>
+<p>Automation bias is a human-factor phenomenon, but its <em>consequences</em> are measurable in model outputs when paired with human decisions.</p>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from scipy.stats import chi2_contingency
+
+def automation_bias_audit(
+    df: pd.DataFrame,
+    model_score_col: str,
+    human_decision_col: str,
+    outcome_col: str,
+    protected_attr: str,
+    threshold: float = 0.5
+) -&gt; dict:
+    &quot;&quot;&quot;
+    Audit whether human decisions defer to model scores
+    in ways that amplify disparities across protected groups.
+
+    Returns:
+    - agreement_rate: how often human == model_binary
+    - override_rate_by_group: where humans disagreed with model
+    - disparity_amplification: whether human decisions are *more*
+      disparate than model scores alone
+    &quot;&quot;&quot;
+    df = df.copy()
+    df[&#x27;model_binary&#x27;] = (df[model_score_col] &gt;= threshold).astype(int)
+
+    # Overall agreement
+    agreement = (df[human_decision_col] == df[&#x27;model_binary&#x27;]).mean()
+
+    # Override rates by protected group
+    override_rates = {}
+    for group_val in df[protected_attr].unique():
+        mask = df[protected_attr] == group_val
+        human = df.loc[mask, human_decision_col]
+        model = df.loc[mask, &#x27;model_binary&#x27;]
+        override_rates[str(group_val)] = (human != model).mean()
+
+    # Disparity in model scores
+    model_rates = df.groupby(protected_attr)[&#x27;model_binary&#x27;].mean()
+    model_gap = model_rates.max() - model_rates.min()
+
+    # Disparity in final human decisions
+    human_rates = df.groupby(protected_attr)[human_decision_col].mean()
+    human_gap = human_rates.max() - human_rates.min()
+
+    return {
+        &#x27;overall_agreement_rate&#x27;: round(agreement, 3),
+        &#x27;override_rate_by_group&#x27;: {k: round(v, 3) for k, v in override_rates.items()},
+        &#x27;model_fairness_gap&#x27;: round(model_gap, 3),
+        &#x27;human_fairness_gap&#x27;: round(human_gap, 3),
+        &#x27;disparity_amplified&#x27;: human_gap &gt; model_gap,
+        &#x27;amplification_factor&#x27;: round(human_gap / model_gap, 2) if model_gap &gt; 0 else None
+    }
+
+# Example: Simulated hiring data where recruiters follow AI rank
+np.random.seed(42)
+n = 1000
+df = pd.DataFrame({
+    &#x27;candidate_id&#x27;: range(n),
+    &#x27;gender&#x27;: np.random.choice([&#x27;M&#x27;, &#x27;F&#x27;], n, p=[0.5, 0.5]),
+    &#x27;true_skill&#x27;: np.random.normal(0, 1, n),
+    # Biased model: underestimates women&#x27;s skill by 0.3 std
+    &#x27;ai_score&#x27;: np.where(
+        df[&#x27;gender&#x27;] == &#x27;F&#x27;,
+        df[&#x27;true_skill&#x27;] - 0.3 + np.random.normal(0, 0.5, n),
+        df[&#x27;true_skill&#x27;] + np.random.normal(0, 0.5, n)
+    ),
+    # Human decision: 80% follow AI, 20% use own judgment
+    &#x27;human_hire&#x27;: np.where(
+        np.random.random(n) &lt; 0.8,
+        (df[&#x27;ai_score&#x27;] &gt;= 0).astype(int),
+        (df[&#x27;true_skill&#x27;] &gt;= 0).astype(int)
+    ),
+    &#x27;actual_performance&#x27;: (df[&#x27;true_skill&#x27;] &gt;= 0).astype(int)
+})
+
+result = automation_bias_audit(
+    df, &#x27;ai_score&#x27;, &#x27;human_hire&#x27;, &#x27;actual_performance&#x27;, &#x27;gender&#x27;
+)
+print(result)
+# Typical output:
+# {
+#   &#x27;overall_agreement_rate&#x27;: 0.80,
+#   &#x27;override_rate_by_group&#x27;: {&#x27;M&#x27;: 0.18, &#x27;F&#x27;: 0.22},
+#   &#x27;model_fairness_gap&#x27;: 0.18,
+#   &#x27;human_fairness_gap&#x27;: 0.24,
+#   &#x27;disparity_amplified&#x27;: True,
+#   &#x27;amplification_factor&#x27;: 1.33
+# }</code></pre>
+<p><strong>Interpretation</strong>: When humans defer to a biased model 80% of the time, the final decision gap (24%) exceeds the model&#x27;s own gap (18%). Automation bias <em>amplified</em> the disparity by 33%.</p>
+<hr>
+<h2 id="mitigation-strategies">Mitigation Strategies</h2>
+<table><thead><tr><th>Strategy</th><th>Mechanism</th><th>Limitation</th></tr></thead><tbody>
+<tr><td><strong>Friction by design</strong></td><td>Require explicit override justification; show confidence intervals, not just scores</td><td>Adds workflow time; may be bypassed under pressure</td></tr>
+<tr><td><strong>Counterfactual display</strong></td><td>&quot;If this applicant were male, the score would be X&quot;</td><td>Requires causal model; contested in court</td></tr>
+<tr><td><strong>Blind review first</strong></td><td>Human evaluates case <em>before</em> seeing AI score</td><td>Not always feasible (e.g., triage)</td></tr>
+<tr><td><strong>Disagreement logging</strong></td><td>Track every human-vs-model divergence for audit</td><td>Passive; does not prevent harm in real time</td></tr>
+<tr><td><strong>Calibrated thresholds per group</strong></td><td>Different decision thresholds to equalize outcomes</td><td>Legal risk (disparate treatment); hard to justify</td></tr>
+<tr><td><strong>Human-in-the-loop training</strong></td><td>Simulate edge cases where model is wrong; train reviewers to catch them</td><td>Resource-intensive; decay over time</td></tr>
+</tbody></table>
+<hr>
+<h2 id="the-deeper-problem">The Deeper Problem: Automation Bias as a Design Choice</h2>
+<p>Automation bias is not a bug in human cognition - it is a predictable response to how AI systems are <em>designed and presented</em>.</p>
+<ul><li>A score displayed as &quot;Risk: HIGH (92%)&quot; invites deference.</li><li>A score displayed as &quot;Model estimate: 0.62 [CI: 0.41-0.83], trained on data with known racial disparity of 15%, not validated for this population&quot; invites scrutiny.</li></ul>
+<p>The same model, two different interfaces. One produces automation bias. The other produces informed human judgment.</p>
+<blockquote><p><strong>Fixing the model is necessary. Fixing the interface is equally necessary.</strong></p></blockquote>
+<hr>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="ml-bias.html">What Is Machine Learning Bias?</a> - the four entry points through which bias enters a model</li><li><a href="proxy-variables.html">What Is a Proxy Variable?</a> - why removing protected attributes is not enough</li><li><a href="label-bias.html">What Is Label Bias?</a> - how historical decisions corrupt training labels</li><li><a href="confounding-variable.html">What Is a Confounding Variable?</a> - hidden causes that create spurious correlations</li><li><a href="ai-objectivity-myth.html">The Biggest Myth About AI Objectivity</a> - why &quot;it&#x27;s just math&quot; is not a defense</li></ul>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://doi.org/10.1136/amiajnl-2011-000089" target="_blank" rel="noreferrer noopener">Goddard, K., Roudsari, A., &amp; Wyatt, J.C. (2012): Automation Bias: A Systematic Review of Frequency, Effect Mediators, and Mitigators, Journal of the American Medical Informatics Association 19(1), 121-127</a> - the definitive literature review on automation bias in clinical settings</li><li><a href="https://doi.org/10.1006/ijhc.1999.0252" target="_blank" rel="noreferrer noopener">Skitka, L.J., Mosier, K.L., &amp; Burdick, M. (1999): Does Automation Bias Decision-Making?, International Journal of Human-Computer Studies 51(5), 991-1006</a> - the foundational experimental paper defining automation bias</li><li><a href="https://doi.org/10.1126/science.aax2342" target="_blank" rel="noreferrer noopener">Obermeyer, Z., Powers, B., Vogeli, C., &amp; Mullainathan, S. (2019): Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations, Science 366(6464), 447-453</a> - shows how an algorithm&#x27;s cost-prediction label created racial bias that clinicians then automated</li><li><a href="https://www.wicourts.gov/sc/opinion/DisplayDocument.pdf?content=pdf&amp;seqNo=188417" target="_blank" rel="noreferrer noopener">State v. Loomis, 881 N.W.2d 749 (Wis. 2016)</a> - Wisconsin Supreme Court ruling on COMPAS use at sentencing</li></ul>
+<hr>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || 'dark';
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>
