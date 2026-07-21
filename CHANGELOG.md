@@ -4,11 +4,27 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.2-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.3-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.3.3] - 21 Jul 2026
+### Added
+- `llms.txt` at the site root - a plain-text index of audits, tools, and explainers for AI assistants and crawlers to read directly, following the [llmstxt.org](https://llmstxt.org) convention
+- `Person` schema (author + founder, name "Yash Kewlani") and a `<meta name="author">` tag added to the homepage and all 29 explainer pages, so structured data and AI grounding have an unambiguous, machine-readable attribution source instead of guessing from the GitHub handle
+### Fixed
+- Sitemap/canonical host mismatch: every `<link rel="canonical">`, `og:url`, and JSON-LD `url` field, plus `sitemap.xml` and the `Sitemap:` line in `robots.txt`, referenced the bare apex domain (`thefaircode.xyz`), which 308-redirects to `www.thefaircode.xyz` - the host that actually serves the site. Google Search Console rejected the sitemap ("Sitemap could not be read") because none of its listed URLs matched the host it was fetched from. All 33 affected files now consistently use `www.thefaircode.xyz`
+### Changed
+- `robots.txt`, canonical URLs, and homepage JSON-LD structured data added (`WebSite`/`Organization` schema) to make the site properly crawlable for search and AI discovery
+- All 29 explainer pages made crawlable for SEO/AI search (canonical tags, `og:type=article`, per-page `DefinedTerm` JSON-LD)
+- `METRICS.md`: new 2026-W30 snapshot - stars 27 -> 38, forks 8 -> 14, contributors 7 -> 9, code audits 6 -> 7, social reach ~10K -> ~16K; **Watching** (7) tracked for the first time; targets table refreshed to match
+- `ROADMAP.md`: traction table refreshed (38 stars, 9 contributors, 14 forks, 7 watching), Phase 4 status updated to 9 external contributors
+- `README.md`: Traction table refreshed to match METRICS.md; Star History section removed
+- `CITATION.cff`: version `1.3.2` → `1.3.3`; release date updated to 2026-07-21
 
 ---
 
