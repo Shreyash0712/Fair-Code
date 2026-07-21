@@ -2,9 +2,10 @@
 
 # Fair Code - Metrics Tracker
 
-![Stars](https://img.shields.io/badge/Stars-27-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-7-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-8-orange?style=flat-square)
+![Stars](https://img.shields.io/badge/Stars-38-brightgreen?style=flat-square&logo=github)
+![Contributors](https://img.shields.io/badge/Contributors-9-blue?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-14-orange?style=flat-square)
+![Watching](https://img.shields.io/badge/Watching-7-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-29-blueviolet?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
@@ -18,7 +19,7 @@ Weekly snapshot of project health. Updated every Friday.
 
 ## How to Update
 
-1. Check GitHub for stars, forks, and contributor count
+1. Check GitHub for stars, forks, watchers, and contributor count
 2. Check Instagram and LinkedIn for combined impressions/followers
 3. Count issues closed this week
 4. Count code audits published this week
@@ -28,12 +29,15 @@ Weekly snapshot of project health. Updated every Friday.
 
 ## Weekly Metrics
 
-| Week | Stars | Forks | Contributors | Posts | Social Views | Issues Closed | Code Audits |
-|------|------:|------:|-------------:|------:|-------------:|--------------:|------------:|
-| 2026-W26 (baseline) | 27 | 8 | 7 | - | ~10K total | - | 6 total |
-| 2026-W27 | 27 | 8 | 7 | - | ~10K total | - | 6 total |
+| Week | Stars | Forks | Watching | Contributors | Posts | Social Views | Issues Closed | Code Audits |
+|------|------:|------:|---------:|-------------:|------:|-------------:|--------------:|------------:|
+| 2026-W26 (baseline) | 27 | 8 | - | 7 | - | ~10K total | - | 6 total |
+| 2026-W27 | 27 | 8 | - | 7 | - | ~10K total | - | 6 total |
+| 2026-W30 | 38 | 14 | 7 | 9 | - | ~16K total | 3 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
+>
+> **2026-W30 - v1.3.0-v1.3.2 shipped since last snapshot:** Tenant Screening audit (#07) and intersectional bias analysis (v1.3.0), Unsupervised Learning + Model Drift explainers (v1.3.1), Selection Bias explainer (v1.3.2), plus author attribution/schema, `llms.txt`, and a canonical-URL/sitemap fix for AI-crawler and Google Search Console indexing. Watching tracked for the first time this week. **Gap notice:** no snapshot was logged for three weeks (W28-W29) - issues-closed reflects the trailing 7 days, not the full gap.
 
 ---
 
@@ -41,12 +45,13 @@ Weekly snapshot of project health. Updated every Friday.
 
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
-| Stars | 27 | 50+ | End of 2026 |
-| Forks | 8 | 15+ | End of 2026 |
-| Contributors | 7 | 10+ | End of 2026 |
-| Social reach | ~10K | 10K/mo | Q3 2026 |
-| Issues closed | - | Track weekly | Ongoing |
-| Code audits | 6 | 8+ | End of 2026 |
+| Stars | 38 | 50+ | End of 2026 |
+| Forks | 14 | 15+ | End of 2026 |
+| Watching | 7 | 15+ | End of 2026 |
+| Contributors | 9 | 10+ | End of 2026 |
+| Social reach | ~16K | 10K/mo | Q3 2026 |
+| Issues closed | 3 (past 7 days) | Track weekly | Ongoing |
+| Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 29 | 30+ | End of 2026 |
 
 ---
@@ -54,7 +59,8 @@ Weekly snapshot of project health. Updated every Friday.
 ## Notes
 
 - Social views = combined Instagram + LinkedIn impressions
-- Contributors = external contributors only (excluding Yash)
+- Contributors = external contributors only (excluding Yash), via GitHub's contributors API
+- Watching = GitHub repo watchers/subscribers, via GitHub's repo API
 - Issues closed = issues merged or resolved that week, not total open
 - Code audits = cumulative total published in repo
 - Explainers = cumulative total in `explainers/`

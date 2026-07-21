@@ -24,9 +24,9 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 **Current traction (July 2026):**
 
-| Stars | Contributors | Forks | Social Reach | Audits | Explainers | CI |
-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 37+ | 8+ | 13+ | 16K+ | 7 | 29 | ✅ every push/PR |
+| Stars | Contributors | Forks | Watching | Social Reach | Audits | Explainers | CI |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| 38 | 9 | 14 | 7 | 16K+ | 7 | 29 | ✅ every push/PR |
 
 ---
 
@@ -107,7 +107,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 
 ## Phase 4 - Contributor Expansion 🔄 In Progress
 
-**Status: Active - 7 external contributors**
+**Status: Active - 9 external contributors**
 
 Goal: grow to 10+ contributors with quality-controlled contributions.
 
@@ -120,7 +120,7 @@ Goal: grow to 10+ contributors with quality-controlled contributions.
 - [x] First-interaction workflow (greets new contributors)
 - [x] 10–15 labelled issues open at all times
 - [x] Contributor list in README
-- [ ] METRICS.md tracking contributor growth weekly
+- [x] METRICS.md tracking contributor growth weekly
 
 ---
 
