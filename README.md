@@ -34,6 +34,7 @@
 - [Getting Started](#getting-started)
 - [Open Dataset Profiler](#open-dataset-profiler)
 - [Benchmark Harness](#benchmark-harness)
+- [Reproducibility & Paper Freeze](#reproducibility--paper-freeze)
 - [Tech Stack](#tech-stack)
 - [Traction](#traction)
 - [Contributors](#contributors)
@@ -161,11 +162,23 @@ Fair-Code/
 │   ├── test_compare.py                  #   drift / comparison tests
 │   ├── test_proxy.py                    #   proxy-hint tests (scipy)
 │   └── test_significance.py             #   significance-module tests
-├── results/                              # `faircode benchmark` output - what a paper would cite
+├── results/                              # `faircode benchmark` output - LIVE, changes on every rerun
 │   ├── results_fairness.csv
 │   ├── results_performance.csv
 │   ├── summary.csv
 │   └── figures/*.png
+├── paper/
+│   └── results-frozen/                  # FROZEN snapshot - what a paper actually cites
+│       ├── MANIFEST.md                  #   git commit, package versions, exact audit.yaml list
+│       ├── results_fairness.csv
+│       ├── results_performance.csv
+│       ├── summary.csv
+│       ├── requirements-lock.txt
+│       └── figures/*.png
+├── scripts/
+│   ├── build_explainers.py              # regenerates explainer HTML/JS/sitemap from the JSON source
+│   ├── render_terminal_png.py            # renders captured stdout as a terminal-style PNG
+│   └── freeze_paper_results.py          # snapshots results/ -> paper/results-frozen/
 ├── pyproject.toml                       # packages the `faircode` console script
 │
 ├── explainers/
@@ -210,7 +223,8 @@ Fair-Code/
 │   └── profiler-engine.js, profiler-ui.js, profiler-compare.js, profiler.css   # client-side profiler
 ├── index.html                           # live at thefaircode.xyz
 ├── profiler.html                        # Open Dataset Profiler - client-side web tool
-└── requirements.txt
+├── requirements.txt                     # loose version ranges - for everyday development
+└── requirements-lock.txt                # exact `pip freeze` - for reproducing results/
 ```
 
 ---
@@ -816,6 +830,43 @@ Writes `results_fairness.csv`, `results_performance.csv`, `summary.csv`, and one
 the CSVs, so re-plotting a different metric never requires re-running a model). One code path, same
 seed, same splits, same metric definitions, for every domain - that uniformity is what makes "we
 measured every audit identically" a true statement rather than an assertion.
+
+---
+
+## Reproducibility & Paper Freeze
+
+The repo keeps changing - new audits, new strategies, reruns with more resamples. A paper cites
+specific numbers. These have to be kept separate, or "seven domains" quietly becomes "whatever was
+in the repo the week someone read the PDF."
+
+**The randomness is pinned.** All seven manifests use `random_state: 42`. Every model family
+(`faircode/models.py`), every train/test split (stratified), and every bootstrap resample /
+permutation shuffle (`faircode/significance.py`, `faircode/metrics.py`) takes that seed explicitly -
+nothing reads numpy's global random state, so two runs of the same manifest against the same data
+are bit-for-bit identical. **Do not change a manifest's `random_state`** on a run whose numbers are
+cited anywhere.
+
+**The environment is pinned.** [`requirements-lock.txt`](requirements-lock.txt) is an exact
+`pip freeze` of the environment that produced the committed `results/` - not the loose version
+ranges in `requirements.txt`, which drift over time. Reproduce it with
+`pip install -r requirements-lock.txt`. At freeze time this repo used **Python 3.13.2**,
+**scikit-learn 1.8.0**, **fairlearn 0.14.0**, **pandas 3.0.2**.
+
+**The cited results are frozen, separately from the live ones.** `results/` at the repo root is
+live - it changes every time someone reruns the harness or a new audit lands. `paper/results-frozen/`
+does not. When the numbers you're about to cite are final:
+
+```bash
+python3 scripts/freeze_paper_results.py --tag v1.0-paper
+```
+
+This copies `results/` into `paper/results-frozen/` alongside a `MANIFEST.md` recording the exact
+git commit, the Python/scikit-learn/fairlearn/pandas/numpy versions, and the exact list of
+`audit.yaml` manifests included - so "seven domains" is a defined, reproducible set tied to a
+specific commit, not an informal count. It prints (but never runs) the `git tag` /
+`git push --tags` command needed to actually tag the release, since tagging is a deliberate,
+public action this script shouldn't take on its own. A paper cites `paper/results-frozen/`;
+future contributed audits change `results/` but never that snapshot.
 
 ---
 

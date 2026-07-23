@@ -15,6 +15,16 @@ what makes it literally true rather than an assertion in a write-up.
 Contributors add a dataset + audit.yaml (Layer 1). They never touch this
 module. faircode.figures reads this module's output tables to render the
 paper figures - it never re-runs a model.
+
+Reproducibility: every manifest's `random_state` (all seven ship with 42),
+every model family (faircode.models), and every bootstrap/permutation draw
+(faircode.significance, faircode.metrics) already take an explicit seed -
+nothing here reads numpy's global random state. GLOBAL_SEED exists as a
+defense-in-depth seed for any future strategy/model that isn't explicitly
+seeded; it is not what makes today's runs reproducible, the explicit seeds
+threaded through every call are. Do not change a manifest's random_state on
+a run whose numbers are cited anywhere - see "Reproducibility & Paper
+Freeze" in README.md before regenerating results/ for a citation.
 """
 
 from __future__ import annotations
@@ -39,6 +49,8 @@ from .strategies import (
     predict_post_processing,
     strategy_features,
 )
+
+GLOBAL_SEED = 42
 
 
 def _load_dataset(manifest):
@@ -169,6 +181,7 @@ def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None
 def run_benchmark(root=".", audits=None, n_resamples=2000, n_permutations=2000):
     """Discover every audit.yaml under root (or use explicit manifest paths)
     and run them all. Returns (fairness_df, performance_df) across every audit."""
+    np.random.seed(GLOBAL_SEED)  # defense-in-depth; see module docstring
     paths = [Path(a) for a in audits] if audits else discover_manifests(root)
     all_fairness = []
     all_performance = []

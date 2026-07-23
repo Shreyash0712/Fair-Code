@@ -34,6 +34,13 @@ random_state: 42                # optional, default 42
 test_size: 0.2                  # optional, default 0.2
 ```
 
+All seven shipped manifests use `random_state: 42` - this is a hard convention, not a coincidence.
+Every model family, train/test split, bootstrap resample, and permutation shuffle takes its seed
+from this one value (see `faircode/benchmark.py`'s module docstring), so two runs of the same
+manifest against the same data are bit-for-bit identical. **Do not change a manifest's
+`random_state` on a run whose numbers are cited anywhere** - see "Reproducibility & Paper Freeze" in
+[README.md](../README.md#reproducibility--paper-freeze) before regenerating `results/` for a citation.
+
 ## `row_filters` (optional)
 
 Applied in order, each narrowing the dataset further (AND semantics). Every filter needs `column`
