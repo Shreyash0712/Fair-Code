@@ -20,3 +20,6 @@ fairlearn>=0.14.0      # MetricFrame, equalized odds, demographic parity ratio
 
 # ── Visualisation ─────────────────────────────────────────────────────────
 matplotlib>=3.11.0     # Bias bar charts, fairness trade-off plots
+
+# ── Benchmark harness (faircode benchmark / faircode/audit.yaml manifests) ─
+pyyaml>=6.0            # parses audit.yaml manifests

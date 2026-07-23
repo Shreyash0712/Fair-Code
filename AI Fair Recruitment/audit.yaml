@@ -1,0 +1,39 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: ai_fair_recruitment
+title: "AI Fair Recruitment - Hiring Bias"
+
+dataset:
+  path: AI_Fair_Recruitment_Dataset.csv
+
+row_filters:
+  - column: Hiring_Decision
+    notna: true
+  - column: Gender
+    notna: true
+  - column: Age
+    notna: true
+  - column: Experience_Years
+    notna: true
+  - column: Technical_Test_Score
+    notna: true
+
+target:
+  column: Hiring_Decision
+  method: binary
+
+protected_attributes:
+  - name: gender
+    type: categorical
+    column: Gender
+    disadvantaged_values: [Female]
+    advantaged_values: [Male]
+
+core_features:
+  - Experience_Years
+  - Technical_Test_Score
+
+proxy_features:
+  - Age
+
+random_state: 42
+test_size: 0.2

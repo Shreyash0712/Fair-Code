@@ -1,0 +1,44 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: german_credit_lending
+title: "German Credit Lending - Age Bias"
+
+dataset:
+  path: credit_customers.csv
+
+target:
+  column: class
+  method: equals
+  value: good
+
+protected_attributes:
+  - name: age
+    type: numeric_threshold
+    column: age
+    threshold: 30
+    disadvantaged: below
+
+core_features:
+  - checking_status
+  - duration
+  - credit_history
+  - purpose
+  - credit_amount
+  - savings_status
+  - installment_commitment
+  - personal_status
+  - other_parties
+  - residence_since
+  - property_magnitude
+  - other_payment_plans
+  - housing
+  - existing_credits
+  - job
+  - num_dependents
+  - own_telephone
+  - foreign_worker
+
+proxy_features:
+  - employment
+
+random_state: 42
+test_size: 0.2

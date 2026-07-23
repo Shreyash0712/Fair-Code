@@ -1,0 +1,36 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: insurance_denial
+title: "Insurance Denial - Age and Gender Bias"
+
+dataset:
+  path: insurance.csv
+
+target:
+  column: claim
+  method: above_median
+
+protected_attributes:
+  - name: age
+    type: numeric_threshold
+    column: age
+    threshold: 35
+    disadvantaged: below
+
+  - name: gender
+    type: categorical
+    column: gender
+    disadvantaged_values: [female]
+    advantaged_values: [male]
+
+core_features:
+  - bloodpressure
+  - children
+  - region
+
+proxy_features:
+  - bmi
+  - smoker
+  - diabetic
+
+random_state: 42
+test_size: 0.2

@@ -7,9 +7,14 @@
     faircode profile data.csv --html report.html
     faircode compare train.csv prod.csv
     faircode compare train.csv prod.csv --json
+    faircode benchmark
+    faircode benchmark --out results/
+    faircode benchmark COMPAS/audit.yaml "German Credit Lending/audit.yaml"
 
 Uses only stdlib argparse + pandas (no heavyweight profiling dependency).
-Reading .xlsx additionally requires the optional 'openpyxl' extra.
+Reading .xlsx additionally requires the optional 'openpyxl' extra. The
+`benchmark` command additionally requires the optional 'benchmark' extra
+(`pip install faircode[benchmark]`: scikit-learn + pyyaml).
 """
 
 from __future__ import annotations
@@ -99,6 +104,22 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("csv_b", help="current dataset B (.csv, .tsv, or .xlsx)")
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
 
+    b = sub.add_parser("benchmark",
+                       help="run the cross-domain fairness benchmark harness over every audit.yaml")
+    b.add_argument("manifests", nargs="*", metavar="audit.yaml",
+                   help="explicit manifest paths (default: discover */audit.yaml under --root)")
+    b.add_argument("--root", default=".", metavar="PATH",
+                   help="directory to search for */audit.yaml (default: current directory)")
+    b.add_argument("--out", default="benchmark_results", metavar="DIR",
+                   help="output directory for results.csv, summary.csv, and plots "
+                        "(default: benchmark_results)")
+    b.add_argument("--n-resamples", type=int, default=2000, metavar="N",
+                   help="bootstrap resamples per metric (default: 2000)")
+    b.add_argument("--n-permutations", type=int, default=2000, metavar="N",
+                   help="permutation-test shuffles per metric (default: 2000)")
+    b.add_argument("--no-plots", action="store_true",
+                   help="skip writing the per-audit ladder PNGs (no matplotlib needed)")
+
     args = parser.parse_args(argv)
 
     if args.command == "profile":
@@ -154,6 +175,28 @@ def main(argv: list[str] | None = None) -> int:
             print(to_json(result))
         else:
             print(compare_to_terminal(result))
+        return 0
+
+    if args.command == "benchmark":
+        try:
+            from .benchmark import run_benchmark, write_report
+        except ImportError as exc:
+            print(f"error: the benchmark command needs scikit-learn and pyyaml "
+                  f"(pip install faircode[benchmark]): {exc}", file=sys.stderr)
+            return 2
+
+        results = run_benchmark(
+            root=args.root, audits=args.manifests or None,
+            n_resamples=args.n_resamples, n_permutations=args.n_permutations,
+        )
+        if results.empty:
+            print(f"error: no audit.yaml manifests found under {args.root}", file=sys.stderr)
+            return 2
+
+        write_report(results, args.out, make_plots=not args.no_plots)
+        n_audits = results["audit"].nunique()
+        print(f"Ran {n_audits} audit(s), wrote {len(results)} result rows to {args.out}/",
+              file=sys.stderr)
         return 0
 
     parser.print_help()

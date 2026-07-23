@@ -1,0 +1,50 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: tenant_screening
+title: "Tenant Screening - Rental Application Bias"
+
+dataset:
+  path: tenant-screening-data.csv
+
+row_filters:
+  - column: Recidivism_Within_3years
+    notna: true
+  - column: Race
+    isin: [BLACK, WHITE]
+
+target:
+  column: Recidivism_Within_3years
+  method: binary
+
+protected_attributes:
+  - name: race
+    type: categorical
+    column: Race
+    disadvantaged_values: [BLACK]
+    advantaged_values: [WHITE]
+
+core_features:
+  - Gender
+  - Age_at_Release
+  - Education_Level
+  - Prison_Offense
+  - Prison_Years
+  - Percent_Days_Employed
+  - Dependents
+  - Supervision_Risk_Score_First
+
+proxy_features:
+  - Prior_Arrest_Episodes_Felony
+  - Prior_Arrest_Episodes_Violent
+  - Prior_Arrest_Episodes_Property
+  - Prior_Arrest_Episodes_Drug
+  - Prior_Arrest_Episodes_GunCharges
+  - Prior_Conviction_Episodes_Felony
+  - Prior_Conviction_Episodes_Viol
+  - Prior_Conviction_Episodes_Prop
+  - Prior_Conviction_Episodes_Drug
+  - Prior_Conviction_Episodes_GunCharges
+  - Gang_Affiliated
+  - Residence_Changes
+
+random_state: 42
+test_size: 0.2

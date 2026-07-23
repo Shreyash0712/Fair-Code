@@ -1,0 +1,51 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: benefits_denial
+title: "Benefits Denial - Welfare Eligibility Bias"
+
+dataset:
+  path: adult.csv
+
+target:
+  column: income
+  method: equals
+  value: ">50K"
+
+protected_attributes:
+  - name: sex
+    type: categorical
+    column: sex
+    disadvantaged_values: [Female]
+    advantaged_values: [Male]
+
+  - name: national_origin
+    type: categorical
+    column: native.country
+    advantaged_values: ["United-States"]
+
+  - name: age
+    type: numeric_threshold
+    column: age
+    threshold: 55
+    disadvantaged: above
+
+  - name: race
+    type: categorical
+    column: race
+    advantaged_values: [White, Asian-Pac-Islander]
+
+core_features:
+  - workclass
+  - education
+  - education.num
+  - capital.gain
+  - capital.loss
+
+proxy_features:
+  - marital.status
+  - occupation
+  - relationship
+  - hours.per.week
+  - fnlwgt
+
+random_state: 42
+test_size: 0.2

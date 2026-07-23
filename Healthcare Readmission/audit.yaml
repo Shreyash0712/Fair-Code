@@ -1,0 +1,63 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: healthcare_readmission
+title: "Healthcare Readmission - Clinical Bias"
+
+dataset:
+  path: diabetic_data.csv
+
+row_filters:
+  - column: race
+    not_isin: ["?"]
+  - column: gender
+    not_equals: "Unknown/Invalid"
+
+target:
+  column: readmitted
+  method: equals
+  value: "<30"
+
+protected_attributes:
+  - name: gender
+    type: categorical
+    column: gender
+    disadvantaged_values: [Female]
+    advantaged_values: [Male]
+
+  - name: race
+    type: categorical
+    column: race
+    advantaged_values: [Caucasian, Asian]
+
+  - name: age
+    type: age_interval_threshold
+    column: age
+    threshold: 70
+    disadvantaged: above
+
+core_features:
+  - admission_type_id
+  - admission_source_id
+  - time_in_hospital
+  - num_lab_procedures
+  - num_procedures
+  - num_medications
+  - number_outpatient
+  - number_emergency
+  - number_diagnoses
+  - max_glu_serum
+  - A1Cresult
+  - insulin
+  - change
+  - diabetesMed
+  - diag_1
+  - diag_2
+  - diag_3
+
+proxy_features:
+  - payer_code
+  - discharge_disposition_id
+  - medical_specialty
+  - number_inpatient
+
+random_state: 42
+test_size: 0.2

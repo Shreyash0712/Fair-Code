@@ -1,0 +1,34 @@
+# See faircode/MANIFEST_SPEC.md for the schema.
+name: compas
+title: "COMPAS - Criminal Justice Recidivism Risk"
+
+dataset:
+  path: compas-scores-raw.csv
+
+row_filters:
+  - column: Ethnic_Code_Text
+    isin: [African-American, Caucasian]
+  - column: DisplayText
+    equals: "Risk of Recidivism"
+
+target:
+  column: ScoreText
+  method: isin
+  values: [High, Medium]
+
+protected_attributes:
+  - name: race
+    type: categorical
+    column: Ethnic_Code_Text
+    disadvantaged_values: [African-American]
+    advantaged_values: [Caucasian]
+
+core_features:
+  - Sex_Code_Text
+  - MaritalStatus
+
+proxy_features:
+  - CustodyStatus
+
+random_state: 42
+test_size: 0.2
