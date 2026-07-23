@@ -33,6 +33,7 @@
 - [Why This Matters](#why-this-matters)
 - [Getting Started](#getting-started)
 - [Open Dataset Profiler](#open-dataset-profiler)
+- [Benchmark Harness](#benchmark-harness)
 - [Tech Stack](#tech-stack)
 - [Traction](#traction)
 - [Contributors](#contributors)
@@ -119,6 +120,7 @@ Fair-Code/
 ├── COMPAS/                              # each audit folder has the same structure:
 │   ├── unfair.py                        #   biased model
 │   ├── fair.py                          #   mitigated model
+│   ├── audit.yaml                       #   declarative manifest - read by the benchmark harness
 │   ├── *.csv                            #   dataset
 │   ├── unfair.png                       #   terminal output - biased results
 │   └── fair.png                         #   terminal output - mitigated results
@@ -138,20 +140,32 @@ Fair-Code/
 │   ├── 06_healthcare_readmission_bias_audit.ipynb
 │   └── 07_tenant_screening_bias_audit.ipynb
 │
-├── faircode/                            # Open Dataset Profiler - CLI + engine
-│   ├── SPEC.md                          #   analysis spec shared with the web port
+├── faircode/                            # Open Dataset Profiler + benchmark harness
+│   ├── SPEC.md                          #   profiler analysis spec, shared with the web port
+│   ├── MANIFEST_SPEC.md                 #   audit.yaml schema for the benchmark harness
 │   ├── detect.py                        #   demographic column auto-detection
 │   ├── profiler.py                      #   core representation engine (pure pandas)
 │   ├── compare.py                       #   two-dataset representation drift (PSI)
 │   ├── proxy.py                         #   chi-squared proxy hints (scipy, opt-in)
 │   ├── significance.py                  #   fairness-gap CI + permutation test
 │   ├── report.py                        #   terminal / JSON / HTML rendering
-│   └── cli.py                           #   `faircode profile` / `compare` entry point
+│   ├── manifest.py                      #   loads + validates audit.yaml manifests
+│   ├── strategies.py                    #   S0-S4 mitigation strategies (incl. fairlearn S3/S4)
+│   ├── models.py                        #   the 3 model families, fixed hyperparameters + seed
+│   ├── metrics.py                       #   6 fairness metrics + accuracy/AUC/F1
+│   ├── benchmark.py                     #   orchestrator - manifests → strategies → metrics → tables
+│   ├── figures.py                       #   renders results_fairness.csv → figures/*.png (300 dpi)
+│   └── cli.py                           #   `faircode profile` / `compare` / `benchmark` entry point
 ├── tests/
 │   ├── test_profiler.py                 # pytest suite for the profiler
 │   ├── test_compare.py                  #   drift / comparison tests
 │   ├── test_proxy.py                    #   proxy-hint tests (scipy)
 │   └── test_significance.py             #   significance-module tests
+├── results/                              # `faircode benchmark` output - what a paper would cite
+│   ├── results_fairness.csv
+│   ├── results_performance.csv
+│   ├── summary.csv
+│   └── figures/*.png
 ├── pyproject.toml                       # packages the `faircode` console script
 │
 ├── explainers/
@@ -768,14 +782,52 @@ directly. Run the tests with `pytest tests/`.
 
 ---
 
+## Benchmark Harness
+
+The seven audits above each run their own `unfair.py` / `fair.py` pair - useful for the story, but
+each script is a bespoke one-off. The **benchmark harness** applies one uniform pipeline to every
+audit, so a cross-domain fairness comparison rests on a single code path instead of seven different
+ones.
+
+**Layer 1 - `audit.yaml`.** Each audit folder carries a declarative manifest naming its label
+column, protected attributes, proxy features, and "core" (fair) feature set - this is the only file
+a contributor writes. Schema: [faircode/MANIFEST_SPEC.md](faircode/MANIFEST_SPEC.md).
+
+**Layer 2 - the harness (`faircode/`).** Reads every manifest and runs the same grid over all of
+them:
+
+| Component | Details |
+|-----------|---------|
+| **Mitigation strategies (S0-S4)** | `baseline` (all features) → `unawareness` (drop protected attribute) → `unawareness_proxy_removal` (drop protected + proxies - the `fair.py` method) → `in_processing` (`fairlearn.reductions.ExponentiatedGradient` under a fairness constraint) → `post_processing` (`fairlearn.postprocessing.ThresholdOptimizer`, per-group decision thresholds). S3/S4 train on the *same* reduced feature set as S2, with the protected attribute passed as `sensitive_features` rather than as a model input - so a residual gap at S3/S4 shows a floor that stronger, constraint-based tools hit too, not a limitation specific to simple proxy removal. |
+| **Model families** | Logistic Regression, Random Forest, Gradient Boosting - fixed hyperparameters and seed (`faircode/models.py`) |
+| **Fairness metrics (x6)** | Demographic Parity Diff, Disparate Impact Ratio, Equal Opportunity Diff, Equalized Odds Diff, Predictive Parity Diff, Accuracy Equality Diff - each with a bootstrap CI and a permutation-test p-value (`faircode/metrics.py`) |
+| **Performance metrics** | Accuracy, AUC, F1 - accuracy/F1 get a bootstrap CI; AUC is a point estimate (a per-resample rank sort is too expensive to repeat thousands of times at these row counts) |
+| **Intersectional gaps** | For every pair of declared protected attributes, via `faircode.significance.intersectional_report` |
+
+```bash
+pip install -e ".[benchmark]"                      # scikit-learn + pyyaml + fairlearn
+faircode benchmark                                  # discovers every */audit.yaml, writes results/
+faircode benchmark --out results/ --n-resamples 2000 --n-permutations 2000
+faircode benchmark COMPAS/audit.yaml                # run a subset explicitly
+```
+
+Writes `results_fairness.csv`, `results_performance.csv`, `summary.csv`, and one
+`figures/<audit>_strategies.png` per audit (300 dpi, rendered by `faircode/figures.py` straight from
+the CSVs, so re-plotting a different metric never requires re-running a model). One code path, same
+seed, same splits, same metric definitions, for every domain - that uniformity is what makes "we
+measured every audit identically" a true statement rather than an assertion.
+
+---
+
 ## Tech Stack
 
 | Component | Details |
 |-----------|---------|
 | Language | Python 3 |
-| Libraries | `pandas`, `scikit-learn`, `fairlearn`, `shap`, `matplotlib`, `scipy` |
+| Libraries | `pandas`, `scikit-learn`, `fairlearn` (`ExponentiatedGradient`, `ThresholdOptimizer`), `shap`, `matplotlib`, `scipy`, `pyyaml` |
 | Notebooks | Jupyter (`.ipynb`) - one per audit, in `notebooks/` |
 | Profiler | `faircode/` CLI (pandas-only) + client-side `profiler.html` (vanilla JS); shared spec, no backend |
+| Benchmark harness | `faircode benchmark` (optional `faircode[benchmark]` extra) - manifests → S0-S4 strategies → 3 models → metrics → `results/` |
 | Website | Static HTML/CSS/JS, deployed on Vercel |
 | Datasets | ProPublica COMPAS (public domain), AI Fair Recruitment (Kaggle), UCI German Credit / Statlog (Kaggle), Insurance Claims (Kaggle), UCI Adult Census Income (Kaggle), Diabetes 130-US Hospitals (Kaggle) |
 

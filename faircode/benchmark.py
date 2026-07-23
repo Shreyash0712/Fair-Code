@@ -24,13 +24,21 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import cross_val_predict, train_test_split
+from sklearn.model_selection import train_test_split
 
 from .manifest import discover_manifests, load_manifest
 from .metrics import METRICS, PERFORMANCE_METRICS, compute_metrics, compute_performance_metrics
 from .models import MODEL_FAMILIES, build_model
 from .significance import intersectional_report
-from .strategies import STRATEGIES, encode_features, equalize_thresholds, reweigh, strategy_features
+from .strategies import (
+    STRATEGIES,
+    encode_features,
+    fit_in_processing,
+    fit_post_processing,
+    predict_in_processing,
+    predict_post_processing,
+    strategy_features,
+)
 
 
 def _load_dataset(manifest):
@@ -63,38 +71,32 @@ def _run_strategy(strategy, model_name, manifest, X_all, y, protected_masks, idx
     X_train, X_test = X.iloc[idx_train], X.iloc[idx_test]
     y_train = y.iloc[idx_train].to_numpy()
     y_test = y.iloc[idx_test].to_numpy()
+    rs = manifest.random_state
 
+    # S3/S4 key their fairness constraint off the manifest's FIRST declared
+    # protected attribute, passed as sensitive_features - never as a column
+    # of X_train/X_test. It is not deleted from the dataset anywhere; it
+    # simply never entered X_all's column selection for these two strategies
+    # (see strategy_features). Every strategy is still scored against every
+    # declared protected attribute below, regardless of which one drove S3/S4.
     primary = manifest.protected_attributes[0].name
-    disadv_train = protected_masks[primary].iloc[idx_train].to_numpy()
+    sensitive_train = protected_masks[primary].iloc[idx_train].to_numpy().astype(int)
+    sensitive_test = protected_masks[primary].iloc[idx_test].to_numpy().astype(int)
 
-    model = build_model(model_name, manifest.random_state)
-    if strategy == "reweigh":
-        model.fit(X_train, y_train, sample_weight=reweigh(y_train, disadv_train))
+    if strategy == "in_processing":
+        mitigator = fit_in_processing(build_model(model_name, rs), X_train, y_train, sensitive_train)
+        y_pred, y_proba = predict_in_processing(mitigator, X_test, rs)
+    elif strategy == "post_processing":
+        optimizer = fit_post_processing(
+            build_model(model_name, rs), X_train, y_train, sensitive_train, random_state=rs)
+        y_pred, y_proba = predict_post_processing(optimizer, X_test, sensitive_test, rs)
     else:
+        model = build_model(model_name, rs)
         model.fit(X_train, y_train)
-
-    test_proba = model.predict_proba(X_test)[:, 1]
-
-    if strategy == "threshold_equalized":
-        # Out-of-fold probabilities to fit thresholds on - an overfit model's
-        # in-sample predict_proba on its own training rows is degenerately
-        # confident (clustered near 0/1), which makes the threshold search
-        # unstable. cross_val_predict trains a fold-held-out model per split,
-        # so these probabilities behave like the test-set ones the fitted
-        # thresholds will actually be applied to.
-        cv = min(3, int(np.bincount(y_train.astype(int)).min())) if len(np.unique(y_train)) > 1 else 1
-        if cv >= 2:
-            train_proba = cross_val_predict(
-                build_model(model_name, manifest.random_state), X_train, y_train,
-                cv=cv, method="predict_proba")[:, 1]
-        else:
-            train_proba = model.predict_proba(X_train)[:, 1]
-        disadv_test = protected_masks[primary].iloc[idx_test].to_numpy()
-        y_pred, _ = equalize_thresholds(train_proba, disadv_train, test_proba, disadv_test)
-    else:
+        y_proba = model.predict_proba(X_test)[:, 1]
         y_pred = np.asarray(model.predict(X_test)).astype(int)
 
-    return y_test, y_pred, test_proba
+    return y_test, y_pred, y_proba
 
 
 def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None):

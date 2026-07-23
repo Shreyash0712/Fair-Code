@@ -6,7 +6,7 @@
 ![Phase 2](https://img.shields.io/badge/Phase%202-In%20Progress-yellow?style=flat-square)
 ![Phase 3](https://img.shields.io/badge/Phase%203-In%20Progress-yellow?style=flat-square)
 ![Phase 4](https://img.shields.io/badge/Phase%204-In%20Progress-yellow?style=flat-square)
-![Phase 5](https://img.shields.io/badge/Phase%205-Planned-lightgrey?style=flat-square)
+![Phase 5](https://img.shields.io/badge/Phase%205-In%20Progress-yellow?style=flat-square)
 
 This is the public roadmap for Fair Code. It tracks what has been built, what is actively in progress, and what comes next.
 
@@ -125,9 +125,9 @@ Goal: grow to 10+ contributors with quality-controlled contributions.
 
 ---
 
-## Phase 5 - Fairness Metrics and Notebooks ⏳ Planned
+## Phase 5 - Fairness Metrics and Notebooks 🔄 In Progress
 
-**Status: Planned**
+**Status: Cross-domain benchmark harness shipped - dashboards and notebooks continuing**
 
 Go deeper on measurement - fairness dashboards, interactive notebooks, and statistical tools for auditors.
 
@@ -135,9 +135,11 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 - [x] Bias detection utility library (`faircode/` module) - diagnostic representation profiler + CLI
 - [x] Profiler: two-dataset comparison for representation drift (`faircode compare`, PSI)
 - [x] Profiler: manual column mapping, reference-population baseline, choosable intersection pair, tunable thresholds, and chi-squared proxy hints
-- [x] AIF360 / Fairlearn integration examples
+- [x] Fairlearn integration: `ExponentiatedGradient` in-processing + `ThresholdOptimizer` post-processing, as two rungs of a five-strategy mitigation ladder (S0-S4) run uniformly across every audit
+- [x] Cross-domain benchmark harness - declarative `audit.yaml` manifests (`faircode/MANIFEST_SPEC.md`) + `faircode benchmark`: 5 strategies x 3 model families x 6 fairness metrics (bootstrap CI + permutation p-value) + accuracy/AUC/F1, written to `results/`
 - [x] Intersectional bias notebook (auditing across multiple protected attributes simultaneously)
 - [x] Statistical significance testing for fairness gaps
+- [ ] Fairness dashboard for the benchmark harness results (interactive `results/` explorer, mirroring the Open Dataset Profiler's web/CLI split)
 
 ---
 

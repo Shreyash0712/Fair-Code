@@ -14,7 +14,7 @@
 Uses only stdlib argparse + pandas (no heavyweight profiling dependency).
 Reading .xlsx additionally requires the optional 'openpyxl' extra. The
 `benchmark` command additionally requires the optional 'benchmark' extra
-(`pip install faircode[benchmark]`: scikit-learn + pyyaml).
+(`pip install faircode[benchmark]`: scikit-learn + pyyaml + fairlearn).
 """
 
 from __future__ import annotations

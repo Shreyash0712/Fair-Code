@@ -2334,6 +2334,29 @@
   </a>
 </section>
 
+<!-- BENCHMARK HARNESS CALLOUT -->
+<section aria-label="Cross-Domain Benchmark Harness">
+  <a href="https://github.com/yakew7/Fair-Code/tree/main/results" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;color:inherit;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;background:var(--surface);padding:32px 34px;transition:border-color .18s ease,transform .18s ease;"
+     onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-2px)';"
+     onmouseout="this.style.borderColor='var(--border)';this.style.borderLeftColor='var(--accent)';this.style.transform='none';">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Research Tools · Reproducible pipeline</div>
+    <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,38px);line-height:1.05;color:var(--white);margin:0 0 12px;">Cross-Domain Benchmark Harness →</h2>
+    <p style="font-size:16px;line-height:1.7;max-width:660px;color:var(--text);margin:0 0 10px;">
+      The seven audits above each run a bespoke <code class="inline-code">unfair.py</code> /
+      <code class="inline-code">fair.py</code> pair. The benchmark harness applies one uniform
+      pipeline to all seven instead: five mitigation strategies - baseline, drop-the-protected-attribute,
+      drop-protected-plus-proxies, Fairlearn <code class="inline-code">ExponentiatedGradient</code>
+      in-processing, and Fairlearn <code class="inline-code">ThresholdOptimizer</code> post-processing -
+      each run across three model families and scored on six fairness metrics with a bootstrap
+      confidence interval and a permutation-test p-value. On COMPAS the demographic parity gap goes
+      86% → 18% → 12% → 1.4% → 2.4% across the five strategies - the two strongest, constraint-based
+      tools land within a point of the simple proxy-removal fix, which is the basis for calling that
+      residual gap a floor rather than a limitation of any one method.
+    </p>
+    <p style="font-size:13px;color:var(--accent3);margin:0;"><span style="margin-right:6px;">📊</span>Contributor-facing: add an <code class="inline-code">audit.yaml</code> manifest, the harness runs the rest. Results and figures committed to <code class="inline-code">results/</code>.</p>
+  </a>
+</section>
+
 <!-- EXPLAINERS -->
 <section id="explainers" style="background: var(--surface);" aria-labelledby="explainers-heading">
   <div class="section-eyebrow"><span class="num">04</span>Explainers</div>

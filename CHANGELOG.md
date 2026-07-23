@@ -4,11 +4,32 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.3-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v1.3.5-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
 </div>
+
+---
+
+## [1.3.5] - 23 Jul 2026
+### Added
+- **Cross-domain fairness benchmark harness** (`faircode benchmark`, optional `faircode[benchmark]` extra) - applies one uniform pipeline to all seven audits instead of seven bespoke scripts, so a cross-domain comparison rests on a single code path
+  - **Layer 1 - `audit.yaml`**: a declarative manifest per audit folder naming its label column, protected attributes, proxy features, and core (fair) feature set. Schema documented in `faircode/MANIFEST_SPEC.md`. All seven audits (COMPAS, AI Fair Recruitment, German Credit Lending, Insurance Denial, Benefits Denial, Healthcare Readmission, Tenant Screening) now carry one
+  - **Layer 2 - the harness**: five mitigation strategies run per audit (`faircode/strategies.py`) - `baseline` → `unawareness` → `unawareness_proxy_removal` (the existing `fair.py` method) → `in_processing` (`fairlearn.reductions.ExponentiatedGradient` under a fairness constraint) → `post_processing` (`fairlearn.postprocessing.ThresholdOptimizer`, per-group decision thresholds) - across three model families (`faircode/models.py`: logistic regression, random forest, gradient boosting, fixed hyperparameters + seed)
+  - Six fairness metrics per (strategy, model, protected attribute) - demographic parity diff, disparate impact ratio, equal opportunity diff, equalized odds diff, predictive parity diff, accuracy equality diff - each with a bootstrap CI and permutation-test p-value, plus accuracy/AUC/F1 as plain performance metrics (`faircode/metrics.py`)
+  - Intersectional gap for every pair of declared protected attributes (reuses `faircode.significance.intersectional_report`)
+  - `faircode/benchmark.py` orchestrates manifests → strategies → metrics and writes `results_fairness.csv` / `results_performance.csv` / `summary.csv`; `faircode/figures.py` renders one 300-dpi `<audit>_strategies.png` per audit straight from those CSVs, so re-plotting a different metric never re-runs a model
+  - `faircode/manifest.py` loads/validates `audit.yaml` and discovers every manifest in the repo
+  - Full run across all seven audits committed to `results/` at the repo root
+- README.md: new [Benchmark Harness](README.md#benchmark-harness) section documenting the manifest schema, the five strategies, and the `faircode benchmark` CLI; `Repository Structure` tree and `Tech Stack` table updated to match
+- `scripts/render_terminal_png.py` - renders a script's captured stdout as a terminal-style PNG (dark background, monospace), matching the existing `fair.png`/`unfair.png` screenshot style
+### Fixed
+- `faircode.strategies.fit_post_processing` (S4): `ThresholdOptimizer`'s default `prefit=False` behaviour calibrates per-group thresholds on the same rows the base estimator was fit on - on an overfit `RandomForestClassifier`, this produced a near-zero demographic parity gap on the calibration data but a +0.22 gap on held-out test data (German Credit Lending). Fixed by fitting the base estimator on a FIT split of the training data and calibrating thresholds on a separate, held-out CALIBRATION split of that same training data (`prefit=True`) - closed the generalization gap to +0.07, consistent with the other strategies' residual variance
+- All 14 `fair.png` / `unfair.png` screenshots regenerated from a fresh run of every `unfair.py` / `fair.py` - the previous images predated the bootstrap CI / permutation-test / proxy-analysis output `faircode.significance` added, so they only showed the bare headline gap. Every audit's underlying values were independently re-verified against what `index.html` already displays (all seven matched exactly - the scripts are deterministic with a fixed `random_state=42`, so only the screenshots were stale, not the published numbers)
+### Changed
+- `ROADMAP.md`: Phase 5 status changed from "Planned" to "In Progress"; checklist gains the Fairlearn in-processing/post-processing integration and the cross-domain benchmark harness as completed items, plus a new planned item for an interactive results dashboard
+- `pyproject.toml` / `requirements.txt`: `fairlearn>=0.14.0` and `pyyaml>=6.0` added to the `benchmark` optional-dependency group
 
 ---
 

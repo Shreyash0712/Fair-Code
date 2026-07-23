@@ -6,11 +6,16 @@ abstract: "An open-source research project that exposes and fixes bias in
   real-world AI systems across criminal justice, hiring, lending, healthcare,
   welfare eligibility, and tenant screening. Each audit trains a biased model, measures the
   fairness gap, removes protected attributes and proxy variables, and proves
-  the reduction with reproducible code and public datasets. Includes the Open
-  Dataset Profiler (CLI and client-side web tool) for auditing any tabular
-  dataset's demographic representation before a model is trained, and
-  intersectional analysis that measures the compounded gap on the group at
-  the intersection of two protected attributes."
+  the reduction with reproducible code and public datasets. A cross-domain
+  benchmark harness applies one uniform pipeline to every audit - five
+  mitigation strategies (including Fairlearn's ExponentiatedGradient
+  in-processing and ThresholdOptimizer post-processing) across three model
+  families, scored on six fairness metrics with bootstrap confidence
+  intervals and permutation tests. Includes the Open Dataset Profiler (CLI
+  and client-side web tool) for auditing any tabular dataset's demographic
+  representation before a model is trained, and intersectional analysis that
+  measures the compounded gap on the group at the intersection of two
+  protected attributes."
 authors:
   - family-names: Kewlani
     given-names: Yash
@@ -19,8 +24,8 @@ authors:
 repository-code: "https://github.com/yakew7/Fair-Code"
 url: "https://www.thefaircode.xyz"
 license: MIT
-version: "1.3.3"
-date-released: "2026-07-21"
+version: "1.3.5"
+date-released: "2026-07-23"
 keywords:
   - algorithmic-fairness
   - bias-detection

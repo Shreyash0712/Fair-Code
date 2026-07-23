@@ -12,9 +12,11 @@ shared benchmark harness (`faircode/benchmark.py`) instead of a bespoke script. 
 in this repo has one alongside its `unfair.py` / `fair.py` pair; the two scripts stay for the
 website story, the manifest is what the harness (and a research write-up) reads.
 
-The harness applies the **same pipeline** to every manifest: a five-rung mitigation ladder
-(`faircode/ladder.py`), three model families, six fairness metrics with a bootstrap CI and a
-permutation p-value each (`faircode/metrics.py`), and the intersectional gap for every pair of
+The harness applies the **same pipeline** to every manifest: five mitigation strategies S0-S4
+(`faircode/strategies.py` - baseline, unawareness, unawareness + proxy removal, fairlearn
+`ExponentiatedGradient` in-processing, fairlearn `ThresholdOptimizer` post-processing), three model
+families (`faircode/models.py`), six fairness metrics with a bootstrap CI and a permutation p-value
+each plus accuracy/AUC/F1 (`faircode/metrics.py`), and the intersectional gap for every pair of
 declared protected attributes (`faircode.significance.intersectional_report`). A cross-domain
 fairness comparison is only trustworthy if every domain was measured identically - the manifest is
 what makes that literally true rather than an assertion in a write-up.
@@ -76,7 +78,7 @@ target:
 ## `protected_attributes`
 
 At least one required. Each becomes one row-set in the results table; the harness scores every
-rung x model against every declared attribute (plus every pair, for the intersectional gap).
+strategy x model against every declared attribute (plus every pair, for the intersectional gap).
 
 ```yaml
 protected_attributes:
@@ -111,9 +113,10 @@ protected_attributes:
 Rows where *any* declared protected attribute is unclassifiable are dropped before modelling (a
 manifest with two attributes only trains on rows both attributes can classify).
 
-The **first** declared attribute is the one the `reweigh` and `threshold_equalized` ladder rungs
-balance against - see `faircode/ladder.py`. Every rung is still scored against every attribute, so a
-report can show whether mitigating attribute A helped or hurt attribute B.
+The **first** declared attribute is the one S3 (`in_processing`) and S4 (`post_processing`) pass to
+fairlearn as `sensitive_features` - see `faircode/strategies.py`. Every strategy is still scored
+against every attribute, so a report can show whether mitigating attribute A helped or hurt
+attribute B.
 
 ## `core_features` / `proxy_features`
 
@@ -122,15 +125,33 @@ core_features: [Sex_Code_Text, MaritalStatus]
 proxy_features: [CustodyStatus]
 ```
 
-- `core_features` - the feature set a mitigated model trains on (rung 3 onward: "drop the protected
-  attributes and their proxies, keep only defensible signal"). This is the `fair.py` feature list.
+- `core_features` - the feature set a mitigated model trains on from S2 onward: "drop the protected
+  attributes and their proxies, keep only defensible signal". This is the `fair.py` feature list,
+  and also what S3/S4 train on (with the protected attribute carried alongside as
+  `sensitive_features`, never as a column of X - see `faircode/strategies.py`).
 - `proxy_features` - columns correlated with a protected attribute that a naive model would use to
-  reconstruct it. Included in rungs 1-2, dropped from rung 3 onward. This is the difference between
+  reconstruct it. Included in S0-S1, dropped from S2 onward. This is the difference between
   `unfair.py`'s feature list and `fair.py`'s, minus the protected attribute columns themselves.
 
 Every column named anywhere in the manifest (core, proxy, or protected) is label-encoded uniformly
-by `faircode.ladder.encode_features` - see that module's docstring for why (uniformity across
+by `faircode.strategies.encode_features` - see that module's docstring for why (uniformity across
 wildly different-cardinality categoricals, not one-hot's per-audit blowup risk).
+
+## The five strategies (S0-S4)
+
+| # | Strategy | What it does |
+|---|----------|---------------|
+| S0 | `baseline` | Every feature, including protected attributes and proxies. The "do nothing" reference. |
+| S1 | `unawareness` | Drop the protected attribute only; keep the proxies. The naive fix people assume works. |
+| S2 | `unawareness_proxy_removal` | Keep only `core_features`. The `fair.py` method every existing audit uses. |
+| S3 | `in_processing` | `fairlearn.reductions.ExponentiatedGradient` with a fairness constraint (`faircode.strategies.FAIRNESS_CONSTRAINT`, default `demographic_parity`). Trains on `core_features`; the protected attribute is passed as `sensitive_features`, never as a model input. |
+| S4 | `post_processing` | `fairlearn.postprocessing.ThresholdOptimizer` wrapping a freshly-fit base model; adjusts the decision threshold per group to satisfy the same constraint. |
+
+S3 and S4 need the protected attribute at both fit and predict time as `sensitive_features`, even
+though it's never a model feature - so it's never dropped from the working dataset, only excluded
+from the column list `X` is built from. Showing that S3/S4 land close to S2's gap - rather than
+closing it further - is the basis for a "residual floor" claim: stronger, constraint-based tools
+hit roughly the same wall a simple proxy-removal fix does.
 
 ## Full example
 
