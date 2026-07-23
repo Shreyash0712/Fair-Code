@@ -9,6 +9,9 @@ Run from the repo root:  pytest tests/ -q
 
 import numpy as np
 import pytest
+
+pytest.importorskip("sklearn", reason="faircode.metrics needs the optional scikit-learn extra")
+
 from sklearn.metrics import roc_auc_score
 
 from faircode.metrics import (

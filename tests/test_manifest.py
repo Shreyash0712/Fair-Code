@@ -7,9 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-import yaml
 
-pytest.importorskip("yaml", reason="manifest loading needs the optional pyyaml extra")
+yaml = pytest.importorskip("yaml", reason="manifest loading needs the optional pyyaml extra")
 
 from faircode.manifest import (
     Manifest,
