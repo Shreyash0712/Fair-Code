@@ -1,26 +1,39 @@
-"""Five mitigation strategies - Layer 2 of the benchmark harness.
+"""The five mitigation strategies (S0-S4) - Layer 2 of the benchmark harness.
 
 Given a manifest's core/proxy/protected feature partition, builds the
-train/test feature set for five strategies of increasing mitigation:
+train/test feature set (and, for S3/S4, fits the fairlearn mitigator) for
+five strategies of increasing sophistication:
 
-  1. naive              - every feature; protected attributes included
-  2. drop_protected      - protected attributes removed, proxies retained
-  3. drop_proxies         - protected attributes AND proxies removed (the
-                            classic fair.py fix every existing audit uses)
-  4. reweigh              - same features as drop_proxies, plus per-row
-                            sample weights that equalize the label x group
-                            joint distribution on the training split
-                            (Kamiran & Calders 2012 reweighing)
-  5. threshold_equalized  - same features as drop_proxies, plus a per-group
-                            decision threshold fit on the training split's
-                            predicted probabilities so each group's
-                            selection rate matches the overall base rate
-                            (a simplified demographic-parity post-processor)
+  S0 baseline                    - every feature; protected attributes and
+                                    proxies included as model input. The "do
+                                    nothing" reference.
+  S1 unawareness                 - protected attribute dropped from the
+                                    model input; proxies retained. The naive
+                                    fix people assume works.
+  S2 unawareness_proxy_removal   - protected attribute AND proxies dropped
+                                    from the model input (the classic
+                                    fair.py fix every existing audit uses).
+  S3 in_processing               - fairlearn ExponentiatedGradient: trains
+                                    an ensemble of base estimators under a
+                                    fairness constraint (see
+                                    FAIRNESS_CONSTRAINT).
+  S4 post_processing             - fairlearn ThresholdOptimizer: fits one
+                                    base estimator, then finds a per-group
+                                    decision threshold over its predicted
+                                    probabilities that satisfies the same
+                                    constraint.
 
-Strategies 4 and 5 key their group/label balancing off the manifest's FIRST
-declared protected attribute; every strategy is still scored against every
-declared protected attribute in faircode.benchmark, so a contributor can see
-whether mitigating one attribute helps or harms another.
+S3 and S4 use the SAME reduced feature set as S2 (core features only) - so a
+residual gap there isn't explained by "the model could still see the
+protected attribute or a proxy". The protected attribute is never deleted
+from the working dataset (faircode.benchmark keeps it in `protected_masks`
+throughout); for S3/S4 it is passed to fairlearn as `sensitive_features`
+instead of as a column of X. That is the whole point of comparing S1/S2
+against S3/S4: S1/S2 remove the protected attribute's influence by deleting
+columns from the model input; S3/S4 remove its influence a different way,
+via a fairness constraint, while seeing the identical feature set S2 sees.
+Showing that S3/S4 hit roughly the same floor S2 does is what turns "here is
+our fix" into "here is the residual floor even stronger tools can't clear".
 """
 
 from __future__ import annotations
@@ -28,11 +41,33 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pandas.api.types as pdt
+from fairlearn.postprocessing import ThresholdOptimizer
+from fairlearn.reductions import DemographicParity, EqualizedOdds, ExponentiatedGradient
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-STRATEGIES = ("naive", "drop_protected", "drop_proxies", "reweigh", "threshold_equalized")
+STRATEGIES = ("baseline", "unawareness", "unawareness_proxy_removal", "in_processing", "post_processing")
 
-_THRESHOLD_GRID = np.linspace(0.0, 1.0, 101)
+# Every audit is run under the SAME fairness constraint, so an in-processing/
+# post-processing comparison across domains stays apples-to-apples. Flip this
+# constant (not a per-manifest setting) to re-run the whole benchmark under
+# the other constraint.
+FAIRNESS_CONSTRAINT = "demographic_parity"  # or "equalized_odds"
+
+_REDUCTIONS_CONSTRAINTS = {
+    "demographic_parity": DemographicParity,
+    "equalized_odds": EqualizedOdds,
+}
+
+# ExponentiatedGradient deep-copies and refits the base estimator once per
+# iteration (its default max_iter is 50). At the row counts several of these
+# audits have (Healthcare Readmission ~100k, AI Fair Recruitment ~121k) and
+# with GradientBoostingClassifier as the base estimator, even 15 iterations
+# measured at 256s for a single (audit, model) cell - 50 would make a full
+# seven-domain run impractical. 10 iterations still converges well enough to
+# demonstrate the constraint's effect. Raise this for a final,
+# paper-quality run where wall-clock time isn't the binding constraint.
+EXPONENTIATED_GRADIENT_MAX_ITER = 10
 
 
 def encode_features(df: pd.DataFrame, columns: list) -> pd.DataFrame:
@@ -60,64 +95,80 @@ def encode_features(df: pd.DataFrame, columns: list) -> pd.DataFrame:
 
 
 def strategy_features(strategy: str, core: list, proxies: list, protected: list) -> list:
-    if strategy == "naive":
+    if strategy == "baseline":
         return list(dict.fromkeys(core + proxies + protected))
-    if strategy == "drop_protected":
+    if strategy == "unawareness":
         return list(dict.fromkeys(core + proxies))
-    return list(core)  # drop_proxies, reweigh, threshold_equalized
+    return list(core)  # unawareness_proxy_removal, in_processing, post_processing
 
 
-def reweigh(y_train, disadvantaged_train) -> np.ndarray:
-    """Kamiran & Calders (2012) reweighing: per-row weight that equalizes the
-    (group, label) joint distribution to what independence would predict."""
-    y = np.asarray(y_train)
-    g = np.asarray(disadvantaged_train, dtype=bool)
-    n = len(y)
-    weights = np.ones(n, dtype=float)
-    for g_val in (True, False):
-        for y_val in (0, 1):
-            cell = (g == g_val) & (y == y_val)
-            n_cell = int(cell.sum())
-            if n_cell == 0:
-                continue
-            p_group = float((g == g_val).mean())
-            p_label = float((y == y_val).mean())
-            p_joint = n_cell / n
-            weights[cell] = (p_group * p_label) / p_joint
-    return weights
+def fit_in_processing(base_model, X_train, y_train, sensitive_train):
+    """S3 - fairlearn ExponentiatedGradient (Agarwal et al. 2018).
 
-
-def _best_threshold(proba: np.ndarray, target_rate: float) -> float:
-    if len(proba) == 0:
-        return 0.5
-    rates = (proba[None, :] >= _THRESHOLD_GRID[:, None]).mean(axis=1)
-    return float(_THRESHOLD_GRID[np.argmin(np.abs(rates - target_rate))])
-
-
-def equalize_thresholds(train_proba, train_disadvantaged, test_proba, test_disadvantaged):
-    """Fit per-group thresholds on train-set probabilities, apply at test time.
-
-    A simplified demographic-parity post-processor: both groups' selection
-    rate is pushed toward the overall base rate the model would produce at
-    the default 0.5 threshold. Thresholds are fit on the training split and
-    only applied (never re-fit) on the test split, so the test metrics stay
-    out-of-sample.
+    base_model is a fresh, unfit estimator; ExponentiatedGradient deep-copies
+    it internally for each iteration and returns a randomized mixture over
+    the resulting ensemble. sensitive_train is passed as `sensitive_features`
+    - never as a column of X_train - so the constraint sees group membership
+    without the base estimator ever training on it directly.
     """
-    train_proba = np.asarray(train_proba)
-    test_proba = np.asarray(test_proba)
-    train_disadvantaged = np.asarray(train_disadvantaged, dtype=bool)
-    test_disadvantaged = np.asarray(test_disadvantaged, dtype=bool)
+    constraint = _REDUCTIONS_CONSTRAINTS[FAIRNESS_CONSTRAINT]()
+    mitigator = ExponentiatedGradient(
+        base_model, constraints=constraint, max_iter=EXPONENTIATED_GRADIENT_MAX_ITER)
+    mitigator.fit(X_train, y_train, sensitive_features=sensitive_train)
+    return mitigator
 
-    target_rate = float((train_proba >= 0.5).mean())
-    thr_disadv = _best_threshold(train_proba[train_disadvantaged], target_rate)
-    thr_adv = _best_threshold(train_proba[~train_disadvantaged], target_rate)
 
-    pred = np.zeros(len(test_proba), dtype=int)
-    pred[test_disadvantaged] = (test_proba[test_disadvantaged] >= thr_disadv).astype(int)
-    pred[~test_disadvantaged] = (test_proba[~test_disadvantaged] >= thr_adv).astype(int)
-    info = {
-        "threshold_disadvantaged": thr_disadv,
-        "threshold_advantaged": thr_adv,
-        "target_rate": target_rate,
-    }
-    return pred, info
+def predict_in_processing(mitigator, X_test, random_state):
+    """Predict with an S3 mitigator. Returns (y_pred, y_proba); y_proba comes
+    from fairlearn's internal (undocumented-but-stable) _pmf_predict - the
+    probability-weighted mixture over the ensemble - and falls back to None
+    (no AUC for this run) if a future fairlearn version removes it."""
+    y_pred = np.asarray(mitigator.predict(X_test, random_state=random_state)).astype(int)
+    try:
+        y_proba = np.asarray(mitigator._pmf_predict(X_test))[:, 1]
+    except (AttributeError, IndexError):
+        y_proba = None
+    return y_pred, y_proba
+
+
+def fit_post_processing(base_model, X_train, y_train, sensitive_train,
+                        random_state=42, calibration_size=0.3):
+    """S4 - fairlearn ThresholdOptimizer (Hardt, Price & Srebro 2016 style).
+
+    base_model is fit on a FIT split of the training data; per-group
+    thresholds are then calibrated on a separate, held-out CALIBRATION split
+    of that same training data (prefit=True). Calibrating thresholds against
+    the same rows the base estimator was fit on - fairlearn's default
+    prefit=False behaviour - lets an overfit classifier's in-sample
+    confidence produce thresholds that don't generalize: on German Credit
+    Lending this produced a near-zero demographic parity gap on the
+    calibration data (as designed) but a gap of +0.22 on the held-out test
+    set, because the base RandomForest's in-sample predict_proba is far more
+    confident than its out-of-sample behaviour. This is the same failure
+    mode faircode.benchmark's predecessor threshold-search had to work
+    around with cross_val_predict; here it's solved by simply not
+    calibrating against the rows the model memorized.
+    """
+    idx = np.arange(len(y_train))
+    stratify = y_train if len(np.unique(y_train)) > 1 else None
+    fit_idx, calib_idx = train_test_split(
+        idx, test_size=calibration_size, random_state=random_state, stratify=stratify)
+
+    base_model.fit(X_train.iloc[fit_idx], y_train[fit_idx])
+    optimizer = ThresholdOptimizer(
+        estimator=base_model, constraints=FAIRNESS_CONSTRAINT,
+        predict_method="predict_proba", prefit=True)
+    optimizer.fit(X_train.iloc[calib_idx], y_train[calib_idx],
+                 sensitive_features=sensitive_train[calib_idx])
+    return optimizer
+
+
+def predict_post_processing(optimizer, X_test, sensitive_test, random_state):
+    """Predict with an S4 optimizer. Needs sensitive_features at predict
+    time too - it must know which group's threshold to apply per row.
+    ThresholdOptimizer has no probability output, so y_proba is always None
+    (no AUC for this strategy - a hard-threshold post-processor has nothing
+    left to rank)."""
+    y_pred = np.asarray(optimizer.predict(
+        X_test, sensitive_features=sensitive_test, random_state=random_state)).astype(int)
+    return y_pred, None
