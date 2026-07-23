@@ -4,7 +4,7 @@
 
 ![Keep a Changelog](https://img.shields.io/badge/Keep%20a%20Changelog-1.1.0-e05735?style=flat-square)
 ![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![Latest](https://img.shields.io/badge/Latest-v1.3.5-brightgreen?style=flat-square)
+![Latest](https://img.shields.io/badge/Latest-v2.0.0-brightgreen?style=flat-square)
 
 All notable changes to Fair Code are documented here, newest first.
 
@@ -12,7 +12,13 @@ All notable changes to Fair Code are documented here, newest first.
 
 ---
 
-## [1.3.5] - 23 Jul 2026
+## [2.0.0] - 23 Jul 2026
+
+A major version bump: Fair Code moves from seven bespoke bias audits to a cross-domain benchmark
+harness that runs one uniform, reproducible pipeline over all of them - the core of what a
+research paper built on this repo would cite. Nothing about the existing audits (`unfair.py` /
+`fair.py`, the website, the explainers) changed or broke; this release is additive.
+
 ### Added
 - **Cross-domain fairness benchmark harness** (`faircode benchmark`, optional `faircode[benchmark]` extra) - applies one uniform pipeline to all seven audits instead of seven bespoke scripts, so a cross-domain comparison rests on a single code path
   - **Layer 1 - `audit.yaml`**: a declarative manifest per audit folder naming its label column, protected attributes, proxy features, and core (fair) feature set. Schema documented in `faircode/MANIFEST_SPEC.md`. All seven audits (COMPAS, AI Fair Recruitment, German Credit Lending, Insurance Denial, Benefits Denial, Healthcare Readmission, Tenant Screening) now carry one
@@ -22,6 +28,17 @@ All notable changes to Fair Code are documented here, newest first.
   - `faircode/benchmark.py` orchestrates manifests → strategies → metrics and writes `results_fairness.csv` / `results_performance.csv` / `summary.csv`; `faircode/figures.py` renders one 300-dpi `<audit>_strategies.png` per audit straight from those CSVs, so re-plotting a different metric never re-runs a model
   - `faircode/manifest.py` loads/validates `audit.yaml` and discovers every manifest in the repo
   - Full run across all seven audits committed to `results/` at the repo root
+- **Reproducibility & paper-freeze infrastructure**, so a paper cites a defined, reproducible set of numbers instead of "whatever was in the repo that week"
+  - Verified and documented that every model, split, bootstrap resample, and permutation shuffle already takes an explicit `random_state` (all seven manifests default to 42); a defense-in-depth global seed added in `benchmark.py`; the "don't change `random_state` on a cited run" invariant stated in `faircode/MANIFEST_SPEC.md`
+  - `requirements-lock.txt` - an exact `pip freeze` of the environment that produced the committed `results/` (Python 3.13.2, scikit-learn 1.8.0, fairlearn 0.14.0, pandas 3.0.2)
+  - `scripts/freeze_paper_results.py` - snapshots `results/` into `paper/results-frozen/` with a `MANIFEST.md` recording the git commit, package versions, and the exact list of `audit.yaml` manifests included; prints (never runs) the `git tag` / `git push --tags` command, since tagging is a deliberate public action
+  - New README.md section: [Reproducibility & Paper Freeze](README.md#reproducibility--paper-freeze)
+- **Test suite for the benchmark harness** (50 new tests, 108 total, ~10s)
+  - `tests/test_metrics.py` - all six fairness metrics hand-computed against a worked tiny example, plus a regression test reproducing COMPAS's published 86.77% headline gap from reconstructed rate arrays
+  - `tests/test_manifest.py` - manifest loading/validation, malformed YAML and missing-field failures, parametrized over all seven shipped manifests
+  - `tests/test_strategies.py` - exact S0-S4 column-set assertions and `encode_features` behaviour
+  - `tests/test_benchmark.py` - genuine end-to-end `run_audit()` against German Credit Lending (smallest dataset), not a mock of it
+  - CI: new `benchmark-harness` job in `.github/workflows/audits.yml` runs these tests plus a CLI-level smoke test on that same small audit. The full seven-domain sweep stays out of CI (fairlearn's in-processing strategy takes minutes per audit on the larger datasets) - run it locally and commit `results/` output
 - README.md: new [Benchmark Harness](README.md#benchmark-harness) section documenting the manifest schema, the five strategies, and the `faircode benchmark` CLI; `Repository Structure` tree and `Tech Stack` table updated to match
 - `scripts/render_terminal_png.py` - renders a script's captured stdout as a terminal-style PNG (dark background, monospace), matching the existing `fair.png`/`unfair.png` screenshot style
 ### Fixed
@@ -30,6 +47,8 @@ All notable changes to Fair Code are documented here, newest first.
 ### Changed
 - `ROADMAP.md`: Phase 5 status changed from "Planned" to "In Progress"; checklist gains the Fairlearn in-processing/post-processing integration and the cross-domain benchmark harness as completed items, plus a new planned item for an interactive results dashboard
 - `pyproject.toml` / `requirements.txt`: `fairlearn>=0.14.0` and `pyyaml>=6.0` added to the `benchmark` optional-dependency group
+- `faircode/__init__.py`: package version `0.1.0` → `2.0.0`, aligned to this release (was tracked separately before the benchmark harness existed)
+- `CITATION.cff`: version `1.3.3` → `2.0.0`; abstract updated to mention the benchmark harness
 
 ---
 
