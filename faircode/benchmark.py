@@ -2,17 +2,19 @@
 architecture documented in faircode/MANIFEST_SPEC.md.
 
 Reads every audit.yaml manifest and runs the SAME pipeline over each one -
-the five-rung mitigation ladder (faircode.ladder) x three model families x
-six fairness metrics (faircode.metrics, each with a bootstrap CI and a
-permutation p-value), plus the intersectional gap for every pair of declared
+five mitigation strategies (faircode.strategies) x three model families
+(faircode.models) x six fairness metrics, each with a bootstrap CI and a
+permutation p-value (faircode.metrics), plus accuracy/AUC/F1 (also
+faircode.metrics), plus the intersectional gap for every pair of declared
 protected attributes (faircode.significance.intersectional_report) - and
-returns one tidy results table. One code path, same seed, same splits, same
-metric definitions, for every domain: a cross-domain comparison is only as
-trustworthy as that uniformity, and this module is what makes it literally
-true rather than an assertion in a write-up.
+returns two tidy results tables (fairness, performance). One code path, same
+seed, same splits, same metric definitions, for every domain: a cross-domain
+comparison is only as trustworthy as that uniformity, and this module is
+what makes it literally true rather than an assertion in a write-up.
 
 Contributors add a dataset + audit.yaml (Layer 1). They never touch this
-module.
+module. faircode.figures reads this module's output tables to render the
+paper figures - it never re-runs a model.
 """
 
 from __future__ import annotations
@@ -22,20 +24,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_predict, train_test_split
 
-from .ladder import RUNGS, encode_features, equalize_thresholds, reweigh, rung_features
 from .manifest import discover_manifests, load_manifest
-from .metrics import METRICS, compute_metrics
+from .metrics import METRICS, PERFORMANCE_METRICS, compute_metrics, compute_performance_metrics
+from .models import MODEL_FAMILIES, build_model
 from .significance import intersectional_report
-
-MODEL_FAMILIES = {
-    "logistic_regression": lambda random_state: LogisticRegression(max_iter=1000, random_state=random_state),
-    "random_forest": lambda random_state: RandomForestClassifier(n_estimators=100, random_state=random_state),
-    "gradient_boosting": lambda random_state: GradientBoostingClassifier(random_state=random_state),
-}
+from .strategies import STRATEGIES, encode_features, equalize_thresholds, reweigh, strategy_features
 
 
 def _load_dataset(manifest):
@@ -61,9 +56,9 @@ def _load_dataset(manifest):
     return df, y, protected_masks
 
 
-def _run_rung(rung, model_name, manifest, X_all, y, protected_masks, idx_train, idx_test):
+def _run_strategy(strategy, model_name, manifest, X_all, y, protected_masks, idx_train, idx_test):
     protected_cols = [pa.column for pa in manifest.protected_attributes]
-    feature_cols = rung_features(rung, manifest.core_features, manifest.proxy_features, protected_cols)
+    feature_cols = strategy_features(strategy, manifest.core_features, manifest.proxy_features, protected_cols)
     X = X_all[feature_cols]
     X_train, X_test = X.iloc[idx_train], X.iloc[idx_test]
     y_train = y.iloc[idx_train].to_numpy()
@@ -72,13 +67,15 @@ def _run_rung(rung, model_name, manifest, X_all, y, protected_masks, idx_train, 
     primary = manifest.protected_attributes[0].name
     disadv_train = protected_masks[primary].iloc[idx_train].to_numpy()
 
-    model = MODEL_FAMILIES[model_name](manifest.random_state)
-    if rung == "reweigh":
+    model = build_model(model_name, manifest.random_state)
+    if strategy == "reweigh":
         model.fit(X_train, y_train, sample_weight=reweigh(y_train, disadv_train))
     else:
         model.fit(X_train, y_train)
 
-    if rung == "threshold_equalized":
+    test_proba = model.predict_proba(X_test)[:, 1]
+
+    if strategy == "threshold_equalized":
         # Out-of-fold probabilities to fit thresholds on - an overfit model's
         # in-sample predict_proba on its own training rows is degenerately
         # confident (clustered near 0/1), which makes the threshold search
@@ -88,25 +85,26 @@ def _run_rung(rung, model_name, manifest, X_all, y, protected_masks, idx_train, 
         cv = min(3, int(np.bincount(y_train.astype(int)).min())) if len(np.unique(y_train)) > 1 else 1
         if cv >= 2:
             train_proba = cross_val_predict(
-                MODEL_FAMILIES[model_name](manifest.random_state), X_train, y_train,
+                build_model(model_name, manifest.random_state), X_train, y_train,
                 cv=cv, method="predict_proba")[:, 1]
         else:
             train_proba = model.predict_proba(X_train)[:, 1]
-        test_proba = model.predict_proba(X_test)[:, 1]
         disadv_test = protected_masks[primary].iloc[idx_test].to_numpy()
         y_pred, _ = equalize_thresholds(train_proba, disadv_train, test_proba, disadv_test)
     else:
         y_pred = np.asarray(model.predict(X_test)).astype(int)
 
-    return y_test, y_pred
+    return y_test, y_pred, test_proba
 
 
 def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None):
-    """Run the full ladder x model x metric grid for one manifest.
+    """Run the full strategy x model x metric grid for one manifest.
 
-    Returns a list of dict rows - one per (rung, model, protected attribute,
-    metric), plus one per (rung, model, attribute pair) for the
-    intersectional gap when two or more protected attributes are declared.
+    Returns (fairness_rows, performance_rows). fairness_rows has one dict per
+    (strategy, model, protected attribute, metric), plus one per (strategy,
+    model, attribute pair) for the intersectional gap when two or more
+    protected attributes are declared. performance_rows has one dict per
+    (strategy, model, performance metric).
     """
     rs = manifest.random_state if random_state is None else random_state
     df, y, protected_masks = _load_dataset(manifest)
@@ -120,11 +118,20 @@ def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None
         stratify=y if y.nunique() > 1 else None,
     )
 
-    rows = []
-    for rung in RUNGS:
+    fairness_rows = []
+    performance_rows = []
+    for strategy in STRATEGIES:
         for model_name in MODEL_FAMILIES:
-            y_test, y_pred = _run_rung(
-                rung, model_name, manifest, X_all, y, protected_masks, idx_train, idx_test)
+            y_test, y_pred, y_proba = _run_strategy(
+                strategy, model_name, manifest, X_all, y, protected_masks, idx_train, idx_test)
+
+            perf = compute_performance_metrics(y_test, y_pred, y_proba, n_resamples, random_state=rs)
+            for metric_name in PERFORMANCE_METRICS:
+                p = perf[metric_name]
+                performance_rows.append({
+                    "audit": manifest.name, "strategy": strategy, "model": model_name,
+                    "metric": metric_name, **p,
+                })
 
             for pa in manifest.protected_attributes:
                 disadv_test = protected_masks[pa.name].iloc[idx_test].to_numpy()
@@ -132,8 +139,8 @@ def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None
                     y_test, y_pred, disadv_test, n_resamples, n_permutations, random_state=rs)
                 for metric_name in METRICS:
                     m = metrics[metric_name]
-                    rows.append({
-                        "audit": manifest.name, "rung": rung, "model": model_name,
+                    fairness_rows.append({
+                        "audit": manifest.name, "strategy": strategy, "model": model_name,
                         "protected_attribute": pa.name, "metric": metric_name, **m,
                     })
 
@@ -144,8 +151,8 @@ def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None
                     inter = intersectional_report(
                         y_pred, mask_a, mask_b, n_resamples, n_permutations, random_state=rs)
                     isr = inter["intersectional"]
-                    rows.append({
-                        "audit": manifest.name, "rung": rung, "model": model_name,
+                    fairness_rows.append({
+                        "audit": manifest.name, "strategy": strategy, "model": model_name,
                         "protected_attribute": f"{pa_a.name}_x_{pa_b.name}",
                         "metric": "intersectional_demographic_parity_diff",
                         "value": isr["gap"], "ci_low": isr["ci_low"], "ci_high": isr["ci_high"],
@@ -154,68 +161,47 @@ def run_audit(manifest, n_resamples=2000, n_permutations=2000, random_state=None
                         "small_sample_warning": isr["small_sample_warning"],
                         "note": "superadditive" if inter["superadditive"] else None,
                     })
-    return rows
+    return fairness_rows, performance_rows
 
 
 def run_benchmark(root=".", audits=None, n_resamples=2000, n_permutations=2000):
     """Discover every audit.yaml under root (or use explicit manifest paths)
-    and run them all. Returns one tidy pandas.DataFrame across every audit."""
+    and run them all. Returns (fairness_df, performance_df) across every audit."""
     paths = [Path(a) for a in audits] if audits else discover_manifests(root)
-    all_rows = []
+    all_fairness = []
+    all_performance = []
     for path in paths:
         manifest = load_manifest(path)
-        all_rows.extend(run_audit(manifest, n_resamples, n_permutations))
-    return pd.DataFrame(all_rows)
+        fairness_rows, performance_rows = run_audit(manifest, n_resamples, n_permutations)
+        all_fairness.extend(fairness_rows)
+        all_performance.extend(performance_rows)
+    return pd.DataFrame(all_fairness), pd.DataFrame(all_performance)
 
 
-def summarize(results: pd.DataFrame) -> pd.DataFrame:
-    """One row per (audit, rung, protected_attribute, metric): the point
+def summarize(fairness_df: pd.DataFrame) -> pd.DataFrame:
+    """One row per (audit, strategy, protected_attribute, metric): the point
     estimate averaged across the three model families, plus how many of
     them found the gap statistically significant."""
-    if results.empty:
-        return results
+    if fairness_df.empty:
+        return fairness_df
     return (
-        results.groupby(["audit", "rung", "protected_attribute", "metric"], as_index=False)
+        fairness_df.groupby(["audit", "strategy", "protected_attribute", "metric"], as_index=False)
         .agg(mean_value=("value", "mean"),
              n_models_significant=("significant", "sum"),
              n_models=("model", "count"))
     )
 
 
-def plot_ladder(results: pd.DataFrame, audit: str, out_path,
-               metric: str = "demographic_parity_diff"):
-    """Bar chart of `metric`'s point estimate across the five ladder rungs
-    (averaged across model families) for one audit. Requires matplotlib,
-    which is an optional extra (`pip install faircode[benchmark]`)."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    subset = results[(results["audit"] == audit) & (results["metric"] == metric)]
-    if subset.empty:
-        raise ValueError(f"no rows for audit={audit!r} metric={metric!r}")
-
-    grouped = subset.groupby("rung")["value"].mean().reindex(RUNGS)
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    ax.bar(grouped.index, grouped.to_numpy(), color="#4C72B0")
-    ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_ylabel(metric.replace("_", " "))
-    ax.set_title(f"{audit}: {metric.replace('_', ' ')} across the mitigation ladder")
-    ax.tick_params(axis="x", rotation=20)
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150)
-    plt.close(fig)
-
-
-def write_report(results: pd.DataFrame, out_dir, make_plots: bool = True,
-                 plot_metric: str = "demographic_parity_diff"):
-    """Write results.csv (full tidy table) and summary.csv (per-model-family
-    average) to out_dir, plus one <audit>_ladder.png per audit if make_plots."""
+def write_report(fairness_df: pd.DataFrame, performance_df: pd.DataFrame, out_dir,
+                 make_plots: bool = True, plot_metric: str = "demographic_parity_diff"):
+    """Write results_fairness.csv, results_performance.csv, and a summary.csv
+    to out_dir, plus (if make_plots) render figures/*.png via faircode.figures."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    results.to_csv(out_dir / "results.csv", index=False)
-    summarize(results).to_csv(out_dir / "summary.csv", index=False)
-    if make_plots and not results.empty:
-        for audit in results["audit"].unique():
-            plot_ladder(results, audit, out_dir / f"{audit}_ladder.png", metric=plot_metric)
+    fairness_df.to_csv(out_dir / "results_fairness.csv", index=False)
+    performance_df.to_csv(out_dir / "results_performance.csv", index=False)
+    summarize(fairness_df).to_csv(out_dir / "summary.csv", index=False)
+    if make_plots and not fairness_df.empty:
+        from .figures import generate_figures
+        generate_figures(out_dir, metric=plot_metric)
     return out_dir

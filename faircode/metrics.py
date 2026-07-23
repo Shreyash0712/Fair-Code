@@ -18,11 +18,21 @@ CI + permutation test on a mean gap). disparate_impact_ratio needs its own
 bootstrap/permutation since a ratio's sampling distribution isn't a
 difference of means; the helpers below mirror significance.py's chunked
 resampling so peak memory stays bounded on the larger audit datasets.
+
+Also here: accuracy, AUC, and F1 - plain model-performance metrics (not
+group comparisons), used for the results_performance.csv table alongside the
+six fairness metrics above. accuracy and f1 get a bootstrap CI (vectorized
+the same chunked way as the fairness metrics); auc gets a point estimate
+only - each bootstrap resample needs an O(n log n) rank sort, which is too
+expensive to repeat thousands of times at the scale of these audits. None of
+the three get a permutation p-value: unlike a fairness gap, there's no
+two-group null hypothesis to test a single performance number against.
 """
 
 from __future__ import annotations
 
 import numpy as np
+from sklearn.metrics import roc_auc_score
 
 from .significance import significance_report
 
@@ -173,3 +183,94 @@ def compute_metrics(y_true, y_pred, disadvantaged, n_resamples=2000,
         correct[disadv], correct[adv], n_resamples, n_permutations, confidence, random_state)
 
     return results
+
+
+# ── Performance metrics (accuracy, AUC, F1) - not group comparisons ─────────
+
+PERFORMANCE_METRICS = ("accuracy", "auc", "f1")
+
+
+def accuracy(y_true, y_pred) -> float:
+    y_true = np.asarray(y_true, dtype=int)
+    y_pred = np.asarray(y_pred, dtype=int)
+    return float((y_true == y_pred).mean())
+
+
+def f1(y_true, y_pred) -> float:
+    y_true = np.asarray(y_true, dtype=int)
+    y_pred = np.asarray(y_pred, dtype=int)
+    tp = int(((y_true == 1) & (y_pred == 1)).sum())
+    fp = int(((y_true == 0) & (y_pred == 1)).sum())
+    fn = int(((y_true == 1) & (y_pred == 0)).sum())
+    if tp == 0:
+        return 0.0
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    return float(2 * precision * recall / (precision + recall))
+
+
+def auc(y_true, y_proba) -> float:
+    y_true = np.asarray(y_true, dtype=int)
+    if len(np.unique(y_true)) < 2:
+        return float("nan")
+    return float(roc_auc_score(y_true, y_proba))
+
+
+def _bootstrap_accuracy_f1(y_true, y_pred, n_resamples, confidence, random_state):
+    y_true = np.asarray(y_true, dtype=int)
+    y_pred = np.asarray(y_pred, dtype=int)
+    n = len(y_true)
+    rng = np.random.default_rng(random_state)
+
+    correct = (y_true == y_pred)
+    true_pos = (y_true == 1) & (y_pred == 1)
+    false_pos = (y_true == 0) & (y_pred == 1)
+    false_neg = (y_true == 1) & (y_pred == 0)
+
+    chunk = max(1, min(n_resamples, 1_000_000 // max(n, 1)))
+    acc_samples = np.empty(n_resamples)
+    f1_samples = np.empty(n_resamples)
+    done = 0
+    while done < n_resamples:
+        size = min(chunk, n_resamples - done)
+        idx = rng.integers(0, n, size=(size, n))
+        acc_samples[done:done + size] = correct[idx].mean(axis=1)
+        tp = true_pos[idx].sum(axis=1).astype(float)
+        fp = false_pos[idx].sum(axis=1).astype(float)
+        fn = false_neg[idx].sum(axis=1).astype(float)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            precision = np.where(tp + fp > 0, tp / (tp + fp), 0.0)
+            recall = np.where(tp + fn > 0, tp / (tp + fn), 0.0)
+            denom = precision + recall
+            f1_samples[done:done + size] = np.where(denom > 0, 2 * precision * recall / denom, 0.0)
+        done += size
+
+    alpha = 1.0 - confidence
+    acc_ci = (float(np.percentile(acc_samples, 100 * alpha / 2)),
+             float(np.percentile(acc_samples, 100 * (1 - alpha / 2))))
+    f1_ci = (float(np.percentile(f1_samples, 100 * alpha / 2)),
+            float(np.percentile(f1_samples, 100 * (1 - alpha / 2))))
+    return acc_ci, f1_ci
+
+
+def compute_performance_metrics(y_true, y_pred, y_proba, n_resamples=2000,
+                                confidence=0.95, random_state=42):
+    """accuracy, auc, and f1 for one set of held-out predictions.
+
+    y_proba is the predicted probability of the positive class (used for auc
+    only); pass None to skip auc (its result will be NaN with no CI).
+    Returns {metric_name: {value, ci_low, ci_high, n}} - no p_value/significant
+    keys, since these aren't group-comparison gaps.
+    """
+    y_true = np.asarray(y_true, dtype=int)
+    y_pred = np.asarray(y_pred, dtype=int)
+    n = len(y_true)
+
+    acc_ci, f1_ci = _bootstrap_accuracy_f1(y_true, y_pred, n_resamples, confidence, random_state)
+    auc_value = auc(y_true, y_proba) if y_proba is not None else float("nan")
+
+    return {
+        "accuracy": {"value": accuracy(y_true, y_pred), "ci_low": acc_ci[0], "ci_high": acc_ci[1], "n": n},
+        "f1": {"value": f1(y_true, y_pred), "ci_low": f1_ci[0], "ci_high": f1_ci[1], "n": n},
+        "auc": {"value": auc_value, "ci_low": None, "ci_high": None, "n": n},
+    }

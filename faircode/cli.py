@@ -110,15 +110,16 @@ def main(argv: list[str] | None = None) -> int:
                    help="explicit manifest paths (default: discover */audit.yaml under --root)")
     b.add_argument("--root", default=".", metavar="PATH",
                    help="directory to search for */audit.yaml (default: current directory)")
-    b.add_argument("--out", default="benchmark_results", metavar="DIR",
-                   help="output directory for results.csv, summary.csv, and plots "
-                        "(default: benchmark_results)")
+    b.add_argument("--out", default="results", metavar="DIR",
+                   help="output directory for results_fairness.csv, "
+                        "results_performance.csv, summary.csv, and figures/ "
+                        "(default: results)")
     b.add_argument("--n-resamples", type=int, default=2000, metavar="N",
                    help="bootstrap resamples per metric (default: 2000)")
     b.add_argument("--n-permutations", type=int, default=2000, metavar="N",
                    help="permutation-test shuffles per metric (default: 2000)")
     b.add_argument("--no-plots", action="store_true",
-                   help="skip writing the per-audit ladder PNGs (no matplotlib needed)")
+                   help="skip rendering figures/*.png (no matplotlib needed)")
 
     args = parser.parse_args(argv)
 
@@ -185,18 +186,18 @@ def main(argv: list[str] | None = None) -> int:
                   f"(pip install faircode[benchmark]): {exc}", file=sys.stderr)
             return 2
 
-        results = run_benchmark(
+        fairness_df, performance_df = run_benchmark(
             root=args.root, audits=args.manifests or None,
             n_resamples=args.n_resamples, n_permutations=args.n_permutations,
         )
-        if results.empty:
+        if fairness_df.empty:
             print(f"error: no audit.yaml manifests found under {args.root}", file=sys.stderr)
             return 2
 
-        write_report(results, args.out, make_plots=not args.no_plots)
-        n_audits = results["audit"].nunique()
-        print(f"Ran {n_audits} audit(s), wrote {len(results)} result rows to {args.out}/",
-              file=sys.stderr)
+        write_report(fairness_df, performance_df, args.out, make_plots=not args.no_plots)
+        n_audits = fairness_df["audit"].nunique()
+        print(f"Ran {n_audits} audit(s), wrote {len(fairness_df)} fairness rows and "
+              f"{len(performance_df)} performance rows to {args.out}/", file=sys.stderr)
         return 0
 
     parser.print_help()

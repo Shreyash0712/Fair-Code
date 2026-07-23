@@ -1,7 +1,7 @@
-"""Five-step mitigation ladder - Layer 2 of the benchmark harness.
+"""Five mitigation strategies - Layer 2 of the benchmark harness.
 
 Given a manifest's core/proxy/protected feature partition, builds the
-train/test feature set for five rungs of increasing mitigation:
+train/test feature set for five strategies of increasing mitigation:
 
   1. naive              - every feature; protected attributes included
   2. drop_protected      - protected attributes removed, proxies retained
@@ -17,8 +17,8 @@ train/test feature set for five rungs of increasing mitigation:
                             selection rate matches the overall base rate
                             (a simplified demographic-parity post-processor)
 
-Rungs 4 and 5 key their group/label balancing off the manifest's FIRST
-declared protected attribute; every rung is still scored against every
+Strategies 4 and 5 key their group/label balancing off the manifest's FIRST
+declared protected attribute; every strategy is still scored against every
 declared protected attribute in faircode.benchmark, so a contributor can see
 whether mitigating one attribute helps or harms another.
 """
@@ -30,7 +30,7 @@ import pandas as pd
 import pandas.api.types as pdt
 from sklearn.preprocessing import LabelEncoder
 
-RUNGS = ("naive", "drop_protected", "drop_proxies", "reweigh", "threshold_equalized")
+STRATEGIES = ("naive", "drop_protected", "drop_proxies", "reweigh", "threshold_equalized")
 
 _THRESHOLD_GRID = np.linspace(0.0, 1.0, 101)
 
@@ -59,10 +59,10 @@ def encode_features(df: pd.DataFrame, columns: list) -> pd.DataFrame:
     return out
 
 
-def rung_features(rung: str, core: list, proxies: list, protected: list) -> list:
-    if rung == "naive":
+def strategy_features(strategy: str, core: list, proxies: list, protected: list) -> list:
+    if strategy == "naive":
         return list(dict.fromkeys(core + proxies + protected))
-    if rung == "drop_protected":
+    if strategy == "drop_protected":
         return list(dict.fromkeys(core + proxies))
     return list(core)  # drop_proxies, reweigh, threshold_equalized
 
