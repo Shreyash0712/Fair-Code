@@ -70,3 +70,39 @@ jobs:
           set -e
           faircode profile "Insurance Denial/insurance.csv"
           faircode profile "Benefits Denial/adult.csv" --json > /dev/null
+
+  benchmark-harness:
+    # Runs the benchmark harness's own tests plus a real end-to-end pass over
+    # ONE small audit, so a contributed audit.yaml (or a change to
+    # manifest.py/strategies.py/models.py/metrics.py/benchmark.py) that
+    # breaks the pipeline is caught in the PR. The full seven-domain sweep is
+    # deliberately NOT run here - fairlearn's in-processing strategy refits
+    # its base estimator multiple times per (audit, model) cell and takes
+    # minutes on the larger datasets. See "Reproducibility & Paper Freeze" in
+    # README.md: run the full benchmark locally and commit results/ output.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install faircode[benchmark] + pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[benchmark]" pytest
+
+      - name: Run benchmark-harness unit + integration tests
+        run: pytest tests/test_metrics.py tests/test_manifest.py tests/test_strategies.py tests/test_benchmark.py -v
+
+      - name: Smoke-test the CLI end-to-end on one small audit
+        run: |
+          set -e
+          faircode benchmark "German Credit Lending/audit.yaml" \
+            --n-resamples 100 --n-permutations 100 --no-plots \
+            --out /tmp/benchmark-smoke
+          test -s /tmp/benchmark-smoke/results_fairness.csv
+          test -s /tmp/benchmark-smoke/results_performance.csv
+          echo "Benchmark harness smoke test passed: $(wc -l < /tmp/benchmark-smoke/results_fairness.csv) fairness rows written"
