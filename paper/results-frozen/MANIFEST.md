@@ -6,10 +6,10 @@ contributors add audits or rerun the harness; this folder does not - regenerate 
 
 ## Provenance
 
-- **Git commit:** `00dbb38b2ff467ff2985848404fe3d10a66cf001` (WORKING TREE HAD UNCOMMITTED CHANGES AT FREEZE TIME)
+- **Git commit:** `2fa4a6693210a1c99932b8ec7a0bd20f052597aa`
 - **Git branch:** `main`
 - **Python:** 3.13.2
-- **scikit-learn:** 1.8.0
+- **scikit-learn:** 1.9.0
 - **fairlearn:** 0.14.0
 - **pandas:** 3.0.2
 - **numpy:** 2.4.4
@@ -31,18 +31,9 @@ repo that week":
 ## Reproducing this snapshot
 
 ```bash
-git checkout 00dbb38b2ff467ff2985848404fe3d10a66cf001
+git checkout 2fa4a6693210a1c99932b8ec7a0bd20f052597aa
 pip install -r requirements-lock.txt
 pip install -e ".[benchmark]"
 faircode benchmark --out results/
 python3 scripts/freeze_paper_results.py
-```
-
-## Tag
-
-This snapshot corresponds to the intended tag `v1.0-paper` - not yet created. Run manually:
-
-```bash
-git tag -a v1.0-paper -m "Results frozen for paper citation"
-git push origin v1.0-paper
 ```
