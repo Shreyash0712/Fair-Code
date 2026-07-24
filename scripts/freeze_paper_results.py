@@ -59,6 +59,13 @@ def freeze(tag: str | None = None) -> Path:
         print(f"error: {RESULTS_DIR} does not exist - run `faircode benchmark` first", file=sys.stderr)
         raise SystemExit(2)
 
+    # Capture provenance BEFORE we rewrite FROZEN_DIR - otherwise the frozen
+    # files this script writes would themselves show up as uncommitted changes
+    # and the dirty flag would always be True on any real freeze.
+    commit = _run(["git", "rev-parse", "HEAD"]) or "unknown (not a git checkout?)"
+    branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"]) or "unknown"
+    dirty = bool(_run(["git", "status", "--porcelain"]))
+
     if FROZEN_DIR.exists():
         shutil.rmtree(FROZEN_DIR)
     FROZEN_DIR.mkdir(parents=True)
@@ -74,9 +81,6 @@ def freeze(tag: str | None = None) -> Path:
     if LOCKFILE.exists():
         shutil.copy2(LOCKFILE, FROZEN_DIR / "requirements-lock.txt")
 
-    commit = _run(["git", "rev-parse", "HEAD"]) or "unknown (not a git checkout?)"
-    branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"]) or "unknown"
-    dirty = bool(_run(["git", "status", "--porcelain"]))
     manifests = _discover_manifests()
 
     manifest_lines = [
