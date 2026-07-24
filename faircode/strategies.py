@@ -67,7 +67,7 @@ _REDUCTIONS_CONSTRAINTS = {
 # seven-domain run impractical. 10 iterations still converges well enough to
 # demonstrate the constraint's effect. Raise this for a final,
 # paper-quality run where wall-clock time isn't the binding constraint.
-EXPONENTIATED_GRADIENT_MAX_ITER = 10
+EXPONENTIATED_GRADIENT_MAX_ITER = 50
 
 
 def encode_features(df: pd.DataFrame, columns: list) -> pd.DataFrame:
