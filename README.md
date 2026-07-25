@@ -945,11 +945,11 @@ The full public roadmap - with phases, completion status, and content schedule -
 
 | Metric | Count |
 |--------|------:|
-| GitHub Stars | 38 |
+| GitHub Stars | 40 |
 | External Contributors | 9 |
-| Forks | 14 |
-| Watching | 7 |
-| Combined Social Reach (Instagram + LinkedIn) | ~16K |
+| Forks | 15 |
+| Watching | 8 |
+| Combined Social Reach (Instagram + LinkedIn) | ~18K |
 | Code Audits Published | 7 |
 | Explainers Published | 30 |
 

@@ -2,11 +2,11 @@
 
 # Fair Code - Metrics Tracker
 
-![Stars](https://img.shields.io/badge/Stars-38-brightgreen?style=flat-square&logo=github)
+![Stars](https://img.shields.io/badge/Stars-40-brightgreen?style=flat-square&logo=github)
 ![Contributors](https://img.shields.io/badge/Contributors-9-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-14-orange?style=flat-square)
-![Watching](https://img.shields.io/badge/Watching-7-yellow?style=flat-square)
-![Explainers](https://img.shields.io/badge/Explainers-29-blueviolet?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-15-orange?style=flat-square)
+![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-30-blueviolet?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.
@@ -29,11 +29,11 @@ Weekly snapshot of project health. Updated every Friday.
 
 ## Weekly Metrics
 
-| Week | Stars | Forks | Watching | Contributors | Posts | Social Views | Issues Closed | Code Audits |
-|------|------:|------:|---------:|-------------:|------:|-------------:|--------------:|------------:|
-| 2026-W26 (baseline) | 27 | 8 | - | 7 | - | ~10K total | - | 6 total |
-| 2026-W27 | 27 | 8 | - | 7 | - | ~10K total | - | 6 total |
-| 2026-W30 | 38 | 14 | 7 | 9 | - | ~16K total | 3 | 7 total |
+| Week | Stars | Forks | Watching | Contributors | Social Views | Issues Closed | Code Audits |
+|------|------:|------:|---------:|-------------:|-------------:|--------------:|------------:|
+| 2026-W26 (baseline) | 27 | 8 | - | 7 | ~10K total | - | 6 total |
+| 2026-W27 | 27 | 8 | - | 7 | ~10K total | - | 6 total |
+| 2026-W30 | 40 | 15 | 8 | 9 | ~18K total | 3 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -45,14 +45,14 @@ Weekly snapshot of project health. Updated every Friday.
 
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
-| Stars | 38 | 50+ | End of 2026 |
-| Forks | 14 | 15+ | End of 2026 |
-| Watching | 7 | 15+ | End of 2026 |
+| Stars | 40 | 50+ | End of 2026 |
+| Forks | 15 | 15+ | End of 2026 |
+| Watching | 8 | 15+ | End of 2026 |
 | Contributors | 9 | 10+ | End of 2026 |
-| Social reach | ~16K | 10K/mo | Q3 2026 |
+| Social reach | ~18K | 10K/mo | Q3 2026 |
 | Issues closed | 3 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 29 | 30+ | End of 2026 |
+| Explainers | 30 | 30+ | End of 2026 |
 
 ---
 
@@ -69,4 +69,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **[X] stars**, **[X] contributors**, **[X] forks**, and **[X] social views**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **40 stars**, **9 contributors**, **15 forks**, and **~18K social views**.
