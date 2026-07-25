@@ -7,12 +7,13 @@
 ![Phase 3](https://img.shields.io/badge/Phase%203-In%20Progress-yellow?style=flat-square)
 ![Phase 4](https://img.shields.io/badge/Phase%204-In%20Progress-yellow?style=flat-square)
 ![Phase 5](https://img.shields.io/badge/Phase%205-In%20Progress-yellow?style=flat-square)
+![Phase 6](https://img.shields.io/badge/Phase%206-Paper%20In%20Review-orange?style=flat-square)
 
 This is the public roadmap for Fair Code. It tracks what has been built, what is actively in progress, and what comes next.
 
 *Last updated: July 2026*
 
-[Where We Are](#where-we-are) · Phase 1 · Phase 2 · Phase 3 · Phase 4 · Phase 5 · [Content Schedule](#content-schedule) · [How to Contribute](#how-to-contribute)
+[Where We Are](#where-we-are) · Phase 1 · Phase 2 · Phase 3 · Phase 4 · Phase 5 · Phase 6 · [Content Schedule](#content-schedule) · [How to Contribute](#how-to-contribute)
 
 </div>
 
@@ -27,6 +28,13 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 | Stars | Contributors | Forks | Watching | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | 40 | 9 | 15 | 8 | 18K+ | 7 | 30 | ✅ every push/PR |
+
+> 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `2fa4a66`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
+
+**Version & release gate:**
+
+- Current release: **v2.0.0**
+- **v3.0.0 is blocked until the paper is published.** The next major version bundles re-run benchmarks and new audits — both frozen right now — so the version cannot move until Phase 6 completes.
 
 ---
 
@@ -89,9 +97,9 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 
 ## Phase 3 - Code Audits 🔄 In Progress
 
-**Status: 7 of 9 planned audits published**
+**Status: 7 of 9 planned audits published — new audits on hold for the paper freeze**
 
-Each audit follows the same pipeline: train a biased model → measure the fairness gap → remove proxies → retrain → measure again.
+Each audit follows the same pipeline: train a biased model → measure the fairness gap → remove proxies → retrain → measure again. The paper covers exactly these seven domains, so the two remaining audits are parked until publication (a timing hold, not a rejection — see [CLAUDE.md](CLAUDE.md)).
 
 - [x] COMPAS - Criminal Justice Bias
 - [x] AI Fair Recruitment - Hiring Bias
@@ -100,9 +108,9 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 - [x] Benefits Denial - Welfare Eligibility Bias
 - [x] Healthcare Readmission - Clinical Bias
 - [x] Tenant Screening - Rental Application Bias
-- [ ] HMDA Mortgage Lending Bias
-- [ ] Facial Recognition Accuracy Gaps (MIT Gender Shades methodology)
 - [x] LLM bias audit
+- [ ] HMDA Mortgage Lending Bias *(post-paper)*
+- [ ] Facial Recognition Accuracy Gaps (MIT Gender Shades methodology) *(post-paper)*
 
 ---
 
@@ -143,6 +151,22 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 
 ---
 
+## Phase 6 - Research Paper and Publication 🔄 In Progress
+
+**Status: Results frozen - paper in peer review**
+
+Publish a peer-reviewed paper on the cross-domain fairness benchmark. This phase gates the whole analysis side of the project: the results stay frozen and the version stays at v2.0.0 until it completes.
+
+- [x] Freeze benchmark results at tag `v1.0-paper` (commit `2fa4a66`)
+- [x] `CLAUDE.md` paper-freeze policy for the benchmark and audits
+- [ ] Submit manuscript to peer review
+- [ ] Address reviewer feedback (may require a re-run + re-freeze — flag, never silently patch)
+- [ ] Paper accepted and published
+- [ ] Add citation and DOI to [README.md](README.md) and [CITATION.cff](CITATION.cff)
+- [ ] Lift the freeze: re-run the benchmark, merge parked audits, cut **v3.0.0** (`paper/results-frozen/` stays untouched as the permanent record)
+
+---
+
 ## Content Schedule
 
 **During school:**
@@ -159,7 +183,7 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to claim an open issue or propose a new audit or explainer.
 
-If you want to take on a Phase 3 audit (HMDA, facial recognition, or LLM bias), open an issue first with a brief description of your approach and the dataset you plan to use.
+New audits are welcome, but during the paper freeze they cannot be merged into `main` — they'll be parked on a branch or held with a `post-paper` label until publication (a timing hold, not a rejection). Explainers, docs, and website content are unaffected and merge as usual. See [CLAUDE.md](CLAUDE.md) before opening a PR.
 
 ---
 
