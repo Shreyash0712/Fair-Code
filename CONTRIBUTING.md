@@ -8,6 +8,8 @@
 
 </div>
 
+> **Before opening a PR, read [CLAUDE.md](CLAUDE.md)** — the repo is under a paper freeze and some changes are on hold until publication.
+
 Thanks for contributing. Fair Code accepts two kinds of additions:
 
 - **Audits** - a real dataset, a biased model, a fair model, proxy analysis, and before/after results
