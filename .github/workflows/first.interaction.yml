@@ -14,18 +14,34 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/first-interaction@v3
+      - name: Greet First-Time Contributor
+        uses: actions/github-script@v8
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          issue_message: |
-            Hey @${{ github.actor }}, thanks for raising this. I really appreciate it.
-
-            Fair Code exists because bias in AI has real consequences for real people, so every issue matters here, whether it's a bug, a dataset question, or something that just didn't feel right. We'll take a look and get back to you.
-
-            In the meantime, feel free to explore the [live audits](https://www.thefaircode.xyz) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.
-          pr_message: |
-            Hey @${{ github.actor }}, your first PR on Fair Code, that's awesome, thank you.
-
-            This project is about making AI more accountable, and contributions like yours are what keep that work going. We'll review your changes shortly.
-
-            If you haven't already, give the [contributing guide](CONTRIBUTING.md) a quick read: it covers how audits are structured and what we look for in a review.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const creator = context.payload.sender.login;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const number = context.issue.number;
+            const isPR = !!context.payload.pull_request;
+            const typeQuery = isPR ? 'is:pr' : 'is:issue';
+            
+            // Search for previous issues or PRs by the same author
+            const query = `repo:${owner}/${repo} ${typeQuery} author:${creator}`;
+            const result = await github.rest.search.issuesAndPullRequests({ q: query, per_page: 5 });
+            
+            // Check if any returned item was created before the current one
+            const hasPrior = result.data.items.some(item => item.number < number);
+            
+            if (!hasPrior) {
+              const issueMsg = `Hey @${creator}, thanks for raising this. I really appreciate it.\n\nFair Code exists because bias in AI has real consequences for real people, so every issue matters here, whether it's a bug, a dataset question, or something that just didn't feel right. We'll take a look and get back to you.\n\nIn the meantime, feel free to explore the [live audits](https://www.thefaircode.xyz) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.`;
+              
+              const prMsg = `Hey @${creator}, your first PR on Fair Code, that's awesome, thank you.\n\nThis project is about making AI more accountable, and contributions like yours are what keep that work going. We'll review your changes shortly.\n\nIf you haven't already, give the [contributing guide](CONTRIBUTING.md) a quick read: it covers how audits are structured and what we look for in a review.`;
+              
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body: isPR ? prMsg : issueMsg
+              });
+            }
