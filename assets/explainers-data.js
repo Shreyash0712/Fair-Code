@@ -272,7 +272,7 @@ window.FAIR_CODE_EXPLAINERS = [
     "slug": "selection-bias",
     "title": "What Is Selection Bias?",
     "subtitle": "A dataset does not remember the people who were turned away before it was collected.",
-    "summary": "Learn why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy variable is even considered. See why the German Credit Lending dataset's 700/300 good/bad split contains zero rejected applicants, and why that reject-inference gap survives Audit 03's proxy-variable fix untouched. Includes a Berkson's-paradox simulation as detection code.",
+    "summary": "Learn why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy is even considered. See why the German Credit Lending dataset's 700/300 good/bad split contains zero rejected applicants, and why that reject-inference gap survives Audit 03's proxy-variable fix untouched. Includes a Berkson's-paradox simulation as detection code.",
     "tags": [
       "data",
       "detection"
@@ -287,6 +287,16 @@ window.FAIR_CODE_EXPLAINERS = [
       "detection",
       "metrics",
       "explainability"
+    ]
+  },
+  {
+    "slug": "roc-curve-auc",
+    "title": "What Is a ROC Curve and AUC?",
+    "subtitle": "Why one threshold-free score can look great and still be unfair.",
+    "summary": "Learn what a ROC curve and its area (AUC) actually measure - the model's ability to rank cases by risk - and why that single headline number hides the two things fairness depends on: where you set the decision threshold, and whether ranking quality is equal across groups. See how COMPAS's ordinary 0.68 baseline AUC (frozen from paper/results-frozen) sat on top of a large racial false-positive gap. Includes detection code for per-group AUC and overlaid ROC curves.",
+    "tags": [
+      "metrics",
+      "detection"
     ]
   }
 ];

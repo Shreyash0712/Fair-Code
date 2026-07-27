@@ -27,7 +27,7 @@ EXPLAINERS_DIR = ROOT / "explainers"
 DATA_JSON = ROOT / "assets" / "explainers-data.json"
 DATA_JS = ROOT / "assets" / "explainers-data.js"
 SITEMAP = ROOT / "sitemap.xml"
-SITE_URL = "https://thefaircode.xyz"
+SITE_URL = "https://www.thefaircode.xyz"
 REPO_URL = "https://github.com/yakew7/Fair-Code"
 
 PROJECT_ANCHORS = {
@@ -275,6 +275,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:title" content="{title} · Fair Code">
 <meta property="og:description" content="{summary}">
 <meta property="og:type" content="article">
+<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="{canonical}">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{title} · Fair Code">
@@ -397,6 +398,11 @@ def build_jsonld(entry, canonical):
     data = {
         "@context": "https://schema.org",
         "@type": "DefinedTerm",
+        "author": {
+            "@type": "Person",
+            "name": "Yash Kewlani",
+            "url": "https://github.com/yakew7",
+        },
         "name": entry["title"],
         "description": entry["summary"],
         "url": canonical,

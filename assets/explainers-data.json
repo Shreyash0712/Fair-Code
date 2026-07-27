@@ -208,5 +208,12 @@
     "subtitle": "When humans defer to algorithms, bias gets automated too.",
     "summary": "Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.",
     "tags": ["detection", "metrics", "explainability"]
+  },
+  {
+    "slug": "roc-curve-auc",
+    "title": "What Is a ROC Curve and AUC?",
+    "subtitle": "Why one threshold-free score can look great and still be unfair.",
+    "summary": "Learn what a ROC curve and its area (AUC) actually measure - the model's ability to rank cases by risk - and why that single headline number hides the two things fairness depends on: where you set the decision threshold, and whether ranking quality is equal across groups. See how COMPAS's ordinary 0.68 baseline AUC (frozen from paper/results-frozen) sat on top of a large racial false-positive gap. Includes detection code for per-group AUC and overlaid ROC curves.",
+    "tags": ["metrics", "detection"]
   }
 ]
