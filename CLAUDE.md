@@ -8,7 +8,7 @@ The benchmark results in this repo are cited in a research paper currently in **
 The paper quotes exact numbers frozen at:
 
 - **Tag:** `v1.0-paper`
-- **Commit:** `2fa4a66`
+- **Commit:** `bbef2ba` (the commit the `v1.0-paper` tag points to; provenance/code state recorded in `paper/results-frozen/MANIFEST.md` is `2fa4a66`, whose code is identical and reproduces these numbers)
 
 **Nothing that affects the benchmark results may change until the paper is published.**
 Any drift makes the paper's tables disagree with the repo — a reviewer will catch it.

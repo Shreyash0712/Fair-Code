@@ -29,7 +29,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | 40 | 9 | 15 | 8 | 18K+ | 7 | 30 | ✅ every push/PR |
 
-> 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `2fa4a66`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
+> 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
 **Version & release gate:**
 
@@ -157,7 +157,7 @@ Go deeper on measurement - fairness dashboards, interactive notebooks, and stati
 
 Publish a peer-reviewed paper on the cross-domain fairness benchmark. This phase gates the whole analysis side of the project: the results stay frozen and the version stays at v2.0.0 until it completes.
 
-- [x] Freeze benchmark results at tag `v1.0-paper` (commit `2fa4a66`)
+- [x] Freeze benchmark results at tag `v1.0-paper` (commit `bbef2ba`)
 - [x] `CLAUDE.md` paper-freeze policy for the benchmark and audits
 - [ ] Submit manuscript to peer review
 - [ ] Address reviewer feedback (may require a re-run + re-freeze — flag, never silently patch)
