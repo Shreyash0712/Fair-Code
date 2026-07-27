@@ -19,6 +19,29 @@ Consistency matters here. It is what makes the repo credible and easy to review.
 
 ---
 
+## Contributing during the paper freeze
+
+Fair Code's benchmark results are cited in a research paper currently in peer review, so the repo is under a **paper freeze**. This changes *what* you can contribute right now, not *whether* you can — most of the project is still wide open.
+
+**✅ Open now — merges as usual:**
+
+- **Explainers** — new `.md` files in `explainers/`
+- **Website content** and `assets/*.json` entries
+- **Documentation** — README prose, this guide, `CHANGELOG.md`
+- **Typo and clarity fixes** in prose
+- **Social media caption files**
+
+**⏸️ On hold until the paper is published:**
+
+- **New audits** — the paper covers exactly seven domains, so new audits cannot merge into `main` yet. This is a **timing hold, not a rejection**: open a PR anyway (it will be parked on a branch or labeled `post-paper`) and it merges once the freeze lifts.
+- **Any change to the frozen results** or the reproducibility parameters (`random_state`, split, iteration counts, the fairness constraint or metrics). If you think you found a bug in the analysis code, **flag it in an issue — do not silently fix it.**
+
+**One rule for explainers:** if your explainer quotes a Fair Code result, use the frozen numbers in [`paper/results-frozen/`](paper/results-frozen/) — never re-run your own.
+
+Full policy: [CLAUDE.md](CLAUDE.md).
+
+---
+
 ## Quick path
 
 1. Check the roadmap in [README.md](README.md#whats-next).
