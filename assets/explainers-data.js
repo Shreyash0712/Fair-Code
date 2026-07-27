@@ -298,5 +298,48 @@ window.FAIR_CODE_EXPLAINERS = [
       "metrics",
       "detection"
     ]
+  },
+  {
+    "slug": "class-imbalance",
+    "title": "What Is Class Imbalance?",
+    "subtitle": "When a 99% accuracy score just means the model ignored the 1% that mattered.",
+    "summary": "Learn why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups, and how common fixes (oversampling, undersampling, SMOTE, class weights) can either help or introduce new bias.",
+    "tags": [
+      "data",
+      "metrics",
+      "detection"
+    ]
+  },
+  {
+    "slug": "bias-variance-tradeoff",
+    "title": "What Is the Bias-Variance Trade-off?",
+    "subtitle": "Why an overfit model can memorize the majority and fail the minority.",
+    "summary": "Learn the difference between statistical bias and societal bias, and see how the classic trade-off between underfitting and overfitting impacts fairness across demographic groups.",
+    "tags": [
+      "detection",
+      "explainability",
+      "data"
+    ]
+  },
+  {
+    "slug": "confusion-matrix",
+    "title": "What Is a Confusion Matrix?",
+    "subtitle": "The foundational building block behind most fairness metrics.",
+    "summary": "Learn how a confusion matrix breaks down accuracy into true positives, true negatives, false positives, and false negatives, and why derived metrics like FPR and FNR are essential for detecting bias.",
+    "tags": [
+      "metrics",
+      "explainability"
+    ]
+  },
+  {
+    "slug": "protected-attribute",
+    "title": "What Is a Protected Attribute?",
+    "subtitle": "Why removing race from a dataset does not remove the bias.",
+    "summary": "Learn what a protected attribute is, how the law recognizes it, and why the \"fairness through unawareness\" approach fails by hiding the bias behind proxies.",
+    "tags": [
+      "data",
+      "explainability",
+      "detection"
+    ]
   }
 ];

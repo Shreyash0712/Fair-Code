@@ -99,4 +99,16 @@
   <url>
     <loc>https://www.thefaircode.xyz/explainers/roc-curve-auc.html</loc>
   </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/class-imbalance.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/bias-variance-tradeoff.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/confusion-matrix.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/protected-attribute.html</loc>
+  </url>
 </urlset>

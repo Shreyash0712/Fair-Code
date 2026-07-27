@@ -210,8 +210,12 @@ Fair-Code/
 │   ├── supervised-learning.md
 │   ├── unsupervised-learning.md
 │   ├── model-drift.md
-│   └── selection-bias.md
-│   └── automation-bias.md
+│   ├── selection-bias.md
+│   ├── automation-bias.md
+│   ├── class-imbalance.md
+│   ├── bias-variance-tradeoff.md
+│   ├── confusion-matrix.md
+│   └── protected-attribute.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -678,6 +682,10 @@ features = [
 | [What Is Model Drift?](explainers/model-drift.md) | Why a fairness gap measured once at launch isn't guaranteed to hold months later, and how rolling-window monitoring (PSI, Page-Hinkley) catches the drift a single audit snapshot can miss |
 | [What Is Selection Bias?](explainers/selection-bias.md) | Why the process that decides who enters a dataset at all can bias a model before any protected attribute or proxy is even considered - and why the German Credit Lending dataset's 700/300 split contains zero rejected applicants |
 | [What Is Automation Bias?](explainers/automation-bias.md) | Why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces |
+| [What Is the Bias-Variance Trade-off?](explainers/bias-variance-tradeoff.md) | Why an overfit model can memorize the majority and fail the minority |
+| [What Is Class Imbalance?](explainers/class-imbalance.md) | Why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups |
+| [What Is a Protected Attribute?](explainers/protected-attribute.md) | Why removing race from a dataset does not remove the bias |
+| [What Is a Confusion Matrix?](explainers/confusion-matrix.md) | The foundational building block behind most fairness metrics |
 
  ---
 
