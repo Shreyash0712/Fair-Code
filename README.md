@@ -868,6 +868,11 @@ specific commit, not an informal count. It prints (but never runs) the `git tag`
 public action this script shouldn't take on its own. A paper cites `paper/results-frozen/`;
 future contributed audits change `results/` but never that snapshot.
 
+**The snapshot is tagged.** The current frozen results carry the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
+tag (commit `bbef2ba`), published as a GitHub release and deliberately kept off "Latest" so it
+never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is published - see
+[CLAUDE.md](CLAUDE.md).
+
 ---
 
 ## Tech Stack

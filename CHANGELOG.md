@@ -12,6 +12,44 @@ All notable changes to Fair Code are documented here, newest first.
 
 ---
 
+> **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
+> and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
+> tag below. The `2.0.1` / `2.0.2` entries that follow are additive (explainers, docs, governance)
+> and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
+> tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
+> paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
+> on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.2] - 27 Jul 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Explainer: What Is a ROC Curve and AUC?** - `explainers/roc-curve-auc.md` + generated page, registry entry in `assets/explainers-data.json`, and sitemap. Covers what a ROC curve and AUC actually measure (ranking quality), and why a single threshold-free number hides the two things fairness depends on: where the decision threshold sits, and whether ranking quality is equal across groups. Anchored to COMPAS's ordinary **0.68** baseline AUC (quoted from `paper/results-frozen/`, per the freeze) sitting on top of a large racial false-positive gap; includes per-group AUC / overlaid-ROC detection code. Brings the explainer count to **31**.
+### Fixed
+- `scripts/build_explainers.py` had drifted out of sync with the committed site: it used the bare `thefaircode.xyz` host and had dropped the `author` (`Yash Kewlani`) `<meta>` tag and `Person` JSON-LD. Left unfixed, the CI rebuild would have stripped author attribution and reverted canonical URLs across every page. Restored to `www.thefaircode.xyz` + the author schema, so a rebuild is now idempotent (28 of 30 existing pages regenerate byte-identical).
+- Regenerated two stale pages, `explainers/automation-bias.html` and `explainers/selection-bias.html`, whose committed HTML predated the styled-table renderer (bare `<table>` with no `explainer-table` classes); `automation-bias.html` was also missing from `sitemap.xml`.
+### Changed
+- `CONTRIBUTING.md`: new **"Contributing during the paper freeze"** section spelling out what is open (explainers, docs, website, captions) vs. on hold (new audits, frozen-results changes), plus the frozen-numbers rule for explainers (closes #97).
+- Explainer count `30 → 31` across `README.md`, `ROADMAP.md`, and `METRICS.md`.
+
+## [2.0.1] - 27 Jul 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **`CLAUDE.md`** - standing paper-freeze policy for AI agents and contributors: the DO-NOT-TOUCH list (`paper/results-frozen/`, `results/`, the `faircode/` core, every `audit.yaml` and dataset CSV, the `v1.0-paper` tag), the parameters that must not change (`random_state=42`, `test_size=0.2` stratified, `EXPONENTIATED_GRADIENT_MAX_ITER=50`, DemographicParity, the six metrics, bootstrap/permutation counts), the no-new-audits-on-`main` rule, the flag-don't-silently-fix escape hatch, and what happens when the freeze lifts.
+- **`ROADMAP.md` Phase 6 - Research Paper and Publication**: makes the paper a tracked goal and explicitly gates `v3.0.0` on publication; freeze notice + version/release-gate block added under "Where We Are".
+### Changed
+- Traction metrics refreshed from live GitHub data: stars `38 → 40`, forks `14 → 15`, watching `7 → 8`, social reach `~16K → ~18K`; the **Posts** column dropped from `METRICS.md`. Applied across `METRICS.md`, `README.md`, and `ROADMAP.md`.
+- `CLAUDE.md` and `ROADMAP.md` freeze commit references aligned to the `v1.0-paper` tag (`bbef2ba`); noted that the frozen `MANIFEST.md`'s provenance commit `2fa4a66` has byte-identical code and reproduces the same numbers.
+- `ROADMAP.md`: Phase 3 relabeled - the two unbuilt audits (HMDA, Facial Recognition) marked *(post-paper)*; "How to Contribute" rewritten so it no longer invites work that cannot merge during the freeze.
+
+---
+
+## [v1.0-paper] - 24 Jul 2026 · Frozen benchmark results (paper reference)
+
+A reference tag, not a normal release. It freezes the exact benchmark numbers cited by the research paper (in peer review) so the paper's tables and the repo can never drift apart. Published as a GitHub release, deliberately **not** marked "Latest" so it does not displace `v2.0.0`. `paper/results-frozen/` is permanent and must never change - see [CLAUDE.md](CLAUDE.md).
+
+### Added
+- **`v1.0-paper` tag** (commit `bbef2ba`) + GitHub [release](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper) freezing `paper/results-frozen/`: the final paper run (`ExponentiatedGradient` `max_iter=50`) across all seven domains, with a `MANIFEST.md` recording provenance (commit `2fa4a66`, identical code), pinned package versions, and the exact seven `audit.yaml` manifests covered. Release notes carry the freeze policy and the no-new-audits notice.
+
+---
+
 ## [2.0.0] - 23 Jul 2026
 
 A major version bump: Fair Code moves from seven bespoke bias audits to a cross-domain benchmark
@@ -70,6 +108,7 @@ research paper built on this repo would cite. Nothing about the existing audits 
 ---
 
 
+## [1.3.3] - 21 Jul 2026
 ### Added
 - `llms.txt` at the site root - a plain-text index of audits, tools, and explainers for AI assistants and crawlers to read directly, following the [llmstxt.org](https://llmstxt.org) convention
 - `Person` schema (author + founder, name "Yash Kewlani") and a `<meta name="author">` tag added to the homepage and all 29 explainer pages, so structured data and AI grounding have an unambiguous, machine-readable attribution source instead of guessing from the GitHub handle
