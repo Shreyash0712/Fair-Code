@@ -5,6 +5,11 @@ body:
   - type: markdown
     attributes:
       value: |
+        > ⏸️ **Paper freeze active - new audits are on hold.** Fair Code's benchmark results are cited in a research paper in peer review, and the paper covers exactly seven domains, so **new audits cannot be merged into `main` until it is published.** This is a **timing hold, not a rejection** - feel free to propose it here; it will be parked on a branch or labeled `post-paper` and merged once the freeze lifts. See [CLAUDE.md](../blob/main/CLAUDE.md). (Explainer and tooling contributions are unaffected.)
+
+  - type: markdown
+    attributes:
+      value: |
         Open this issue before doing any work. If two people are building the same audit at the same time, that's wasted effort.
         Check the [roadmap in the README](../blob/main/README.md#whats-next) and the open issues first.
 

@@ -1,3 +1,5 @@
+> ⏸️ **Paper freeze active.** Do not modify anything under `paper/results-frozen/`, `results/`, the `faircode/` analysis core, any `audit.yaml` / dataset CSV, or the reproducibility parameters (`random_state`, split, iteration counts, metrics) - these are frozen for a paper in peer review (see [CLAUDE.md](../blob/main/CLAUDE.md)). **New audits cannot merge to `main` yet** (timing hold - they will be parked `post-paper`). Explainers, docs, website, and tooling are unaffected. If you think you found a bug in the analysis code, **flag it in an issue - do not silently fix it.**
+
 ## Summary
 
 <!-- One sentence: e.g. "Adds HMDA mortgage lending bias audit" or "Adds demographic parity explainer" -->
