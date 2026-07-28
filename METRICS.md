@@ -52,7 +52,7 @@ Weekly snapshot of project health. Updated every Friday.
 | Social reach | ~18K | 10K/mo | Q3 2026 |
 | Issues closed | 3 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 35 | 30+ | End of 2026 |
+| Explainers | 35 | 60+ | End of 2026 |
 
 ---
 
