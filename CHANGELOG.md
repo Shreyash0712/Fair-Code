@@ -29,6 +29,7 @@ All notable changes to Fair Code are documented here, newest first.
 - `index.html` roadmap timeline caught up: added the six explainers it was missing (roc-curve-auc, protected-attribute, confusion-matrix, class-imbalance, bias-variance-tradeoff, accuracy-not-enough-healthcare-ai). The homepage explainer grid is generated from `explainers-data.js` and already tracked every explainer.
 - `CONTRIBUTING.md` explainers table and `llms.txt` list updated for the accuracy explainer.
 - Metric targets revised in `METRICS.md`: explainers `30+ → 60+`, forks `15+ → 20+`, watching `15+ → 12+`, social reach `10K/mo → 40K+`.
+- Roadmap pivot for the freeze: added a planned **healthcare-explainer** track (race correction in clinical algorithms, the Obermeyer cost-as-proxy case, underdiagnosis bias, clinical-score miscalibration, EHR missing-data bias, medical-imaging representation gaps) to `ROADMAP.md` Phase 2, the `README.md` healthcare section, and the `index.html` roadmap - the freeze-safe way to keep the healthcare focus moving while new audits are on hold.
 
 ## [2.0.3] - 28 Jul 2026 *(pending - will be tagged after the paper is published)*
 ### Added

@@ -97,6 +97,15 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 - [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
 - [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups
 
+**On the roadmap (the freeze-safe focus while new audits are on hold):**
+
+- Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR, spirometry, VBAC) bake bias into the math itself
+- The Obermeyer Case: When Cost Becomes a Proxy for Health Need
+- Underdiagnosis Bias: When the Label Itself Is Sicker for One Group
+- Miscalibration in Clinical Risk Scores Across Groups
+- Missing Data as Bias in Electronic Health Records
+- Why Medical Imaging Models Fail on Underrepresented Groups
+
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
 ---
