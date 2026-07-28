@@ -22,6 +22,12 @@ Created and maintained by Yash Kewlani ([github.com/yakew7](https://github.com/y
 
 ## Explainers
 
+- [What Is a Protected Attribute?](https://www.thefaircode.xyz/explainers/protected-attribute.html)
+- [What Is a Confusion Matrix?](https://www.thefaircode.xyz/explainers/confusion-matrix.html)
+- [What Is Class Imbalance?](https://www.thefaircode.xyz/explainers/class-imbalance.html)
+- [What Is the Bias-Variance Trade-off?](https://www.thefaircode.xyz/explainers/bias-variance-tradeoff.html)
+- [What Is a ROC Curve and AUC?](https://www.thefaircode.xyz/explainers/roc-curve-auc.html)
+- [What Is Automation Bias?](https://www.thefaircode.xyz/explainers/automation-bias.html)
 - [What Is Selection Bias?](https://www.thefaircode.xyz/explainers/selection-bias.html)
 - [Proxy Variables](https://www.thefaircode.xyz/explainers/proxy-variables.html)
 - [Proxy Entanglement](https://www.thefaircode.xyz/explainers/proxy-entanglement.html)

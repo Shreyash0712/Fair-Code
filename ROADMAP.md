@@ -27,7 +27,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Watching | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 40 | 9 | 15 | 8 | 18K+ | 7 | 31 | ✅ every push/PR |
+| 40 | 9 | 15 | 8 | 18K+ | 7 | 35 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -74,6 +74,11 @@ Build the foundational vocabulary and explain core fairness concepts clearly eno
 - [x] What Is Model Drift?
 - [x] What Is Selection Bias?
 - [x] What Is Automation Bias?
+- [x] What Is a ROC Curve and AUC?
+- [x] What Is a Protected Attribute?
+- [x] What Is a Confusion Matrix?
+- [x] What Is Class Imbalance?
+- [x] What Is the Bias-Variance Trade-off?
 
 ---
 

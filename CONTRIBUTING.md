@@ -318,6 +318,11 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `model-drift.md` | Why a fairness gap measured once at launch can drift after deployment, and how rolling-window monitoring (PSI, Page-Hinkley) catches what a single audit snapshot misses |
 | `selection-bias.md` | Why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy variable is even considered, with a Berkson's-paradox simulation and the German Credit Lending reject-inference gap as proof |
 | `automation-bias.md` | Why judges, recruiters, and clinicians defer to AI scores even when biased - and how automation bias amplifies disparities beyond the model alone, with detection code for disparity amplification in human-in-the-loop decisions |
+| `roc-curve-auc.md` | Why a single threshold-free AUC can look strong while hiding where the decision threshold sits and whether ranking quality is equal across groups, with per-group AUC / overlaid-ROC detection code |
+| `protected-attribute.md` | What a protected attribute is, which ones the law recognizes, and why removing them outright just hides the bias behind proxies |
+| `confusion-matrix.md` | The TP/FP/FN/TN building block behind most fairness metrics, and everything (precision, recall, FPR, FNR) derived from it |
+| `class-imbalance.md` | Why skewed positive/negative ratios wreck naive accuracy and hit minority subgroups hardest, and when resampling helps or hurts fairness |
+| `bias-variance-tradeoff.md` | The classic underfit/overfit trade-off, and why statistical "bias" here is not the societal bias the rest of these explainers mean |
 
 ### A good explainer should include
 

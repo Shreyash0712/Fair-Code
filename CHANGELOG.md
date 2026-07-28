@@ -14,11 +14,25 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.3] - 28 Jul 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Four explainers** contributed by [@Shreyash0712](https://github.com/Shreyash0712) (PR #102), from the topics requested in issues #98 / #96 / #99 / #100:
+  - **What Is a Protected Attribute?** (`protected-attribute.md`) - what a protected attribute is, which ones the law recognizes, and why removing them outright just hides the bias behind proxies.
+  - **What Is a Confusion Matrix?** (`confusion-matrix.md`) - the TP/FP/FN/TN building block behind most fairness metrics, and everything (precision, recall, FPR, FNR) derived from it.
+  - **What Is Class Imbalance?** (`class-imbalance.md`) - why skewed positive/negative ratios wreck naive accuracy and hit minority subgroups hardest, and when resampling helps or hurts fairness.
+  - **What Is the Bias-Variance Trade-off?** (`bias-variance-tradeoff.md`) - the classic underfit/overfit trade-off, distinguished from the societal/algorithmic bias the other explainers mean.
+  Each ships as `explainers/<slug>.md` + generated page + an `assets/explainers-data.json` entry + `sitemap.xml`.
+### Changed
+- Explainer count `31 → 35` across `README.md`, `ROADMAP.md` (traction table + Phase 1 checklist), and `METRICS.md` (badge + targets).
+- `CONTRIBUTING.md` explainers table: rows added for the four new explainers plus the previously-missing `roc-curve-auc.md`.
+- `llms.txt` Explainers list: added the four new explainers plus the previously-missing `automation-bias` and `roc-curve-auc` (`robots.txt` needs no change - it allows all crawlers and points at `sitemap.xml`, which already lists every page).
+- Paper-freeze notice surfaced at the point of contribution: the issue forms (`new_audit.yml` audit-hold banner, `new_explainer.yml` frozen-numbers rule), `PULL_REQUEST_TEMPLATE.md` (don't-touch paths + flag-don't-fix), and `llms.txt` (status line for AI crawlers).
 
 ## [2.0.2] - 27 Jul 2026 *(pending - will be tagged after the paper is published)*
 ### Added
