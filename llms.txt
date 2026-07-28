@@ -4,6 +4,8 @@
 
 Created and maintained by Yash Kewlani ([github.com/yakew7](https://github.com/yakew7)). Source: [github.com/yakew7/Fair-Code](https://github.com/yakew7/Fair-Code).
 
+> Status: the benchmark results are frozen for a research paper in peer review (tag `v1.0-paper`). New audits are paused until publication; explainers and tooling continue as normal.
+
 ## Audits
 
 - [COMPAS](https://www.thefaircode.xyz/#projects): Criminal justice recidivism scoring. ProPublica's public dataset, 70,000+ records.

@@ -7,6 +7,8 @@ body:
       value: |
         Open this before writing anything. Check the `explainers/` folder first - proxy variables, equalized odds, sampling bias, SHAP values, disparate impact, fairness metric conflicts, and calibration are already done.
 
+        ✅ Explainers are fully open during the paper freeze. One rule: if your explainer quotes a Fair Code benchmark result, use the frozen numbers in `paper/results-frozen/` - never re-run your own. See [CLAUDE.md](../blob/main/CLAUDE.md).
+
   - type: input
     id: concept
     attributes:
