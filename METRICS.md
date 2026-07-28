@@ -46,10 +46,10 @@ Weekly snapshot of project health. Updated every Friday.
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
 | Stars | 40 | 50+ | End of 2026 |
-| Forks | 15 | 15+ | End of 2026 |
-| Watching | 8 | 15+ | End of 2026 |
+| Forks | 15 | 20+ | End of 2026 |
+| Watching | 8 | 12+ | End of 2026 |
 | Contributors | 9 | 10+ | End of 2026 |
-| Social reach | ~18K | 10K/mo | Q3 2026 |
+| Social reach | ~18K | 40K+ | End of 2026 |
 | Issues closed | 3 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 35 | 60+ | End of 2026 |
