@@ -6,7 +6,7 @@
 ![Contributors](https://img.shields.io/badge/Contributors-9-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-15-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
-![Explainers](https://img.shields.io/badge/Explainers-35-blueviolet?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-36-blueviolet?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.

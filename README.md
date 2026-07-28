@@ -92,11 +92,10 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 - **[Benefits Denial](Benefits%20Denial/)** - An automated welfare means-test flags men for ineligibility at 18 percentage points higher than women - not because of income, but because of who they are married to.
 - **[Healthcare Readmission](Healthcare%20Readmission/)** - A hospital readmission model flags patients for high clinical risk using payer code and discharge destination - variables that measure insurance access, not medical severity.
 
-**Upcoming healthcare AI explainers:**
+**Published healthcare AI explainers:**
 
-- Why Accuracy Is Not Enough in Healthcare AI - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
-
-Read the published explainer: [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups.
+- [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
+- [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups
 
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
@@ -686,6 +685,8 @@ features = [
 | [What Is Class Imbalance?](explainers/class-imbalance.md) | Why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups |
 | [What Is a Protected Attribute?](explainers/protected-attribute.md) | Why removing race from a dataset does not remove the bias |
 | [What Is a Confusion Matrix?](explainers/confusion-matrix.md) | The foundational building block behind most fairness metrics |
+| [What Is a ROC Curve and AUC?](explainers/roc-curve-auc.md) | Why a single threshold-free AUC can look strong while hiding where the decision threshold sits and whether ranking quality is equal across groups |
+| [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
 
  ---
 
@@ -964,7 +965,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Watching | 8 |
 | Combined Social Reach (Instagram + LinkedIn) | ~18K |
 | Code Audits Published | 7 |
-| Explainers Published | 35 |
+| Explainers Published | 36 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

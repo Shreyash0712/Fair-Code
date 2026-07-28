@@ -27,7 +27,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Watching | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 40 | 9 | 15 | 8 | 18K+ | 7 | 35 | ✅ every push/PR |
+| 40 | 9 | 15 | 8 | 18K+ | 7 | 36 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -92,7 +92,7 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 - [x] Benefits Denial bias audit
 - [x] Healthcare Readmission bias audit
 - [x] Jupyter notebooks for all three healthcare audits
-- [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
+- [x] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [x] Explainer: False Positives and False Negatives in Medical Risk Models
 - [x] Case study write-up: Insurance Denial Bias 
 - [x] Case study write-up: Benefits Denial Bias (standalone 

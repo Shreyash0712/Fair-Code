@@ -22,6 +22,7 @@ Created and maintained by Yash Kewlani ([github.com/yakew7](https://github.com/y
 
 ## Explainers
 
+- [Why Accuracy Is Not Enough in Healthcare AI](https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html)
 - [What Is a Protected Attribute?](https://www.thefaircode.xyz/explainers/protected-attribute.html)
 - [What Is a Confusion Matrix?](https://www.thefaircode.xyz/explainers/confusion-matrix.html)
 - [What Is Class Imbalance?](https://www.thefaircode.xyz/explainers/class-imbalance.html)

@@ -341,5 +341,15 @@ window.FAIR_CODE_EXPLAINERS = [
       "explainability",
       "detection"
     ]
+  },
+  {
+    "slug": "accuracy-not-enough-healthcare-ai",
+    "title": "Why Accuracy Is Not Enough in Healthcare AI",
+    "subtitle": "A 95% accurate model can still miss the sickest patients in one group.",
+    "summary": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
+    "tags": [
+      "metrics",
+      "detection"
+    ]
   }
 ];

@@ -14,11 +14,21 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.4] - 28 Jul 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Explainer: Why Accuracy Is Not Enough in Healthcare AI** (`accuracy-not-enough-healthcare-ai.md`, closes #64) - the accuracy paradox on rare clinical outcomes (a "predict nothing" model scoring 97% while catching zero at-risk patients), why one aggregate score masks per-group recall / false-negative gaps, anchored to the Healthcare Readmission audit (Audit 06) and Obermeyer et al. (2019), with per-group accuracy-vs-recall detection code. Repo figures use the frozen `paper/results-frozen/` numbers per the freeze.
+### Changed
+- Explainer count `35 → 36` across `README.md`, `ROADMAP.md` (traction table + Phase 2 item checked off), and `METRICS.md`.
+- `README.md` explainers table gained the accuracy explainer plus the previously-missing `roc-curve-auc` row; the homepage "healthcare AI explainers" list moved from *Upcoming* to *Published*.
+- `index.html` roadmap timeline caught up: added the six explainers it was missing (roc-curve-auc, protected-attribute, confusion-matrix, class-imbalance, bias-variance-tradeoff, accuracy-not-enough-healthcare-ai). The homepage explainer grid is generated from `explainers-data.js` and already tracked every explainer.
+- `CONTRIBUTING.md` explainers table and `llms.txt` list updated for the accuracy explainer.
+- Metric targets revised in `METRICS.md`: explainers `30+ → 60+`, forks `15+ → 20+`, watching `15+ → 12+`, social reach `10K/mo → 40K+`.
 
 ## [2.0.3] - 28 Jul 2026 *(pending - will be tagged after the paper is published)*
 ### Added

@@ -323,6 +323,7 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `confusion-matrix.md` | The TP/FP/FN/TN building block behind most fairness metrics, and everything (precision, recall, FPR, FNR) derived from it |
 | `class-imbalance.md` | Why skewed positive/negative ratios wreck naive accuracy and hit minority subgroups hardest, and when resampling helps or hurts fairness |
 | `bias-variance-tradeoff.md` | The classic underfit/overfit trade-off, and why statistical "bias" here is not the societal bias the rest of these explainers mean |
+| `accuracy-not-enough-healthcare-ai.md` | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare clinical outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
 
 ### A good explainer should include
 
