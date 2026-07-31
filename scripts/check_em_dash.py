@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail if an em dash (—, U+2014) appears in tracked source or prose files.
+"""Fail if an em dash (U+2014) appears in tracked source or prose files.
 
 Fair Code's contribution rule (CONTRIBUTING.md, and the new-audit / new-explainer
 issue templates) is to write a spaced hyphen ' - ' instead of an em dash. This
@@ -16,8 +16,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-EM_DASH = "—"  # — the forbidden character
-EN_DASH = "–"  # – allowed (ranges)
+EM_DASH = "\u2014"  # em dash, the forbidden character
+EN_DASH = "\u2013"  # en dash, allowed for numeric ranges
 
 # Only contributor-facing source/prose is scanned. Data (.csv), config (.yml),
 # and dependency pins (.txt) are deliberately out of scope.
