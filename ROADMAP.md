@@ -34,7 +34,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 **Version & release gate:**
 
 - Current release: **v2.0.0**
-- **v3.0.0 is blocked until the paper is published.** The next major version bundles re-run benchmarks and new audits — both frozen right now — so the version cannot move until Phase 6 completes.
+- **v3.0.0 is blocked until the paper is published.** The next major version bundles re-run benchmarks and new audits - both frozen right now - so the version cannot move until Phase 6 completes.
 
 ---
 
@@ -111,9 +111,9 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 
 ## Phase 3 - Code Audits 🔄 In Progress
 
-**Status: 7 of 9 planned audits published — new audits on hold for the paper freeze**
+**Status: 7 of 9 planned audits published - new audits on hold for the paper freeze**
 
-Each audit follows the same pipeline: train a biased model → measure the fairness gap → remove proxies → retrain → measure again. The paper covers exactly these seven domains, so the two remaining audits are parked until publication (a timing hold, not a rejection — see [CLAUDE.md](CLAUDE.md)).
+Each audit follows the same pipeline: train a biased model → measure the fairness gap → remove proxies → retrain → measure again. The paper covers exactly these seven domains, so the two remaining audits are parked until publication (a timing hold, not a rejection - see [CLAUDE.md](CLAUDE.md)).
 
 - [x] COMPAS - Criminal Justice Bias
 - [x] AI Fair Recruitment - Hiring Bias
@@ -174,7 +174,7 @@ Publish a peer-reviewed paper on the cross-domain fairness benchmark. This phase
 - [x] Freeze benchmark results at tag `v1.0-paper` (commit `bbef2ba`)
 - [x] `CLAUDE.md` paper-freeze policy for the benchmark and audits
 - [ ] Submit manuscript to peer review
-- [ ] Address reviewer feedback (may require a re-run + re-freeze — flag, never silently patch)
+- [ ] Address reviewer feedback (may require a re-run + re-freeze - flag, never silently patch)
 - [ ] Paper accepted and published
 - [ ] Add citation and DOI to [README.md](README.md) and [CITATION.cff](CITATION.cff)
 - [ ] Lift the freeze: re-run the benchmark, merge parked audits, cut **v3.0.0** (`paper/results-frozen/` stays untouched as the permanent record)
@@ -197,7 +197,7 @@ Publish a peer-reviewed paper on the cross-domain fairness benchmark. This phase
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to claim an open issue or propose a new audit or explainer.
 
-New audits are welcome, but during the paper freeze they cannot be merged into `main` — they'll be parked on a branch or held with a `post-paper` label until publication (a timing hold, not a rejection). Explainers, docs, and website content are unaffected and merge as usual. See [CLAUDE.md](CLAUDE.md) before opening a PR.
+New audits are welcome, but during the paper freeze they cannot be merged into `main` - they'll be parked on a branch or held with a `post-paper` label until publication (a timing hold, not a rejection). Explainers, docs, and website content are unaffected and merge as usual. See [CLAUDE.md](CLAUDE.md) before opening a PR.
 
 ---
 
