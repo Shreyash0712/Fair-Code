@@ -34,5 +34,5 @@ def test_profile_fail_under_equal_threshold_returns_zero(tmp_path, capsys):
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "Representation score:" in captured.out
+    assert "Representation score: 100/100" in captured.out
     assert captured.err == ""
