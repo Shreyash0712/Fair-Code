@@ -79,6 +79,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--json", action="store_true", help="emit JSON to stdout")
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
+    p.add_argument("--fail-under", type=float, metavar="N",
+                   help="exit 1 when the overall representation score is below N")
     p.add_argument("--map", action="append", metavar="COL=KIND",
                    help="force a column's dimension when auto-detection misses it; "
                         "KIND is one of " + ", ".join(_MAP_CHOICES) + " (repeatable)")
@@ -164,6 +166,13 @@ def main(argv: list[str] | None = None) -> int:
             print(to_json(result))
         else:
             print(to_terminal(result))
+        if args.fail_under is not None and result["overall_score"] < args.fail_under:
+            print(
+                f"error: representation score {result['overall_score']}/100 is below "
+                f"--fail-under {args.fail_under:g}",
+                file=sys.stderr,
+            )
+            return 1
         return 0
 
     if args.command == "compare":
