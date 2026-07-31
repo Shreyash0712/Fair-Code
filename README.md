@@ -975,7 +975,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Metric | Count |
 |--------|------:|
 | GitHub Stars | 40 |
-| External Contributors | 10 |
+| External Contributors | 11 |
 | Forks | 17 |
 | Watching | 8 |
 | Combined Social Reach (Instagram + LinkedIn) | ~21K |
@@ -999,9 +999,11 @@ Thanks to everyone who has contributed audits, explainers, or documentation to F
 | [@Rajveerx11](https://github.com/Rajveerx11) | Explainer: Disparate Impact (The 80% Rule) |
 | [@sofiya-iii](https://github.com/sofiya-iii) | Explainer: Calibration |
 | [@cannotdoit13](https://github.com/cannotdoit13) | Standardized dataset paths and added CI to run all audits |
-| [@Shreyash0712](https://github.com/Shreyash0712) | Explainer: Why AI Hallucinates · first-interaction workflow and audits-workflow fixes |
+| [@Shreyash0712](https://github.com/Shreyash0712) | Explainer: Why AI Hallucinates · Explainers: Protected Attribute, Confusion Matrix, Class Imbalance, Bias-Variance Trade-off · first-interaction workflow and audits-workflow fixes |
 | [@propcgamer20-png](https://github.com/propcgamer20-png) | Explainer: Predictive Parity |
 | [@AnayDhawan](https://github.com/AnayDhawan) | Explainer: Unsupervised Learning · Explainer: Model Drift |
+| [@tomatotomata](https://github.com/tomatotomata) | Tooling: `faircode profile --fail-under` score CI gate |
+| [@ahmdkaml](https://github.com/ahmdkaml) | Test: `--fail-under` equality-threshold boundary |
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 

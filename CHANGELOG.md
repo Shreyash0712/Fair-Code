@@ -14,11 +14,24 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.5] - 31 Jul 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Profiler: 95% confidence intervals on every group share** (#83) - a deterministic Wilson score interval per group, so a share read off a small sample carries its sampling uncertainty. Implemented identically in `faircode/profiler.py` and the JS port `assets/profiler-engine.js` (parity preserved - Wilson is deterministic, no resampling), documented in `faircode/SPEC.md` section 3, and surfaced in the terminal report, the HTML report, JSON, and the web UI.
+- **Profiler: shareable HTML / PDF report** (#85) - the generated report is print-optimised so it saves straight to PDF from the browser, alongside the existing `faircode profile --html` and web "Download report" export.
+- **`faircode profile --fail-under N` CI gate** (#115, by [@tomatotomata](https://github.com/tomatotomata)) - exits non-zero when a dataset's representation score falls below `N`, so the profiler can gate a CI pipeline; `--json` output stays machine-readable. The boundary is strict (a score equal to `N` passes), verified by an equality test (#123, by [@ahmdkaml](https://github.com/ahmdkaml)).
+- **CI: automatic em-dash enforcement** (#112) - `scripts/check_em_dash.py` plus a `lint` workflow fail the build on an em dash (U+2014) in tracked source/prose (en dashes for numeric ranges are allowed), so the em-dash-free contribution rule is enforced automatically instead of by eye.
+### Changed
+- Dependency bumps (Dependabot): `pillow` 11.1.0 -> 12.3.0, `prompt-toolkit` 3.0.52 -> 3.0.53, `fastjsonschema` 2.21.2 -> 2.22.1, `narwhals` 2.20.0 -> 2.24.0, `pyreadstat` 1.3.4 -> 1.3.5.
+- Traction refreshed as the project grew (see `METRICS.md`): forks 15 -> 17, external contributors 9 -> 11, social reach ~18K -> ~21K.
+### Fixed
+- `scripts/check_em_dash.py` no longer flagged its own source - the em-dash character is referenced by code point so the file contains no literal em dash.
+- Normalised the `--fail-under` equality test to PEP8 (blank lines before the new function, trailing newline).
 
 ## [2.0.4] - 28 Jul 2026 *(pending - will be tagged after the paper is published)*
 ### Added
