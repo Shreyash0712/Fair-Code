@@ -25,6 +25,8 @@ def test_profile_fail_under_keeps_json_output_machine_readable(tmp_path, capsys)
     assert exit_code == 0
     assert json.loads(captured.out)["overall_score"] == 100
     assert captured.err == ""
+
+
 def test_profile_fail_under_equal_threshold_returns_zero(tmp_path, capsys):
     path = tmp_path / "balanced.csv"
     path.write_text("sex\nM\nF\nM\nF\n", encoding="utf-8")
