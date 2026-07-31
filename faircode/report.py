@@ -210,7 +210,12 @@ def to_html(result: dict) -> str:
  .flags ul {{ list-style:none; padding:0; }}
  .flags li {{ background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; }}
  .head {{ border-bottom:2px solid var(--accent); padding-bottom:12px; }}
+ .print-btn {{ position:fixed; top:16px; right:16px; background:var(--accent); color:#fff;
+               border:0; border-radius:6px; padding:8px 14px; font-size:13px; cursor:pointer;
+               font-family:inherit; }}
+ @media print {{ .print-btn {{ display:none; }} body {{ padding:24px; max-width:none; }} }}
 </style></head><body>
+<button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
 <div class="head"><h1>Dataset Representation Profile</h1>
 <p>{result['n_rows']:,} rows · {result['n_cols']} columns · Score
 <strong>{result['overall_score']}/100</strong> (Grade {result['grade']})</p></div>
