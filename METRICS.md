@@ -33,7 +33,7 @@ Weekly snapshot of project health. Updated every Friday.
 |------|------:|------:|---------:|-------------:|-------------:|--------------:|------------:|
 | 2026-W26 (baseline) | 27 | 8 | - | 7 | ~10K total | - | 6 total |
 | 2026-W27 | 27 | 8 | - | 7 | ~10K total | - | 6 total |
-| 2026-W30 | 40 | 15 | 8 | 9 | ~18K total | 3 | 7 total |
+| 2026-W30 | 40 | 15 | 8 | 9 | ~21K total | 3 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -49,10 +49,10 @@ Weekly snapshot of project health. Updated every Friday.
 | Forks | 15 | 20+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 9 | 10+ | End of 2026 |
-| Social reach | ~18K | 40K+ | End of 2026 |
+| Social reach | ~21K | 40K+ | End of 2026 |
 | Issues closed | 3 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 35 | 60+ | End of 2026 |
+| Explainers | 36 | 60+ | End of 2026 |
 
 ---
 
@@ -69,4 +69,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **40 stars**, **9 contributors**, **15 forks**, and **~18K social views**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **40 stars**, **9 contributors**, **15 forks**, and **~21K social views**.
