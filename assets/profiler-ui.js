@@ -245,10 +245,15 @@
     var bars = d.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
       var under = d.under_represented.indexOf(g.label) !== -1 ? ' under' : '';
       var w = maxShare > 0 ? (g.share / maxShare) * 100 : 0;
+      var ci = (g.ci_low != null && g.ci_high != null)
+        ? '<span class="bar-ci" title="95% Wilson confidence interval on this share">95% CI '
+          + (g.ci_low * 100).toFixed(1) + '–' + (g.ci_high * 100).toFixed(1) + '%</span>'
+        : '';
       return '<div class="bar-row' + under + '">' +
         '<span class="bar-label" title="' + esc(g.label) + '">' + esc(g.label) + '</span>' +
         '<span class="bar-track"><span class="bar-fill" style="width:' + w.toFixed(1) + '%"></span></span>' +
         '<span class="bar-pct">' + pct(g.share) + ' (' + g.count.toLocaleString() + ')</span>' +
+        ci +
         '</div>';
     }).join('');
 
@@ -415,8 +420,11 @@
     var dimBlocks = r.dimensions.map(function (d) {
       var rows = d.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
         var under = d.under_represented.indexOf(g.label) !== -1 ? 'under' : 'ok';
+        var ci = (g.ci_low != null && g.ci_high != null)
+          ? (g.ci_low * 100).toFixed(1) + '–' + (g.ci_high * 100).toFixed(1) + '%' : '';
         return '<tr class="' + under + '"><td>' + esc(g.label) + '</td>' +
           '<td class="num">' + (g.share * 100).toFixed(1) + '%</td>' +
+          '<td class="num ci">' + ci + '</td>' +
           '<td class="num">' + g.count.toLocaleString() + '</td>' +
           '<td class="bar"><span style="width:' + (g.share * 100).toFixed(1) + '%"></span></td></tr>';
       }).join('');
@@ -447,6 +455,7 @@
       ' table { width:100%; border-collapse:collapse; }\n' +
       ' td { padding:4px 8px; font-size:14px; border-bottom:1px solid var(--border); }\n' +
       ' td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }\n' +
+      ' td.ci { color:var(--muted); font-size:12px; }\n' +
       ' td.bar { width:40%; }\n' +
       ' td.bar span { display:block; height:10px; background:var(--accent3); border-radius:3px; }\n' +
       ' tr.under td.bar span { background:var(--accent); }\n' +

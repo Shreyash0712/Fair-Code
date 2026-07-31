@@ -78,6 +78,10 @@ The band shares are then analyzed exactly like a categorical column.
 For a dimension with `k` groups and null-excluded normalized shares `p_1 … p_k` (each `p_i = count_i / N_nonnull`):
 
 - **shares** - the `p_i`, descending, with raw counts.
+- **ci_low / ci_high** - a 95% **Wilson score interval** on each group's share, so a share read off a small sample carries its sampling uncertainty. For a group with count `c` out of `N_nonnull = n`, `p = c/n`, `z = 1.959963984540054`:
+  - `center = (p + z²/2n) / (1 + z²/n)`, `margin = (z / (1 + z²/n)) · √( p(1−p)/n + z²/4n² )`
+  - `ci_low = max(0, center − margin)`, `ci_high = min(1, center + margin)`, each rounded to 4 dp.
+  - Deterministic (no resampling), so the Python and JS engines return identical bounds. Wilson is used over the normal approximation because it stays inside `[0, 1]` and holds up for small/extreme groups - the under-represented cases this profiler targets.
 - **min_share** = `min(p_i)`; **max_share** = `max(p_i)`.
 - **imbalance_ratio** = `max_share / min_share` (the most-represented group is this many times the least).
 - **entropy_ratio** = `H / ln(k)` where `H = −Σ p_i · ln(p_i)`.
@@ -152,8 +156,10 @@ dict, JS uses a plain object):
       "dimension_score": 99, "entropy_ratio": 0.999,
       "imbalance_ratio": 1.05, "min_share": 0.49, "missing_pct": 0.0,
       "skewness": null,
-      "groups": [ {"label": "male", "count": 676, "share": 0.504},
-                  {"label": "female", "count": 664, "share": 0.496} ],
+      "groups": [ {"label": "male", "count": 676, "share": 0.504,
+                   "ci_low": 0.4775, "ci_high": 0.5305},
+                  {"label": "female", "count": 664, "share": 0.496,
+                   "ci_low": 0.4695, "ci_high": 0.5225} ],
       "under_represented": []
     }
   ],

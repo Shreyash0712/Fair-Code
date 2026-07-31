@@ -84,6 +84,33 @@ def test_skewed_distribution_flags_under_represented():
     assert any("under-represented" in f for f in result["flags"])
 
 
+def test_group_shares_carry_wilson_ci():
+    from faircode.profiler import _r, _wilson
+
+    dim = profile(pd.DataFrame({"sex": ["M"] * 98 + ["F"] * 2}))["dimensions"][0]
+    f = {g["label"]: g for g in dim["groups"]}["F"]
+    # Every group now carries a 95% Wilson interval that brackets its point
+    # share and never escapes [0, 1].
+    assert 0.0 <= f["ci_low"] <= f["share"] <= f["ci_high"] <= 1.0
+    # And it matches the Wilson helper exactly (2 successes out of 100).
+    lo, hi = _wilson(2, 100)
+    assert f["ci_low"] == _r(lo, 4)
+    assert f["ci_high"] == _r(hi, 4)
+    assert math.isclose(f["ci_low"], 0.0055, abs_tol=5e-4)
+    assert math.isclose(f["ci_high"], 0.0700, abs_tol=5e-4)
+
+
+def test_wilson_interval_shrinks_with_sample_size():
+    from faircode.profiler import _wilson
+
+    lo_small, hi_small = _wilson(1, 10)      # 10% off just 10 rows
+    lo_big, hi_big = _wilson(100, 1000)      # 10% off 1000 rows
+    assert (hi_small - lo_small) > (hi_big - lo_big)   # more data → tighter CI
+    assert lo_small <= 0.1 <= hi_small and lo_big <= 0.1 <= hi_big
+    assert lo_small >= 0.0 and hi_big <= 1.0
+    assert _wilson(5, 0) == (0.0, 0.0)                 # empty dimension is safe
+
+
 def test_single_group_scores_zero():
     df = pd.DataFrame({"sex": ["M"] * 100})
     # one distinct value -> not a valid categorical (needs >=2), so not detected by

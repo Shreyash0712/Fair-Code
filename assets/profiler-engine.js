@@ -229,6 +229,20 @@
     return Math.round(x * f) / f;
   }
 
+  // 95% normal quantile, shared verbatim with faircode/profiler.py so both
+  // engines return identical Wilson bounds (SPEC section 3).
+  var Z95 = 1.959963984540054;
+  function wilson(count, n) {
+    if (n <= 0) return [0, 0];
+    var p = count / n;
+    var z2 = Z95 * Z95;
+    var denom = 1 + z2 / n;
+    var center = (p + z2 / (2 * n)) / denom;
+    var margin = (Z95 / denom) * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n));
+    var lo = center - margin, hi = center + margin;
+    return [lo > 0 ? lo : 0, hi < 1 ? hi : 1];
+  }
+
   // ── Per-dimension metrics (SPEC section 3) ─────────────────────────────
   function analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold) {
     if (minShareThreshold === undefined) minShareThreshold = MIN_SHARE_THRESHOLD;
@@ -237,8 +251,11 @@
     for (i = 0; i < labels.length; i++) nNonnull += counts[labels[i]];
 
     var groups = labels.map(function (label) {
-      return { label: String(label), count: counts[label],
-               share: nNonnull ? counts[label] / nNonnull : 0 };
+      var c = counts[label];
+      var ci = wilson(c, nNonnull);
+      return { label: String(label), count: c,
+               share: nNonnull ? c / nNonnull : 0,
+               ci_low: round(ci[0], 4), ci_high: round(ci[1], 4) };
     });
     // count desc, then label asc - deterministic tie-break to match Python.
     groups.sort(function (a, b) {
@@ -275,7 +292,8 @@
       missing_pct: nTotal ? round(nullCount / nTotal, 4) : 0,
       skewness: skew === null || skew === undefined ? null : round(skew, 4),
       groups: groups.map(function (g) {
-        return { label: g.label, count: g.count, share: g.share };
+        return { label: g.label, count: g.count, share: g.share,
+                 ci_low: g.ci_low, ci_high: g.ci_high };
       }),
       under_represented: under
     };

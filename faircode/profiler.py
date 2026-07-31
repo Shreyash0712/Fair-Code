@@ -25,6 +25,31 @@ MAX_DIMENSION_GROUPS = 50  # drop identifier/date-like columns (geography exempt
 
 _DATE_RE = re.compile(r"\d{1,4}[/-]\d{1,2}[/-]\d{1,4}")
 
+# 95% two-sided normal quantile, shared verbatim with the JS port so both engines
+# return identical Wilson bounds (SPEC section 3).
+Z95 = 1.959963984540054
+
+
+def _wilson(count: int, n: int) -> tuple:
+    """95% Wilson score interval for the proportion count/n.
+
+    Deterministic (no resampling), so the Python engine and the JS port in
+    assets/profiler-engine.js produce identical bounds. The Wilson interval is
+    preferred over the normal approximation because it stays inside [0, 1] and
+    behaves sensibly for small groups and extreme shares - exactly the
+    under-represented cases this profiler is built to surface.
+    """
+    if n <= 0:
+        return 0.0, 0.0
+    p = count / n
+    z2 = Z95 * Z95
+    denom = 1 + z2 / n
+    center = (p + z2 / (2 * n)) / denom
+    margin = (Z95 / denom) * math.sqrt(p * (1 - p) / n + z2 / (4 * n * n))
+    lo = center - margin
+    hi = center + margin
+    return (lo if lo > 0 else 0.0), (hi if hi < 1 else 1.0)
+
 # Tunable knobs (SPEC section 7); overridable per call via profile(opts=...).
 _DEFAULT_OPTS = {
     "min_share": MIN_SHARE_THRESHOLD,
@@ -109,7 +134,9 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
     groups = []
     for label, count in labels_counts.items():
         share = count / n_nonnull if n_nonnull else 0.0
-        groups.append({"label": str(label), "count": int(count), "share": share})
+        lo, hi = _wilson(count, n_nonnull)
+        groups.append({"label": str(label), "count": int(count), "share": share,
+                       "ci_low": _r(lo, 4), "ci_high": _r(hi, 4)})
     # count desc, then label asc - deterministic tie-break so the JS port agrees.
     groups.sort(key=lambda g: (-g["count"], g["label"]))
 

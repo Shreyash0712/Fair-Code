@@ -49,8 +49,11 @@ def to_terminal(result: dict) -> str:
         shown = d["groups"][:DISPLAY_GROUPS]
         for g in shown:
             mark = "  <- under-represented" if g["label"] in d["under_represented"] else ""
+            ci = ""
+            if g.get("ci_low") is not None and g.get("ci_high") is not None:
+                ci = f"  [95% CI {g['ci_low'] * 100:.1f}-{g['ci_high'] * 100:.1f}%]"
             add(f"  {g['label'][:18]:<18} {_bar(g['share'])} "
-                f"{g['share'] * 100:5.1f}%  (n={g['count']:,}){mark}")
+                f"{g['share'] * 100:5.1f}%  (n={g['count']:,}){ci}{mark}")
         if len(d["groups"]) > DISPLAY_GROUPS:
             add(f"  … and {len(d['groups']) - DISPLAY_GROUPS} more groups")
         meta = []
@@ -160,9 +163,13 @@ def to_html(result: dict) -> str:
         rows = []
         for g in d["groups"][:DISPLAY_GROUPS]:
             under = "under" if g["label"] in d["under_represented"] else "ok"
+            ci = ""
+            if g.get("ci_low") is not None and g.get("ci_high") is not None:
+                ci = f'{g["ci_low"] * 100:.1f}–{g["ci_high"] * 100:.1f}%'
             rows.append(
                 f'<tr class="{under}"><td>{esc(g["label"])}</td>'
                 f'<td class="num">{g["share"] * 100:.1f}%</td>'
+                f'<td class="num ci">{ci}</td>'
                 f'<td class="num">{g["count"]:,}</td>'
                 f'<td class="bar"><span style="width:{g["share"] * 100:.1f}%"></span></td></tr>'
             )
@@ -195,6 +202,7 @@ def to_html(result: dict) -> str:
  table {{ width:100%; border-collapse:collapse; }}
  td {{ padding:4px 8px; font-size:14px; border-bottom:1px solid var(--border); }}
  td.num {{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }}
+ td.ci {{ color:var(--muted); font-size:12px; }}
  td.bar {{ width:40%; }}
  td.bar span {{ display:block; height:10px; background:var(--accent3); border-radius:3px; }}
  tr.under td.bar span {{ background:var(--accent); }}
