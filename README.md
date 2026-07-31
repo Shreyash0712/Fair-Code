@@ -794,6 +794,7 @@ faircode profile data.tsv                          # tab-separated exports work 
 faircode profile data.xlsx                         # Excel workbooks work too
 faircode profile data.csv --json                   # machine-readable
 faircode profile data.csv --html report.html       # standalone HTML report
+faircode profile data.csv --fail-under 70          # fail CI if score is below 70
 faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
 faircode profile data.csv --map gndr=sex           # fix a missed column
 faircode profile data.csv --cross race,age         # choose the intersection pair
@@ -801,6 +802,11 @@ faircode profile data.csv --reference census.csv   # score vs a population basel
 faircode profile data.csv --proxy-hints            # chi-squared proxy hints (needs scipy)
 faircode profile data.csv --min-share 0.1          # tune the flagging thresholds
 ```
+
+For CI, `--fail-under N` returns exit code `1` and explains the failing score
+on stderr when the overall representation score is below `N`; report output,
+including `--json`, remains on stdout. A score at or above the threshold exits
+successfully.
 
 The engine is domain-agnostic - it works on any tabular CSV (health, hiring, lending, justice),
 auto-detecting demographic columns (sex, race, age, geography) by name. Beyond the single-dataset
