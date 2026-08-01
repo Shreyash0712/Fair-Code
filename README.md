@@ -18,6 +18,7 @@
 ![CI](https://github.com/yakew7/Fair-Code/actions/workflows/audits.yml/badge.svg)
 <a href="https://github.com/yakew7/Fair-Code/stargazers"><img src="https://img.shields.io/github/stars/yakew7/Fair-Code?style=social" alt="Stars" height="28"></a>
 <a href="https://github.com/yakew7/Fair-Code/forks"><img src="https://img.shields.io/github/forks/yakew7/Fair-Code?style=social" alt="Forks" height="28"></a>
+<a href="https://github.com/yakew7/Fair-Code/watchers"><img src="https://img.shields.io/github/watchers/yakew7/Fair-Code?style=social" alt="Watchers" height="28"></a>
 <a href="https://github.com/yakew7/Fair-Code/contributors"><img src="https://img.shields.io/github/contributors/yakew7/Fair-Code?style=social" alt="Contributors" height="28"></a>
 
 </div>
