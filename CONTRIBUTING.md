@@ -53,7 +53,7 @@ If you are unsure whether an idea fits, open an issue first and ask.
 
 > **Contributing to the Open Dataset Profiler?** The `faircode/` CLI and the client-side
 > `profiler.html` share one analysis spec - [`faircode/SPEC.md`](faircode/SPEC.md). Any change to
-> the metrics, thresholds, or detection rules **must** be made in `faircode/profiler.py` **and**
+> the metrics, thresholds, detection rules, or result fields **must** be made in `faircode/profiler.py` **and**
 > `assets/profiler-engine.js` together, and must keep them producing identical results (run
 > `pytest tests/` and cross-check a CSV through both). Update `SPEC.md` first - it is the source of
 > truth.

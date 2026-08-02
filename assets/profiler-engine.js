@@ -18,6 +18,7 @@
   var AGE_BANDS = [0, 18, 30, 45, 60, 75];
   var MAX_CATEGORICAL_CARD = 20;
   var MAX_DIMENSION_GROUPS = 50;
+  var MIN_GROUP_SIZE = 100;  // warn when a subgroup has fewer than N rows (SPEC 3)
   var REFERENCE_DEVIATION_FLAG = 0.05;
   // Kinds a manual override may force a column to; mirror faircode/detect.py.
   var VALID_KINDS = { sex: 1, race: 1, age: 1, geography: 1, categorical: 1 };
@@ -29,6 +30,7 @@
     imbalance_flag: IMBALANCE_FLAG,
     missing_flag: MISSING_FLAG,
     reference_flag: REFERENCE_DEVIATION_FLAG,
+    min_group_size: MIN_GROUP_SIZE,  // warn when a subgroup has fewer than N rows
     cross: null,      // [colA, colB] to force the intersection pair (SPEC 4)
     reference: null   // {column: {group: expected_share}} baseline (SPEC 8)
   };
@@ -244,8 +246,9 @@
   }
 
   // ── Per-dimension metrics (SPEC section 3) ─────────────────────────────
-  function analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold) {
+  function analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold, minGroupSize) {
     if (minShareThreshold === undefined) minShareThreshold = MIN_SHARE_THRESHOLD;
+    if (minGroupSize === undefined) minGroupSize = MIN_GROUP_SIZE;
     var labels = Object.keys(counts);
     var nNonnull = 0, i;
     for (i = 0; i < labels.length; i++) nNonnull += counts[labels[i]];
@@ -255,7 +258,8 @@
       var ci = wilson(c, nNonnull);
       return { label: String(label), count: c,
                share: nNonnull ? c / nNonnull : 0,
-               ci_low: round(ci[0], 4), ci_high: round(ci[1], 4) };
+               ci_low: round(ci[0], 4), ci_high: round(ci[1], 4),
+               small_group: c < minGroupSize };
     });
     // count desc, then label asc - deterministic tie-break to match Python.
     groups.sort(function (a, b) {
@@ -293,13 +297,13 @@
       skewness: skew === null || skew === undefined ? null : round(skew, 4),
       groups: groups.map(function (g) {
         return { label: g.label, count: g.count, share: g.share,
-                 ci_low: g.ci_low, ci_high: g.ci_high };
+                 ci_low: g.ci_low, ci_high: g.ci_high, small_group: g.small_group };
       }),
       under_represented: under
     };
   }
 
-  function dimension(table, name, kind, minShareThreshold) {
+  function dimension(table, name, kind, minShareThreshold, minGroupSize) {
     var rows = table.rows, nTotal = rows.length, i, v;
 
     if (kind === 'age' && !looksLikeDates(rows, name)) {
@@ -317,7 +321,7 @@
           if (b === null) nullCount++;
           else counts[b] = (counts[b] || 0) + 1;
         }
-        var res = analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold);
+        var res = analyzeGroups(counts, nTotal, nullCount, skew, minShareThreshold, minGroupSize);
         res.name = name; res.kind = kind;
         return res;
       }
@@ -330,7 +334,7 @@
       if (v === null) nulls++;
       else c[v] = (c[v] || 0) + 1;
     }
-    var r = analyzeGroups(c, nTotal, nulls, null, minShareThreshold);
+    var r = analyzeGroups(c, nTotal, nulls, null, minShareThreshold, minGroupSize);
     r.name = name; r.kind = kind;
     return r;
   }
@@ -471,7 +475,7 @@
     var o = resolveOpts(opts);
     var detected = detectColumns(table, overrides);
     var dimensions = detected.map(function (d) {
-      return dimension(table, d.name, d.kind, o.min_share);
+      return dimension(table, d.name, d.kind, o.min_share, o.min_group_size);
     });
     var forced = {};
     Object.keys(overrides).forEach(function (col) {

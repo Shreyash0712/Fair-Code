@@ -88,6 +88,7 @@ For a dimension with `k` groups and null-excluded normalized shares `p_1 … p_k
   - Range `[0, 1]`; `1` = perfectly uniform, `0` = all mass in one group.
   - If `k ≤ 1`: `entropy_ratio = 0` (a single-group column has no diversity).
   - Use natural log in both languages (`Math.log` / `math.log`); the log base cancels in the ratio.
+- **small_group** - `true` when a group's raw `count` is below `min_group_size` (default **100**). A flag on the group, not a score input: below this size the share and its interval are noisy enough that a gap should be treated as a lead to investigate, not a confirmed finding.
 - **under_represented** - groups with `p_i < min_share_threshold` (default **0.05**).
 - **missing_pct** = `null_count / N_total` for the column.
 
@@ -157,9 +158,9 @@ dict, JS uses a plain object):
       "imbalance_ratio": 1.05, "min_share": 0.49, "missing_pct": 0.0,
       "skewness": null,
       "groups": [ {"label": "male", "count": 676, "share": 0.504,
-                   "ci_low": 0.4775, "ci_high": 0.5305},
+                   "ci_low": 0.4775, "ci_high": 0.5305, "small_group": false},
                   {"label": "female", "count": 664, "share": 0.496,
-                   "ci_low": 0.4695, "ci_high": 0.5225} ],
+                   "ci_low": 0.4695, "ci_high": 0.5225, "small_group": false} ],
       "under_represented": []
     }
   ],
@@ -177,13 +178,14 @@ with `imbalance_ratio ≥ 3`, every dimension with `missing_pct ≥ 0.05`, and e
 
 ## 7. Defaults (single place to tune)
 
-The four flagging thresholds are overridable per run without editing source: `profile(df, opts={...})`
+The flagging thresholds are overridable per run without editing source: `profile(df, opts={...})`
 in Python, `profile(table, overrides, opts)` in JS, and `--min-share` / `--intersection-floor` /
-`--imbalance-flag` / `--missing-flag` on the CLI. Omitted knobs fall back to the defaults below.
+`--imbalance-flag` / `--missing-flag` / `--min-group-size` on the CLI. Omitted knobs fall back to the defaults below.
 
 | Constant               | Default | Used by                          |
 |------------------------|:-------:|----------------------------------|
 | `MIN_SHARE_THRESHOLD`  | 0.05    | under-representation flagging    |
+| `MIN_GROUP_SIZE`       | 100     | `small_group` unreliable-metric flag |
 | `INTERSECTION_FLOOR`   | 0.01    | near-empty intersection cells    |
 | `MAX_CATEGORICAL_CARD` | 20      | generic-categorical detection    |
 | `IMBALANCE_FLAG`       | 3.0     | imbalance-ratio flag             |

@@ -138,7 +138,8 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
         share = count / n_nonnull if n_nonnull else 0.0
         lo, hi = _wilson(count, n_nonnull)
         groups.append({"label": str(label), "count": int(count), "share": share,
-                       "ci_low": _r(lo, 4), "ci_high": _r(hi, 4),"small_group": count < min_group_size})
+                       "ci_low": _r(lo, 4), "ci_high": _r(hi, 4),
+                       "small_group": count < min_group_size})
     # count desc, then label asc - deterministic tie-break so the JS port agrees.
     groups.sort(key=lambda g: (-g["count"], g["label"]))
 

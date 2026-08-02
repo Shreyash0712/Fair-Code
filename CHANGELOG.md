@@ -14,11 +14,17 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.6] - 02 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Profiler: configurable small-subgroup warnings** (#124, by [@ahmdkaml](https://github.com/ahmdkaml)) - every group now carries a `small_group` flag (raw count below `min_group_size`, default 100), shown as a "small group" warning in the terminal report, the HTML report, and the web UI, and tunable via `faircode profile --min-group-size N` or `opts.min_group_size`. Below that size a share and its confidence interval are noisy enough that a gap is a lead to investigate, not a confirmed finding.
+### Fixed
+- Restored Python/JS parity for the feature. The merged PR added `small_group` to `faircode/profiler.py` only; mirrored it into the browser engine `assets/profiler-engine.js`, documented it in `faircode/SPEC.md` (sections 3, 6, 7), and wired the warning into the web UI (`assets/profiler-ui.js` live view + downloaded report, `assets/profiler.css`) so the CLI and the web tool return identical results per the SPEC parity rule. Also normalised a couple of PEP8 nits in the Python change.
 
 ## [2.0.5] - 31 Jul 2026 *(pending - will be tagged after the paper is published)*
 ### Added

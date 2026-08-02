@@ -798,6 +798,7 @@ faircode profile data.xlsx                         # Excel workbooks work too
 faircode profile data.csv --json                   # machine-readable
 faircode profile data.csv --html report.html       # standalone HTML report
 faircode profile data.csv --fail-under 70          # fail CI if score is below 70
+faircode profile data.csv --min-group-size 50      # warn on subgroups under 50 rows
 faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
 faircode profile data.csv --map gndr=sex           # fix a missed column
 faircode profile data.csv --cross race,age         # choose the intersection pair
@@ -1006,7 +1007,7 @@ Thanks to everyone who has contributed audits, explainers, or documentation to F
 | [@propcgamer20-png](https://github.com/propcgamer20-png) | Explainer: Predictive Parity |
 | [@AnayDhawan](https://github.com/AnayDhawan) | Explainer: Unsupervised Learning · Explainer: Model Drift |
 | [@tomatotomata](https://github.com/tomatotomata) | Tooling: `faircode profile --fail-under` score CI gate |
-| [@ahmdkaml](https://github.com/ahmdkaml) | Test: `--fail-under` equality-threshold boundary |
+| [@ahmdkaml](https://github.com/ahmdkaml) | Profiler: configurable `--min-group-size` small-subgroup warnings · Test: `--fail-under` equality-threshold boundary |
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 

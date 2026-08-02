@@ -249,11 +249,14 @@
         ? '<span class="bar-ci" title="95% Wilson confidence interval on this share">95% CI '
           + (g.ci_low * 100).toFixed(1) + '–' + (g.ci_high * 100).toFixed(1) + '%</span>'
         : '';
+      var small = g.small_group
+        ? '<span class="bar-small" title="Fewer than the minimum group size - this metric may be unreliable">⚠ small group</span>'
+        : '';
       return '<div class="bar-row' + under + '">' +
         '<span class="bar-label" title="' + esc(g.label) + '">' + esc(g.label) + '</span>' +
         '<span class="bar-track"><span class="bar-fill" style="width:' + w.toFixed(1) + '%"></span></span>' +
         '<span class="bar-pct">' + pct(g.share) + ' (' + g.count.toLocaleString() + ')</span>' +
-        ci +
+        ci + small +
         '</div>';
     }).join('');
 
@@ -419,10 +422,12 @@
   function buildHtmlReport(r) {
     var dimBlocks = r.dimensions.map(function (d) {
       var rows = d.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
-        var under = d.under_represented.indexOf(g.label) !== -1 ? 'under' : 'ok';
+        var classes = [];
+        if (d.under_represented.indexOf(g.label) !== -1) classes.push('under');
+        if (g.small_group) classes.push('small-group');
         var ci = (g.ci_low != null && g.ci_high != null)
           ? (g.ci_low * 100).toFixed(1) + '–' + (g.ci_high * 100).toFixed(1) + '%' : '';
-        return '<tr class="' + under + '"><td>' + esc(g.label) + '</td>' +
+        return '<tr class="' + classes.join(' ') + '"><td>' + esc(g.label) + '</td>' +
           '<td class="num">' + (g.share * 100).toFixed(1) + '%</td>' +
           '<td class="num ci">' + ci + '</td>' +
           '<td class="num">' + g.count.toLocaleString() + '</td>' +
@@ -460,6 +465,7 @@
       ' td.bar span { display:block; height:10px; background:var(--accent3); border-radius:3px; }\n' +
       ' tr.under td.bar span { background:var(--accent); }\n' +
       ' tr.under td:first-child::after { content:\' (under-represented)\'; color:var(--accent); font-size:11px; }\n' +
+      ' tr.small-group td:first-child::before { content:\'⚠ small group \'; color:var(--accent); }\n' +
       ' .flags ul { list-style:none; padding:0; }\n' +
       ' .flags li { background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; }\n' +
       ' .head { border-bottom:2px solid var(--accent); padding-bottom:12px; }\n' +
