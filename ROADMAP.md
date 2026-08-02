@@ -11,7 +11,7 @@
 
 This is the public roadmap for Fair Code. It tracks what has been built, what is actively in progress, and what comes next.
 
-*Last updated: July 2026*
+*Last updated: August 2026*
 
 [Where We Are](#where-we-are) · Phase 1 · Phase 2 · Phase 3 · Phase 4 · Phase 5 · Phase 6 · [Content Schedule](#content-schedule) · [How to Contribute](#how-to-contribute)
 
@@ -23,11 +23,11 @@ This is the public roadmap for Fair Code. It tracks what has been built, what is
 
 Fair Code is an open-source responsible AI platform explaining algorithmic bias, fairness, and AI accountability through code audits, explainers, healthcare-bias case studies, and contributor-led GitHub documentation.
 
-**Current traction (July 2026):**
+**Current traction (August 2026):**
 
 | Stars | Contributors | Forks | Watching | Social Reach | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 40 | 11 | 17 | 8 | 21K+ | 7 | 36 | ✅ every push/PR |
+| 41 | 12 | 18 | 8 | 23K+ | 7 | 36 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -130,7 +130,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 
 ## Phase 4 - Contributor Expansion 🔄 In Progress
 
-**Status: Active - 11 external contributors, growing toward 15+**
+**Status: Active - 12 external contributors, growing toward 15+**
 
 Goal: grow to 15+ contributors with quality-controlled contributions.
 
