@@ -49,11 +49,12 @@ def to_terminal(result: dict) -> str:
         shown = d["groups"][:DISPLAY_GROUPS]
         for g in shown:
             mark = "  <- under-represented" if g["label"] in d["under_represented"] else ""
+            warning = ("  ⚠ small group (metric may be unreliable)" if g.get("small_group") else "")
             ci = ""
             if g.get("ci_low") is not None and g.get("ci_high") is not None:
                 ci = f"  [95% CI {g['ci_low'] * 100:.1f}-{g['ci_high'] * 100:.1f}%]"
             add(f"  {g['label'][:18]:<18} {_bar(g['share'])} "
-                f"{g['share'] * 100:5.1f}%  (n={g['count']:,}){ci}{mark}")
+                f"{g['share'] * 100:5.1f}%  (n={g['count']:,}){ci}{mark}{warning}")
         if len(d["groups"]) > DISPLAY_GROUPS:
             add(f"  … and {len(d['groups']) - DISPLAY_GROUPS} more groups")
         meta = []
@@ -162,12 +163,16 @@ def to_html(result: dict) -> str:
     for d in result["dimensions"]:
         rows = []
         for g in d["groups"][:DISPLAY_GROUPS]:
-            under = "under" if g["label"] in d["under_represented"] else "ok"
+            classes = []
+            if g["label"] in d["under_represented"]:
+                classes.append("under")
+            if g.get("small_group"):
+                classes.append("small-group")
             ci = ""
             if g.get("ci_low") is not None and g.get("ci_high") is not None:
                 ci = f'{g["ci_low"] * 100:.1f}–{g["ci_high"] * 100:.1f}%'
             rows.append(
-                f'<tr class="{under}"><td>{esc(g["label"])}</td>'
+                f'<tr class="{" ".join(classes)}"><td>{esc(g["label"])}</td>'
                 f'<td class="num">{g["share"] * 100:.1f}%</td>'
                 f'<td class="num ci">{ci}</td>'
                 f'<td class="num">{g["count"]:,}</td>'
@@ -207,6 +212,7 @@ def to_html(result: dict) -> str:
  td.bar span {{ display:block; height:10px; background:var(--accent3); border-radius:3px; }}
  tr.under td.bar span {{ background:var(--accent); }}
  tr.under td:first-child::after {{ content:' (under-represented)'; color:var(--accent); font-size:11px; }}
+ tr.small-group td:first-child::before {{content:'⚠ small group ';color:var(--accent);}}
  .flags ul {{ list-style:none; padding:0; }}
  .flags li {{ background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; }}
  .head {{ border-bottom:2px solid var(--accent); padding-bottom:12px; }}
