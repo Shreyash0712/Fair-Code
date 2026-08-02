@@ -99,6 +99,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="imbalance-ratio flag threshold (default 3.0)")
     p.add_argument("--missing-flag", type=float, metavar="F",
                    help="missing-data flag threshold (default 0.05)")
+    p.add_argument("--min-group-size", type=int, default=100, metavar="N",
+                   help="warn when a subgroup has fewer than N rows (default: 100)")
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
@@ -133,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
             "intersection_floor": args.intersection_floor,
             "imbalance_flag": args.imbalance_flag,
             "missing_flag": args.missing_flag,
+            "min_group_size": args.min_group_size,
         }
         if args.cross:
             parts = [c.strip() for c in args.cross.split(",")]

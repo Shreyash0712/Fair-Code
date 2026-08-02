@@ -83,7 +83,27 @@ def test_skewed_distribution_flags_under_represented():
     assert dim["dimension_score"] < 50
     assert any("under-represented" in f for f in result["flags"])
 
+def test_min_group_size_tunable():
+    df = pd.DataFrame({"sex": ["M"] * 80 + ["F"] * 20})
 
+    # Default threshold (100): both groups are considered small.
+    result = profile(df)
+    dim = result["dimensions"][0]
+
+    assert all(g["small_group"] for g in dim["groups"])
+
+    flags = result["flags"]
+    assert any("'M'" in f and "unreliable" in f for f in flags)
+    assert any("'F'" in f and "unreliable" in f for f in flags)
+
+    # Lowering the threshold means neither group is considered small.
+    result = profile(df, opts={"min_group_size": 10})
+    dim = result["dimensions"][0]
+
+    assert not any(g["small_group"] for g in dim["groups"])
+
+    flags = result["flags"]
+    assert not any("fairness metrics may be unreliable" in f for f in flags)
 def test_group_shares_carry_wilson_ci():
     from faircode.profiler import _r, _wilson
 

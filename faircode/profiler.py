@@ -22,6 +22,7 @@ MISSING_FLAG = 0.05
 REFERENCE_DEVIATION_FLAG = 0.05  # under-representation vs a reference baseline
 AGE_BANDS = [0, 18, 30, 45, 60, 75]  # left-closed edges; final band is "75+"
 MAX_DIMENSION_GROUPS = 50  # drop identifier/date-like columns (geography exempt)
+MIN_GROUP_SIZE = 100  # warn when a subgroup has fewer than N rows (default: 100)
 
 _DATE_RE = re.compile(r"\d{1,4}[/-]\d{1,2}[/-]\d{1,4}")
 
@@ -57,6 +58,7 @@ _DEFAULT_OPTS = {
     "imbalance_flag": IMBALANCE_FLAG,
     "missing_flag": MISSING_FLAG,
     "reference_flag": REFERENCE_DEVIATION_FLAG,
+    "min_group_size": MIN_GROUP_SIZE,  # warn when a subgroup has fewer than N rows
     "cross": None,       # [colA, colB] to force the intersection pair (SPEC 4)
     "reference": None,   # {column: {group: expected_share}} baseline (SPEC 8)
 }
@@ -128,7 +130,7 @@ def _skewness(values: list[float]):
 
 # ── Per-dimension metrics (SPEC section 3) ──────────────────────────────────
 def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
-                    skewness=None, min_share_threshold=MIN_SHARE_THRESHOLD) -> dict:
+                    skewness=None, min_share_threshold=MIN_SHARE_THRESHOLD, min_group_size=MIN_GROUP_SIZE) -> dict:
     """Given {label: count} for non-null values, compute the dimension metrics."""
     n_nonnull = sum(labels_counts.values())
     groups = []
@@ -136,7 +138,7 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
         share = count / n_nonnull if n_nonnull else 0.0
         lo, hi = _wilson(count, n_nonnull)
         groups.append({"label": str(label), "count": int(count), "share": share,
-                       "ci_low": _r(lo, 4), "ci_high": _r(hi, 4)})
+                       "ci_low": _r(lo, 4), "ci_high": _r(hi, 4),"small_group": count < min_group_size})
     # count desc, then label asc - deterministic tie-break so the JS port agrees.
     groups.sort(key=lambda g: (-g["count"], g["label"]))
 
@@ -169,7 +171,7 @@ def _analyze_groups(labels_counts: dict, n_total: int, null_count: int,
 
 
 def _dimension(df: pd.DataFrame, name: str, kind: str,
-               min_share=MIN_SHARE_THRESHOLD) -> dict:
+               min_share=MIN_SHARE_THRESHOLD, min_group_size=MIN_GROUP_SIZE) -> dict:
     col = df[name]
     n_total = len(df)
     skewness = None
@@ -186,7 +188,7 @@ def _dimension(df: pd.DataFrame, name: str, kind: str,
             for b in bands:
                 if b is not None:
                     counts[b] = counts.get(b, 0) + 1
-            result = _analyze_groups(counts, n_total, null_count, skewness, min_share)
+            result = _analyze_groups(counts, n_total, null_count, skewness, min_share, min_group_size)
             result.update({"name": name, "kind": kind})
             return result
 
@@ -194,7 +196,7 @@ def _dimension(df: pd.DataFrame, name: str, kind: str,
     null_count = int(col.isna().sum())
     vc = col.dropna().value_counts()
     counts = {label: int(c) for label, c in vc.items()}
-    result = _analyze_groups(counts, n_total, null_count, skewness, min_share)
+    result = _analyze_groups(counts, n_total, null_count, skewness, min_share, min_group_size)
     result.update({"name": name, "kind": kind})
     return result
 
@@ -294,6 +296,11 @@ def _build_flags(dimensions: list[dict], intersections: list[dict],
                     f"{d['name']}: '{g['label']}' is under-represented "
                     f"({g['share'] * 100:.1f}%)"
                 )
+            if g.get("small_group"):
+                flags.append(
+                    f"{d['name']}: '{g['label']}' has only {g['count']} rows; "
+                    f"fairness metrics may be unreliable"
+                )
         if d["imbalance_ratio"] is not None and d["imbalance_ratio"] >= imbalance_flag:
             flags.append(
                 f"{d['name']}: imbalance ratio {d['imbalance_ratio']:.1f}× "
@@ -365,14 +372,15 @@ def profile(df: pd.DataFrame, overrides=None, opts=None) -> dict:
     column's dimension when auto-detection misses or mislabels it.
 
     `opts` is an optional dict of tunable knobs (SPEC section 7): `min_share`,
-    `intersection_floor`, `imbalance_flag`, `missing_flag`, `reference_flag`, a
-    `cross` pair [colA, colB] for the intersection (SPEC 4), and a `reference`
-    baseline {column: {group: expected_share}} (SPEC 8).
+    `intersection_floor`, `imbalance_flag`, `missing_flag`, `reference_flag`,
+    `min_group_size`, a `cross` pair [colA, colB] for the intersection (SPEC 4),
+    and a `reference` baseline {column: {group: expected_share}} (SPEC 8).
+
     """
     overrides = overrides or {}
     o = _resolve_opts(opts)
     detected = detect_columns(df, overrides)
-    dimensions = [_dimension(df, d["name"], d["kind"], o["min_share"])
+    dimensions = [_dimension(df, d["name"], d["kind"], o["min_share"], o["min_group_size"])
                   for d in detected]
     # Drop identifier/date-like columns that exploded into many groups; geography
     # (cities, regions) legitimately has high cardinality, so it is exempt - as is
