@@ -12,10 +12,13 @@
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-orange?style=flat-square&logo=scikit-learn)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626?style=flat-square&logo=jupyter)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-blueviolet?style=flat-square)
 ![Deployed](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)
 ![CI](https://github.com/yakew7/Fair-Code/actions/workflows/audits.yml/badge.svg)
+<a href="https://github.com/yakew7/Fair-Code/stargazers"><img src="https://img.shields.io/github/stars/yakew7/Fair-Code?style=social" alt="Stars" height="28"></a>
+<a href="https://github.com/yakew7/Fair-Code/forks"><img src="https://img.shields.io/github/forks/yakew7/Fair-Code?style=social" alt="Forks" height="28"></a>
+<a href="https://github.com/yakew7/Fair-Code/watchers"><img src="https://img.shields.io/github/watchers/yakew7/Fair-Code?style=social" alt="Watchers" height="28"></a>
+<a href="https://github.com/yakew7/Fair-Code/contributors"><img src="https://img.shields.io/github/contributors/yakew7/Fair-Code?style=social" alt="Contributors" height="28"></a>
 
 </div>
 
@@ -975,7 +978,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Metric | Count |
 |--------|------:|
 | GitHub Stars | 40 |
-| External Contributors | 10 |
+| External Contributors | 11 |
 | Forks | 17 |
 | Watching | 8 |
 | Combined Social Reach (Instagram + LinkedIn) | ~21K |
@@ -999,9 +1002,11 @@ Thanks to everyone who has contributed audits, explainers, or documentation to F
 | [@Rajveerx11](https://github.com/Rajveerx11) | Explainer: Disparate Impact (The 80% Rule) |
 | [@sofiya-iii](https://github.com/sofiya-iii) | Explainer: Calibration |
 | [@cannotdoit13](https://github.com/cannotdoit13) | Standardized dataset paths and added CI to run all audits |
-| [@Shreyash0712](https://github.com/Shreyash0712) | Explainer: Why AI Hallucinates · first-interaction workflow and audits-workflow fixes |
+| [@Shreyash0712](https://github.com/Shreyash0712) | Explainer: Why AI Hallucinates · Explainers: Protected Attribute, Confusion Matrix, Class Imbalance, Bias-Variance Trade-off · first-interaction workflow and audits-workflow fixes |
 | [@propcgamer20-png](https://github.com/propcgamer20-png) | Explainer: Predictive Parity |
 | [@AnayDhawan](https://github.com/AnayDhawan) | Explainer: Unsupervised Learning · Explainer: Model Drift |
+| [@tomatotomata](https://github.com/tomatotomata) | Tooling: `faircode profile --fail-under` score CI gate |
+| [@ahmdkaml](https://github.com/ahmdkaml) | Test: `--fail-under` equality-threshold boundary |
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 
