@@ -994,7 +994,7 @@ Tracked weekly in [METRICS.md](METRICS.md).
 
 Thanks to everyone who has contributed audits, explainers, or documentation to Fair Code.
 
-[![Contributors](https://contrib.rocks/image?repo=yakew7/awesome-student-resources)](https://github.com/yakew7/Fair-Code/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=yakew7/Fair-Code&excludeBots=true)](https://github.com/yakew7/Fair-Code/graphs/contributors)
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 
