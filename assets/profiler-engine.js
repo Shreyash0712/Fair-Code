@@ -52,7 +52,17 @@
   var SCORE_DROP_FLAG = 5;
 
   // Pandas-style missing tokens, so JS null-handling matches read_csv defaults.
-  var NA_TOKENS = { '': 1, 'na': 1, 'n/a': 1, 'nan': 1, 'null': 1, 'none': 1 };
+  var NA_TOKENS = {
+  '': 1,
+  'na': 1,
+  'n/a': 1,
+  'nan': 1,
+  'null': 1,
+  // Intentionally exclude "none" to match the Python profiler.
+  // In this project, pd.read_csv() preserves the literal string "none"
+  // as a categorical value, so treating it as missing breaks Python↔JS
+  // parity (see credit_customers.csv).
+};
 
   // ── Keyword lists - MUST mirror faircode/detect.py ─────────────────────
   var KEYWORDS = [
@@ -446,6 +456,12 @@
         if (d.under_represented.indexOf(g.label) !== -1) {
           flags.push(d.name + ": '" + g.label + "' is under-represented (" +
                      (g.share * 100).toFixed(1) + '%)');
+        }
+        if (g.small_group) {
+          flags.push(
+            d.name + ": '" + g.label + "' has only " +
+            g.count + " rows; fairness metrics may be unreliable"
+          );
         }
       });
       if (d.imbalance_ratio !== null && d.imbalance_ratio >= imbalanceFlag) {

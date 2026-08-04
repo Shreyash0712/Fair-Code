@@ -57,6 +57,10 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install faircode + pytest
         run: |
           python -m pip install --upgrade pip
