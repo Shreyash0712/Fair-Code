@@ -3,6 +3,8 @@
     faircode profile data.csv
     faircode profile data.tsv
     faircode profile data.xlsx
+    faircode profile data.json
+    faircode profile data.parquet
     faircode profile data.csv --json
     faircode profile data.csv --html report.html
     faircode compare train.csv prod.csv
