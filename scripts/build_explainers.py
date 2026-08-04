@@ -27,6 +27,7 @@ EXPLAINERS_DIR = ROOT / "explainers"
 DATA_JSON = ROOT / "assets" / "explainers-data.json"
 DATA_JS = ROOT / "assets" / "explainers-data.js"
 SITEMAP = ROOT / "sitemap.xml"
+LLMS_FULL = ROOT / "llms-full.txt"
 SITE_URL = "https://www.thefaircode.xyz"
 REPO_URL = "https://github.com/yakew7/Fair-Code"
 
@@ -450,6 +451,44 @@ def build_data_js(entries):
     return f"window.FAIR_CODE_EXPLAINERS = {payload};\n"
 
 
+def build_llms_full(entries):
+    """Concatenate every explainer's full markdown into llms-full.txt.
+
+    Follows the llms.txt convention (llmstxt.org): `llms.txt` is the short
+    index, `llms-full.txt` is the complete text so AI answer engines and LLM
+    crawlers (GEO) can ground on the whole corpus in one fetch.
+    """
+    header = [
+        "# Fair Code - Full Text for LLMs and AI Answer Engines",
+        "",
+        "> Fair Code exposes and fixes bias in real-world AI systems - criminal "
+        "justice, hiring, lending, healthcare, welfare eligibility, and tenant "
+        "screening - through open-source audits with measurable results and clear "
+        "explainers of the underlying fairness concepts.",
+        "",
+        f"Site: {SITE_URL}  |  Source: {REPO_URL}  |  Index: {SITE_URL}/llms.txt",
+        "",
+        "Created and maintained by Yash Kewlani. This file is generated from "
+        "explainers/*.md by scripts/build_explainers.py; it concatenates every "
+        "explainer in full so an AI assistant can read the complete text in a "
+        "single request. The benchmark results are frozen for a paper in peer "
+        "review (tag v1.0-paper); new audits are paused, explainers continue.",
+        "",
+    ]
+    parts = ["\n".join(header)]
+    for entry in entries:
+        slug = entry["slug"]
+        body = (EXPLAINERS_DIR / f"{slug}.md").read_text(encoding="utf-8").strip()
+        parts.append(
+            "---\n\n"
+            f"# {entry['title']}\n"
+            f"URL: {SITE_URL}/explainers/{slug}.html\n"
+            f"Summary: {entry['summary']}\n\n"
+            f"{body}\n"
+        )
+    return "\n".join(parts) + "\n"
+
+
 def main():
     entries = json.loads(DATA_JSON.read_text(encoding="utf-8"))
     known_slugs = {entry["slug"] for entry in entries}
@@ -465,8 +504,10 @@ def main():
 
     DATA_JS.write_text(build_data_js(entries), encoding="utf-8")
     SITEMAP.write_text(build_sitemap(entries), encoding="utf-8")
+    LLMS_FULL.write_text(build_llms_full(entries), encoding="utf-8")
 
-    print(f"Generated {len(entries)} explainer pages, assets/explainers-data.js, and sitemap.xml")
+    print(f"Generated {len(entries)} explainer pages, assets/explainers-data.js, "
+          "sitemap.xml, and llms-full.txt")
 
 
 if __name__ == "__main__":

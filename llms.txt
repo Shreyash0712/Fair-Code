@@ -4,6 +4,8 @@
 
 Created and maintained by Yash Kewlani ([github.com/yakew7](https://github.com/yakew7)). Source: [github.com/yakew7/Fair-Code](https://github.com/yakew7/Fair-Code).
 
+Full text of every explainer in one file (for AI answer engines): https://www.thefaircode.xyz/llms-full.txt
+
 > Status: the benchmark results are frozen for a research paper in peer review (tag `v1.0-paper`). New audits are paused until publication; explainers and tooling continue as normal.
 
 ## Audits
