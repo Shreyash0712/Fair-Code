@@ -536,7 +536,7 @@
     background: var(--border);
   }
 
-  .about-title, .method-title, .projects-title, .impact-title, .roadmap-title {
+  .about-title, .method-title, .projects-title, .impact-title, .roadmap-title, .faq-title {
     font-family: var(--serif);
     font-weight: 400;
     font-size: clamp(34px, 4.6vw, 58px);
@@ -1192,6 +1192,73 @@
     color: var(--muted);
   }
 
+  /* ── FAQ ───────────────────────────────────────── */
+  .faq-sub {
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 560px;
+  }
+  .faq-list {
+    margin-top: 46px;
+    max-width: 800px;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq-item summary {
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 0;
+    cursor: pointer;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--accent);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  .faq-item[open] summary::after { transform: rotate(45deg); }
+  .faq-item summary:hover { color: var(--accent); }
+  .faq-answer {
+    margin: 0 0 24px;
+    max-width: 640px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--muted);
+  }
+  .faq-answer a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ── FOOTER: CONTACT & LEGAL ───────────────────── */
+  .footer-legal {
+    width: 100%;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .footer-legal a { color: var(--muted); text-decoration: none; }
+  .footer-legal a:hover { color: var(--accent); }
+
   /* ── BACK TO TOP ───────────────────────────────── */
   #back-to-top {
     position: fixed;
@@ -1466,6 +1533,7 @@
     <li><a href="profiler.html">Profiler</a></li>
     <li><a href="#impact">Impact</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-social">
     <a href="https://github.com/yakew7/Fair-Code" target="_blank" rel="noopener noreferrer" class="nav-github">↗ GitHub</a>
@@ -1495,6 +1563,7 @@
     <a href="profiler.html" class="mobile-link">Profiler</a>
     <a href="#impact" class="mobile-link">Impact</a>
     <a href="#roadmap" class="mobile-link">Roadmap</a>
+    <a href="#faq" class="mobile-link">FAQ</a>
     <div class="mobile-social-row">
       <a href="https://github.com/yakew7/Fair-Code" target="_blank" rel="noopener noreferrer">↗ GitHub</a>
       <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noopener noreferrer">↗ Insta</a>
@@ -2787,6 +2856,44 @@
   </div>
 </section>
 
+<!-- FAQ -->
+<section id="faq" style="background: var(--surface);" aria-labelledby="faq-heading">
+  <div class="section-eyebrow"><span class="num">07</span>FAQ</div>
+  <h2 id="faq-heading" class="faq-title reveal">Questions, answered</h2>
+  <p class="faq-sub reveal">The short version of what this project is, what it isn't, and how to reach a human about it.</p>
+
+  <div class="faq-list reveal">
+    <details class="faq-item">
+      <summary>What is Fair Code, exactly?</summary>
+      <p class="faq-answer">An open-source research project that audits real-world AI systems for demographic bias, then engineers a fixed version of the same model and measures the gap before and after. Every audit follows the same pipeline: train a biased model, measure the fairness gap, remove protected attributes and proxy variables, retrain, and measure again.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Is this legal, medical, or compliance advice?</summary>
+      <p class="faq-answer">No. Fair Code is a research and engineering project, not legal or regulatory advice. The audits demonstrate that bias is measurable and fixable in a research setting - they are not a substitute for a formal compliance review, and no results here should be relied on as legal counsel for a production system.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Which fairness metric does it use, and why?</summary>
+      <p class="faq-answer">Demographic Parity is the primary constraint used to mitigate bias, alongside six fairness metrics used to measure it. See the <a href="#methodology">Methodology</a> section and the <a href="explainers/fairness-metric-conflicts.html">Fairness Metric Conflicts explainer</a> for why no single metric captures fairness completely, and why the choice of metric is itself a judgment call.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Does the Dataset Profiler upload my file anywhere?</summary>
+      <p class="faq-answer">No. The <a href="profiler.html">Open Dataset Profiler</a> runs entirely client-side in your browser - your CSV is parsed and analyzed locally and is never uploaded to a server.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Can I contribute a new audit or dataset?</summary>
+      <p class="faq-answer">Yes - contributions are welcome. See <a href="https://github.com/yakew7/Fair-Code/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">CONTRIBUTING.md</a> on GitHub. Note that the benchmark results are currently frozen for a paper in peer review, so new audits are staged on a branch and merged into <code>main</code> after publication rather than being blocked outright.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What's the license?</summary>
+      <p class="faq-answer">MIT. See the <a href="https://github.com/yakew7/Fair-Code/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE</a> file - the code, audits, and explainers are free to use, modify, and redistribute with attribution.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How do I get in touch?</summary>
+      <p class="faq-answer">Email <a href="mailto:yashkewlani2020@gmail.com">yashkewlani2020@gmail.com</a> for questions, bug reports, or collaboration - or open an issue on <a href="https://github.com/yakew7/Fair-Code/issues" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+    </details>
+  </div>
+</section>
+
 <button id="back-to-top" aria-label="Back to top"></button>
 
 <!-- FOOTER -->
@@ -2796,9 +2903,15 @@
     <div class="footer-by">by Yash Kewlani · @thefaircodeproject</div>
   </div>
   <div class="footer-links">
+    <a href="#faq">FAQ</a>
+    <a href="mailto:yashkewlani2020@gmail.com">Contact</a>
     <a href="https://github.com/yakew7/Fair-Code" target="_blank" rel="noopener noreferrer">↗ GitHub</a>
     <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noopener noreferrer">↗ Instagram</a>
     <a href="https://www.linkedin.com/in/yash-kewlani-7ab090357" target="_blank" rel="noopener noreferrer">↗ Linkedin</a>
+  </div>
+  <div class="footer-legal">
+    <span>© 2026 Yash Kewlani · Fair Code is research and educational content, not legal or compliance advice.</span>
+    <a href="https://github.com/yakew7/Fair-Code/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
   </div>
 </footer>
 
