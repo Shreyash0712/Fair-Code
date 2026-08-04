@@ -274,14 +274,23 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <title>{title} · Fair Code</title>
 <meta name="description" content="{summary}">
 <link rel="canonical" href="{canonical}">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="{title} · Fair Code">
 <meta property="og:description" content="{summary}">
 <meta property="og:type" content="article">
-<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="{canonical}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="{og_image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="{title} · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title} · Fair Code">
 <meta name="twitter:description" content="{summary}">
+<meta name="twitter:image" content="{og_image}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -445,7 +454,7 @@ def _faq(entry, markdown_text):
     return pairs
 
 
-def build_jsonld(entry, canonical, markdown_text=""):
+def build_jsonld(entry, canonical, markdown_text="", dates=None):
     defined_term = {
         "@type": "DefinedTerm",
         "author": {"@type": "Person", "name": "Yash Kewlani",
@@ -459,6 +468,11 @@ def build_jsonld(entry, canonical, markdown_text=""):
             "url": f"{SITE_URL}/index.html#explainers",
         },
     }
+    if dates:
+        if dates.get("published"):
+            defined_term["datePublished"] = dates["published"]
+        if dates.get("modified"):
+            defined_term["dateModified"] = dates["modified"]
     faq_page = {
         "@type": "FAQPage",
         "url": canonical,
@@ -468,8 +482,16 @@ def build_jsonld(entry, canonical, markdown_text=""):
             for q, a in _faq(entry, markdown_text)
         ],
     }
+    breadcrumbs = {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Fair Code", "item": f"{SITE_URL}/"},
+            {"@type": "ListItem", "position": 2, "name": "Explainers", "item": f"{SITE_URL}/index.html#explainers"},
+            {"@type": "ListItem", "position": 3, "name": entry["title"], "item": canonical},
+        ],
+    }
     return json.dumps({"@context": "https://schema.org",
-                       "@graph": [defined_term, faq_page]}, indent=2)
+                       "@graph": [defined_term, faq_page, breadcrumbs]}, indent=2)
 
 
 def build_page(entry, known_slugs):
@@ -478,6 +500,10 @@ def build_page(entry, known_slugs):
     markdown_text = md_path.read_text(encoding="utf-8")
     content_html = render_markdown(markdown_text, known_slugs)
     canonical = f"{SITE_URL}/explainers/{slug}.html"
+    dates = {
+        "published": _git_first_commit(f"explainers/{slug}.md"),
+        "modified": _git_lastmod(f"explainers/{slug}.md"),
+    }
 
     return PAGE_TEMPLATE.format(
         title=escape_html(entry["title"]),
@@ -486,7 +512,8 @@ def build_page(entry, known_slugs):
         subtitle=escape_html(entry["subtitle"]),
         content=content_html,
         source_url=f"{REPO_URL}/blob/main/explainers/{slug}.md",
-        jsonld=build_jsonld(entry, canonical, markdown_text),
+        og_image=f"{SITE_URL}/assets/og/{slug}.png",
+        jsonld=build_jsonld(entry, canonical, markdown_text, dates),
     )
 
 
@@ -501,6 +528,20 @@ def _git_lastmod(relpath: str) -> str | None:
     except Exception:  # noqa: BLE001 - git absent / shallow clone: just skip lastmod
         return None
     return out if re.match(r"^\d{4}-\d{2}-\d{2}$", out) else None
+
+
+def _git_first_commit(relpath: str) -> str | None:
+    """First commit date (YYYY-MM-DD) of a tracked file, for JSON-LD
+    datePublished. None if unavailable (untracked file or no git history)."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "--follow", "--format=%cs", "--", relpath],
+            capture_output=True, text=True, cwd=str(ROOT), check=False,
+        ).stdout.strip().splitlines()
+    except Exception:  # noqa: BLE001 - git absent / shallow clone: just skip datePublished
+        return None
+    last = out[-1] if out else ""
+    return last if re.match(r"^\d{4}-\d{2}-\d{2}$", last) else None
 
 
 def build_sitemap(entries):
