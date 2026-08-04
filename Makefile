@@ -17,8 +17,9 @@ setup:  ## Install the package plus the dev tools (pytest, pre-commit)
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
 
-build-explainers:  ## Regenerate explainer pages, data.js, and sitemap
+build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images
 	$(PY) scripts/build_explainers.py
+	$(PY) scripts/generate_og_images.py
 
 lint:  ## Enforce the em-dash-free rule (mirrors the lint workflow)
 	$(PY) scripts/check_em_dash.py

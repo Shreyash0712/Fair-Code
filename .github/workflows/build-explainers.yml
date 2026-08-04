@@ -7,6 +7,7 @@ on:
       - "explainers/**.md"
       - "assets/explainers-data.json"
       - "scripts/build_explainers.py"
+      - "scripts/generate_og_images.py"
 
 permissions:
   contents: write
@@ -23,13 +24,19 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Pillow (OG image generation)
+        run: python -m pip install --upgrade pip pillow
+
       - name: Generate explainer pages, data.js, and sitemap
         run: python3 scripts/build_explainers.py
+
+      - name: Generate OG/Twitter social preview images
+        run: python3 scripts/generate_og_images.py
 
       - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add explainers/*.html assets/explainers-data.js sitemap.xml
+          git add explainers/*.html assets/explainers-data.js sitemap.xml assets/og/*.png
           git diff --cached --quiet || git commit -m "chore: regenerate explainer pages"
           git push

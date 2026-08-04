@@ -20,6 +20,13 @@ repos:
         pass_filenames: false
         files: '^(explainers/.*\.md|assets/explainers-data\.json)$'
 
+      - id: generate-og-images
+        name: regenerate OG/Twitter social preview images
+        entry: python3 scripts/generate_og_images.py
+        language: system
+        pass_filenames: false
+        files: '^(explainers/.*\.md|assets/explainers-data\.json|scripts/generate_og_images\.py)$'
+
       - id: pytest
         name: pytest (full suite)
         entry: python3 -m pytest tests/ -q

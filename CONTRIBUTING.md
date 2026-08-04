@@ -68,7 +68,7 @@ A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can 
 make setup             # install faircode + pytest + pre-commit
 make check             # everything CI runs: em-dash lint + full test suite
 make test              # just the test suite
-make build-explainers  # regenerate explainer pages after editing explainers/*.md
+make build-explainers  # regenerate explainer pages, sitemap, and OG images after editing explainers/*.md
 make lint              # em-dash-free check only
 ```
 
