@@ -9,6 +9,7 @@
     faircode profile data.csv --html report.html
     faircode compare train.csv prod.csv
     faircode compare train.csv prod.csv --json
+    faircode compare train.csv prod.csv --html report.html
     faircode benchmark
     faircode benchmark --out results/
     faircode benchmark COMPAS/audit.yaml "German Credit Lending/audit.yaml"
@@ -32,7 +33,7 @@ from .detect import VALID_KINDS
 from .loaders_extra import read_table
 from .profiler import parse_reference, profile
 from .proxy import proxy_hints
-from .report import compare_to_terminal, to_html, to_json, to_terminal
+from .report import compare_to_terminal, to_html, compare_to_html, to_json, to_terminal
 
 _MAP_CHOICES = VALID_KINDS + ("ignore",)
 
@@ -111,6 +112,8 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, .xlsx, .json, or .parquet)")
     c.add_argument("csv_b", help="current dataset B (.csv, .tsv, .xlsx, .json, or .parquet)")
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
+    c.add_argument("--html", metavar="PATH",
+                   help="write a standalone HTML report to PATH")
 
     b = sub.add_parser("benchmark",
                        help="run the cross-domain fairness benchmark harness over every audit.yaml")
@@ -188,6 +191,10 @@ def main(argv: list[str] | None = None) -> int:
             profile(_read_or_exit(args.csv_b)),
             name_a=args.csv_a, name_b=args.csv_b,
         )
+        if args.html:
+            with open(args.html, "w", encoding="utf-8") as fh:
+                fh.write(compare_to_html(result))
+            print(f"HTML report written to {args.html}", file=sys.stderr)
         if args.json:
             print(to_json(result))
         else:
