@@ -60,6 +60,28 @@ If you are unsure whether an idea fits, open an issue first and ask.
 
 ---
 
+## Local setup and checks
+
+A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can catch failures before you open a PR:
+
+```bash
+make setup             # install faircode + pytest + pre-commit
+make check             # everything CI runs: em-dash lint + full test suite
+make test              # just the test suite
+make build-explainers  # regenerate explainer pages after editing explainers/*.md
+make lint              # em-dash-free check only
+```
+
+Optionally install the git hooks so the checks run automatically:
+
+```bash
+pre-commit install
+```
+
+With the hooks installed, the em-dash lint runs on every commit (and explainer pages rebuild when you touch `explainers/*.md`), while the full test suite runs on `git push`. Run `make check` any time to reproduce CI on demand.
+
+---
+
 ## 1. Before you start
 
 - Read the relevant section in this guide before writing code.
