@@ -14,11 +14,16 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.7] - 04 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Contributor task runner** (#114, by [@propcgamer20-png](https://github.com/propcgamer20-png)) - a `Makefile` (`setup`, `test`, `build-explainers`, `lint`, `check`) and a `.pre-commit-config.yaml` that mirror CI, so `make check` reproduces the em-dash lint plus the full test suite locally, and the git hooks run the fast checks on commit with the test suite on push. Documented in a new "Local setup and checks" section of `CONTRIBUTING.md`.
+- **Per-audit reproducibility READMEs** (#86) - each of the seven audit folders now has a `README.md` with a reproducibility checklist (pinned `random_state=42`, `requirements-lock.txt`, stratified 80/20 split, and the exact `unfair.py` / `fair.py` commands) plus the published before/after fairness numbers copied verbatim from the main results table (paper-aligned, not re-run). Standardised in `CONTRIBUTING.md` (folder layout + a rule) so future audits ship one too.
 
 ## [2.0.6] - 02 Aug 2026 *(pending - will be tagged after the paper is published)*
 ### Added
