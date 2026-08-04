@@ -1,19 +1,26 @@
 name: Build Explainers
 
+# Verifies explainers/*.html, assets/explainers-data.js, sitemap.xml,
+# llms-full.txt, and assets/og/*.png are in sync with their sources
+# (explainers/*.md, assets/explainers-data.json).
+#
+# main requires a PR (branch protection), and github-actions[bot] isn't in
+# that ruleset's bypass list, so this can no longer auto-commit a fix by
+# pushing straight to main. Contributors already run `make build-explainers`
+# locally before opening a PR (see CONTRIBUTING.md) - this job just fails
+# the check if that step was skipped, instead of silently drifting or
+# erroring out trying to push.
+
 on:
-  push:
-    branches: [main]
+  pull_request:
     paths:
       - "explainers/**.md"
       - "assets/explainers-data.json"
       - "scripts/build_explainers.py"
       - "scripts/generate_og_images.py"
 
-permissions:
-  contents: write
-
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,10 +40,11 @@ jobs:
       - name: Generate OG/Twitter social preview images
         run: python3 scripts/generate_og_images.py
 
-      - name: Commit generated files
+      - name: Fail if generated files are out of date
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add explainers/*.html assets/explainers-data.js sitemap.xml assets/og/*.png
-          git diff --cached --quiet || git commit -m "chore: regenerate explainer pages"
-          git push
+          if ! git diff --quiet -- explainers/*.html assets/explainers-data.js sitemap.xml llms-full.txt assets/og/*.png; then
+            echo "::error::Generated files are out of date - run 'make build-explainers' locally and commit the result."
+            git diff --stat -- explainers/*.html assets/explainers-data.js sitemap.xml llms-full.txt assets/og/*.png
+            exit 1
+          fi
+          echo "Generated files are up to date."
