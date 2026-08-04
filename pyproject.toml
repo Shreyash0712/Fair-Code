@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 excel = ["openpyxl>=3.0"]
+parquet = ["pyarrow>=10.0"]
 proxy = ["scipy>=1.10"]
 benchmark = ["scikit-learn>=1.9.0", "pyyaml>=6.0", "fairlearn>=0.14.0"]
 

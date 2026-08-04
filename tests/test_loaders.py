@@ -9,7 +9,8 @@ import pandas as pd
 import pytest
 
 from faircode import profile
-from faircode.loaders import _sniff_delimiter, read_table
+from faircode.loaders import _sniff_delimiter
+from faircode.loaders_extra import read_table
 
 requires_openpyxl = pytest.mark.skipif(
     importlib.util.find_spec("openpyxl") is None,

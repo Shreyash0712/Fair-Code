@@ -34,21 +34,6 @@ def read_table(path: str) -> pd.DataFrame:
 
     if suffix == ".csv":
         return pd.read_csv(path)
-    
-    if suffix == ".json":
-        try:
-            return pd.read_json(path)
-        except ValueError:
-            return pd.read_json(path, orient="split")
-        
-    if suffix == ".parquet":
-        try:
-            return pd.read_parquet(path)
-        except ImportError as exc:
-            raise RuntimeError(
-                "reading .parquet files requires the 'pyarrow' package "
-                "(install with: pip install faircode[parquet])"
-            ) from exc
 
     with open(path, "r", encoding="utf-8", errors="replace", newline="") as fh:
         sample = fh.read(SNIFF_SAMPLE_BYTES)

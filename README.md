@@ -783,18 +783,22 @@ same CSV produces the same numbers in both:
 **Web - drop in a CSV or TSV, audit it in your browser.** Open **[profiler.html](profiler.html)**
 (linked from the site nav, live at [thefaircode.xyz](https://www.thefaircode.xyz)).
 All analysis runs client-side - **your file never leaves your browser**, which matters for health
-data. (Excel `.xlsx` isn't supported client-side yet - use the CLI below.)
+data. (Excel `.xlsx`, JSON, and Parquet aren't supported client-side yet - use the CLI below.)
 
-**CLI - `faircode`.** Reads `.csv`, `.tsv`, and `.xlsx` (delimiter is auto-detected for anything
-else); `.xlsx` needs the optional `excel` extra.
+**CLI - `faircode`.** Reads `.csv`, `.tsv`, `.xlsx`, `.json`, and `.parquet` (delimiter is
+auto-detected for anything else); `.xlsx` needs the optional `excel` extra, `.parquet` needs the
+optional `parquet` extra.
 
 ```bash
 pip install -e .                                   # installs the faircode console script
 pip install -e ".[excel]"                          # + .xlsx support (openpyxl)
+pip install -e ".[parquet]"                        # + .parquet support (pyarrow)
 pip install -e ".[proxy]"                           # + chi-squared proxy hints (scipy)
 faircode profile "Insurance Denial/insurance.csv"  # terminal report
 faircode profile data.tsv                          # tab-separated exports work too
 faircode profile data.xlsx                         # Excel workbooks work too
+faircode profile data.json                         # JSON records (or split-orient) work too
+faircode profile data.parquet                      # Parquet files work too
 faircode profile data.csv --json                   # machine-readable
 faircode profile data.csv --html report.html       # standalone HTML report
 faircode profile data.csv --fail-under 70          # fail CI if score is below 70

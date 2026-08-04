@@ -14,8 +14,10 @@
     faircode benchmark COMPAS/audit.yaml "German Credit Lending/audit.yaml"
 
 Uses only stdlib argparse + pandas (no heavyweight profiling dependency).
-Reading .xlsx additionally requires the optional 'openpyxl' extra. The
-`benchmark` command additionally requires the optional 'benchmark' extra
+Reading .xlsx additionally requires the optional 'openpyxl' extra
+(`pip install faircode[excel]`); reading .parquet additionally requires the
+optional 'pyarrow' extra (`pip install faircode[parquet]`). The `benchmark`
+command additionally requires the optional 'benchmark' extra
 (`pip install faircode[benchmark]`: scikit-learn + pyyaml + fairlearn).
 """
 
@@ -27,7 +29,7 @@ import sys
 from . import __version__
 from .compare import compare
 from .detect import VALID_KINDS
-from .loaders import read_table
+from .loaders_extra import read_table
 from .profiler import parse_reference, profile
 from .proxy import proxy_hints
 from .report import compare_to_terminal, to_html, to_json, to_terminal
@@ -77,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("profile", help="profile a dataset for demographic imbalance")
-    p.add_argument("csv", help="path to the dataset file (.csv, .tsv, or .xlsx)")
+    p.add_argument("csv", help="path to the dataset file (.csv, .tsv, .xlsx, .json, or .parquet)")
     p.add_argument("--json", action="store_true", help="emit JSON to stdout")
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
@@ -106,8 +108,8 @@ def main(argv: list[str] | None = None) -> int:
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
-    c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, or .xlsx)")
-    c.add_argument("csv_b", help="current dataset B (.csv, .tsv, or .xlsx)")
+    c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, .xlsx, .json, or .parquet)")
+    c.add_argument("csv_b", help="current dataset B (.csv, .tsv, .xlsx, .json, or .parquet)")
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
 
     b = sub.add_parser("benchmark",
