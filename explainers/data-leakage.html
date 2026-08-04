@@ -6,14 +6,23 @@
 <title>What Is Data Leakage? · Fair Code</title>
 <meta name="description" content="Data leakage contaminates a model&#x27;s training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.">
 <link rel="canonical" href="https://www.thefaircode.xyz/explainers/data-leakage.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="What Is Data Leakage? · Fair Code">
 <meta property="og:description" content="Data leakage contaminates a model&#x27;s training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.">
 <meta property="og:type" content="article">
-<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="https://www.thefaircode.xyz/explainers/data-leakage.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/data-leakage.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="What Is Data Leakage? · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What Is Data Leakage? · Fair Code">
 <meta name="twitter:description" content="Data leakage contaminates a model&#x27;s training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/data-leakage.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -86,7 +95,9 @@
         "@type": "DefinedTermSet",
         "name": "Fair Code Explainers",
         "url": "https://www.thefaircode.xyz/index.html#explainers"
-      }
+      },
+      "datePublished": "2026-06-11",
+      "dateModified": "2026-06-30"
     },
     {
       "@type": "FAQPage",
@@ -107,6 +118,29 @@
             "@type": "Answer",
             "text": "A model trained with leakage passes every internal test. It fails at the moment it is deployed - when the future arrives and the borrowed information is no longer there. In high-stakes domains, that failure is not an accuracy metric. It is a parole decision that collapses under scrutiny, a credit denial that cannot survive an audit, a clinical flag that fires or fails at the wrong moment."
           }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What Is Data Leakage?",
+          "item": "https://www.thefaircode.xyz/explainers/data-leakage.html"
         }
       ]
     }

@@ -6,14 +6,23 @@
 <title>Why Accuracy Is Not Enough in Healthcare AI · Fair Code</title>
 <meta name="description" content="Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a &#x27;predict nothing&#x27; model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.">
 <link rel="canonical" href="https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="Why Accuracy Is Not Enough in Healthcare AI · Fair Code">
 <meta property="og:description" content="Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a &#x27;predict nothing&#x27; model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.">
 <meta property="og:type" content="article">
-<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/accuracy-not-enough-healthcare-ai.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Why Accuracy Is Not Enough in Healthcare AI · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why Accuracy Is Not Enough in Healthcare AI · Fair Code">
 <meta name="twitter:description" content="Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a &#x27;predict nothing&#x27; model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/accuracy-not-enough-healthcare-ai.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -86,7 +95,9 @@
         "@type": "DefinedTermSet",
         "name": "Fair Code Explainers",
         "url": "https://www.thefaircode.xyz/index.html#explainers"
-      }
+      },
+      "datePublished": "2026-07-28",
+      "dateModified": "2026-07-28"
     },
     {
       "@type": "FAQPage",
@@ -107,6 +118,29 @@
             "@type": "Answer",
             "text": "In healthcare the outcomes worth predicting - a sepsis onset, a 30-day readmission, a missed cancer, a high-cost complication - are usually rare. When an event happens to only a few percent of patients, a model can score extremely high accuracy by quietly learning to predict \"nothing will happen\" almost every time. That model is accurate and useless: it never flags the people the tool exists to catch."
           }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Why Accuracy Is Not Enough in Healthcare AI",
+          "item": "https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html"
         }
       ]
     }

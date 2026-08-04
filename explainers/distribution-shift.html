@@ -6,14 +6,23 @@
 <title>Distribution Shift · Fair Code</title>
 <meta name="description" content="Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.">
 <link rel="canonical" href="https://www.thefaircode.xyz/explainers/distribution-shift.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="Distribution Shift · Fair Code">
 <meta property="og:description" content="Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.">
 <meta property="og:type" content="article">
-<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="https://www.thefaircode.xyz/explainers/distribution-shift.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/distribution-shift.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Distribution Shift · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Distribution Shift · Fair Code">
 <meta name="twitter:description" content="Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/distribution-shift.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -86,7 +95,9 @@
         "@type": "DefinedTermSet",
         "name": "Fair Code Explainers",
         "url": "https://www.thefaircode.xyz/index.html#explainers"
-      }
+      },
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-30"
     },
     {
       "@type": "FAQPage",
@@ -107,6 +118,29 @@
             "@type": "Answer",
             "text": "A lending model trained on pre-2020 applicants, a hiring model trained on one industry's resumes, or a healthcare model trained on one hospital system's patients will all eventually meet a population that looks different from their training data. When that happens, accuracy degrades silently. No error is thrown. The model keeps producing confident scores, but those scores are calibrated to a world that no longer exists."
           }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Distribution Shift",
+          "item": "https://www.thefaircode.xyz/explainers/distribution-shift.html"
         }
       ]
     }

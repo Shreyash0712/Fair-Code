@@ -6,14 +6,23 @@
 <title>Feedback Loop Bias · Fair Code</title>
 <meta name="description" content="See how model outputs feed back into future data and amplify unfairness over time.">
 <link rel="canonical" href="https://www.thefaircode.xyz/explainers/feedback-loop-bias.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="Feedback Loop Bias · Fair Code">
 <meta property="og:description" content="See how model outputs feed back into future data and amplify unfairness over time.">
 <meta property="og:type" content="article">
-<meta name="author" content="Yash Kewlani">
 <meta property="og:url" content="https://www.thefaircode.xyz/explainers/feedback-loop-bias.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/feedback-loop-bias.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Feedback Loop Bias · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Feedback Loop Bias · Fair Code">
 <meta name="twitter:description" content="See how model outputs feed back into future data and amplify unfairness over time.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/feedback-loop-bias.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -86,7 +95,9 @@
         "@type": "DefinedTermSet",
         "name": "Fair Code Explainers",
         "url": "https://www.thefaircode.xyz/index.html#explainers"
-      }
+      },
+      "datePublished": "2026-05-28",
+      "dateModified": "2026-06-30"
     },
     {
       "@type": "FAQPage",
@@ -107,6 +118,29 @@
             "@type": "Answer",
             "text": "Proxy variables and sampling bias are problems you can fix at training time: audit your features, remove the proxies, retrain. Feedback loop bias is different. It's a temporal problem. The model doesn't just learn from biased historical data - it generates biased present-day data that then becomes the training set for the next version of itself."
           }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Feedback Loop Bias",
+          "item": "https://www.thefaircode.xyz/explainers/feedback-loop-bias.html"
         }
       ]
     }
