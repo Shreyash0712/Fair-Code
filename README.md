@@ -1011,6 +1011,8 @@ The full project is at **[thefaircode.xyz](https://www.thefaircode.xyz)** - ever
 Follow the project on Instagram: **[@thefaircodeproject](https://instagram.com/thefaircodeproject)**
 Data. Code. Accountability. One post at a time.
 
+Questions, bug reports, or collaboration: **[yashkewlani2020@gmail.com](mailto:yashkewlani2020@gmail.com)**, or open an issue on [GitHub](https://github.com/yakew7/Fair-Code/issues). See the site's [FAQ](https://www.thefaircode.xyz/#faq) for common questions.
+
 ---
 
 *All datasets used in this project are publicly available. Fair Code is for educational and awareness purposes.*
