@@ -114,7 +114,8 @@ Fair-Code/
 │   ├── fair.py
 │   ├── your-dataset.csv
 │   ├── unfair.png
-│   └── fair.png
+│   ├── fair.png
+│   └── README.md
 └── notebooks/
     └── 06_your_domain_bias_audit.ipynb
 ```
@@ -125,6 +126,7 @@ Rules:
 - Do not add extra subfolders.
 - Use the existing naming style for the folder and files.
 - Add a notebook only if you can make it useful and complete.
+- Add a `README.md` with the reproducibility checklist (pinned seed, exact commands, and expected before/after numbers) - copy the format from any existing audit folder.
 
 ### The two required scripts
 
