@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Proxy Variables",
-  "description": "Learn how correlated features like zip code, custody status, and employment history can smuggle protected attributes back into a model.",
-  "url": "https://www.thefaircode.xyz/explainers/proxy-variables.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Proxy Variables",
+      "description": "Learn how correlated features like zip code, custody status, and employment history can smuggle protected attributes back into a model.",
+      "url": "https://www.thefaircode.xyz/explainers/proxy-variables.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/proxy-variables.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Proxy Variables?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A proxy variable is a data feature that correlates with a protected attribute (like race, gender, or class) even though it doesn't mention it directly - so removing the protected attribute from a model doesn't remove the bias it encodes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people assume that removing race from an AI model makes it race-neutral. This is wrong."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

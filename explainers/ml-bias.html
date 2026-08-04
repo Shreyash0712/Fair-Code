@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Machine Learning Bias?",
-  "description": "Understand how bias enters AI systems through training data, labels, proxy variables, and feedback loops - with detection code and real examples from every audit in this repo.",
-  "url": "https://www.thefaircode.xyz/explainers/ml-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Machine Learning Bias?",
+      "description": "Understand how bias enters AI systems through training data, labels, proxy variables, and feedback loops - with detection code and real examples from every audit in this repo.",
+      "url": "https://www.thefaircode.xyz/explainers/ml-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/ml-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Machine Learning Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Machine learning bias occurs when a model produces systematically different outcomes for different demographic groups - not because of legitimate differences in the underlying signal, but because of how the training data was collected, labelled, or used."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every audit in this repository starts from the same premise: the bias is real, it is measurable, and it is fixable. But before you can measure or fix it, you need a precise vocabulary for what you are looking at."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

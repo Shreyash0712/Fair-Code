@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Calibration",
-  "description": "Check whether predicted probabilities match real-world frequencies across groups and where calibration can still fail.",
-  "url": "https://www.thefaircode.xyz/explainers/calibration.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Calibration",
+      "description": "Check whether predicted probabilities match real-world frequencies across groups and where calibration can still fail.",
+      "url": "https://www.thefaircode.xyz/explainers/calibration.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/calibration.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Calibration?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A model is calibrated for a group if its predicted probabilities actually match real-world outcomes - so when it says \"70% risk,\" roughly 70% of people in that group actually experience the outcome."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people evaluate AI models on accuracy. Calibration is a different question: do the scores mean the same thing across demographic groups?"
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

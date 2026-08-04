@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Distribution Shift",
-  "description": "Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.",
-  "url": "https://www.thefaircode.xyz/explainers/distribution-shift.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Distribution Shift",
+      "description": "Learn why a model that passes a bias audit at launch can drift back into bias as the population it serves changes over time. Covers covariate shift, label shift, and concept drift, with detection code for monitoring both.",
+      "url": "https://www.thefaircode.xyz/explainers/distribution-shift.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/distribution-shift.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Distribution Shift?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Distribution shift occurs when the statistical properties of the data a model encounters in production differ from the data it was trained on, causing its learned patterns to stop matching reality."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A lending model trained on pre-2020 applicants, a hiring model trained on one industry's resumes, or a healthcare model trained on one hospital system's patients will all eventually meet a population that looks different from their training data. When that happens, accuracy degrades silently. No error is thrown. The model keeps producing confident scores, but those scores are calibrated to a world that no longer exists."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

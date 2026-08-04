@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Automation Bias?",
-  "description": "Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.",
-  "url": "https://www.thefaircode.xyz/explainers/automation-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Automation Bias?",
+      "description": "Understand why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces. Includes detection code measuring disparity amplification in human-in-the-loop decisions, mitigation strategies, and the COMPAS courtroom case study.",
+      "url": "https://www.thefaircode.xyz/explainers/automation-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/automation-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Automation Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Automation bias is the cognitive tendency to defer to automated systems, treating their outputs as more objective, accurate, or authoritative than human judgment - even when the automation is known to be fallible, biased, or trained on flawed data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Automation bias is the bridge between a model's statistical unfairness and its real-world harm. A model can have a documented 15% fairness gap, but if every decision-maker treats its output as a verdict rather than a signal, that gap becomes a discriminatory outcome at scale."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

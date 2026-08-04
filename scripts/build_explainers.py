@@ -19,6 +19,7 @@ Nothing here is contributor-facing. Run with: python3 scripts/build_explainers.p
 """
 import json
 import re
+import subprocess
 from html import escape as _escape
 from pathlib import Path
 
@@ -395,15 +396,60 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 """
 
 
-def build_jsonld(entry, canonical):
-    data = {
-        "@context": "https://schema.org",
+def _plain_text(md: str) -> str:
+    """Reduce a markdown fragment to plain text for a JSON-LD answer."""
+    md = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", md)   # links -> label
+    md = re.sub(r"[*_`>#]", "", md)                    # emphasis / code / quote / heading marks
+    return re.sub(r"\s+", " ", md).strip()
+
+
+def _first_paragraph(markdown_text: str, keywords) -> str | None:
+    """First paragraph under the first `##` heading matching any keyword."""
+    capturing = False
+    buf: list[str] = []
+    for line in markdown_text.splitlines():
+        heading = re.match(r"^##\s+(.*)", line)
+        if heading:
+            if capturing:
+                break
+            capturing = any(k in heading.group(1).lower() for k in keywords)
+            continue
+        if not capturing:
+            continue
+        stripped = line.strip()
+        if not stripped:
+            if buf:
+                break
+            continue
+        if stripped.startswith(("---", "|", "```", "- ", "* ", ">")):
+            if buf:
+                break
+            continue
+        buf.append(stripped)
+    return _plain_text(" ".join(buf)) if buf else None
+
+
+def _faq(entry, markdown_text):
+    """Two question/answer pairs derived from the explainer's own content, so
+    the FAQPage schema reflects real text (for AI answer engines / GEO)."""
+    title = entry["title"].strip()
+    q1 = title if title.endswith("?") else f"What is {title}?"
+    definition = _first_paragraph(markdown_text, ("definition",)) or entry["summary"]
+    pairs = [(q1, definition)]
+    why = _first_paragraph(markdown_text, ("why it matters", "why this matters"))
+    if why:
+        if len(why) > 500:
+            trimmed = why[:500].rsplit(". ", 1)[0]
+            why = (trimmed + ".") if trimmed else why[:500]
+        pairs.append(("Why does this matter for fairness?", why))
+    return pairs
+
+
+def build_jsonld(entry, canonical, markdown_text=""):
+    defined_term = {
         "@type": "DefinedTerm",
-        "author": {
-            "@type": "Person",
-            "name": "Yash Kewlani",
-            "url": "https://github.com/yakew7",
-        },
+        "author": {"@type": "Person", "name": "Yash Kewlani",
+                   "url": "https://github.com/yakew7"},
         "name": entry["title"],
         "description": entry["summary"],
         "url": canonical,
@@ -413,7 +459,17 @@ def build_jsonld(entry, canonical):
             "url": f"{SITE_URL}/index.html#explainers",
         },
     }
-    return json.dumps(data, indent=2)
+    faq_page = {
+        "@type": "FAQPage",
+        "url": canonical,
+        "mainEntity": [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in _faq(entry, markdown_text)
+        ],
+    }
+    return json.dumps({"@context": "https://schema.org",
+                       "@graph": [defined_term, faq_page]}, indent=2)
 
 
 def build_page(entry, known_slugs):
@@ -430,14 +486,35 @@ def build_page(entry, known_slugs):
         subtitle=escape_html(entry["subtitle"]),
         content=content_html,
         source_url=f"{REPO_URL}/blob/main/explainers/{slug}.md",
-        jsonld=build_jsonld(entry, canonical),
+        jsonld=build_jsonld(entry, canonical, markdown_text),
     )
 
 
+def _git_lastmod(relpath: str) -> str | None:
+    """Last commit date (YYYY-MM-DD) of a tracked file, for <lastmod>. None if
+    unavailable (untracked file or no git history)."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", relpath],
+            capture_output=True, text=True, cwd=str(ROOT), check=False,
+        ).stdout.strip()
+    except Exception:  # noqa: BLE001 - git absent / shallow clone: just skip lastmod
+        return None
+    return out if re.match(r"^\d{4}-\d{2}-\d{2}$", out) else None
+
+
 def build_sitemap(entries):
-    urls = [f"{SITE_URL}/", f"{SITE_URL}/profiler.html"]
-    urls += [f"{SITE_URL}/explainers/{entry['slug']}.html" for entry in entries]
-    body = "\n".join(f"  <url>\n    <loc>{escape_html(u)}</loc>\n  </url>" for u in urls)
+    # (public URL, repo file whose commit date drives <lastmod>)
+    items = [(f"{SITE_URL}/", "index.html"),
+             (f"{SITE_URL}/profiler.html", "profiler.html")]
+    items += [(f"{SITE_URL}/explainers/{e['slug']}.html",
+               f"explainers/{e['slug']}.md") for e in entries]
+    rows = []
+    for url, src in items:
+        lastmod = _git_lastmod(src)
+        lm = f"\n    <lastmod>{lastmod}</lastmod>" if lastmod else ""
+        rows.append(f"  <url>\n    <loc>{escape_html(url)}</loc>{lm}\n  </url>")
+    body = "\n".join(rows)
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

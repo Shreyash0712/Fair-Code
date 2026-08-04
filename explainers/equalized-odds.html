@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Equalized Odds",
-  "description": "See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.",
-  "url": "https://www.thefaircode.xyz/explainers/equalized-odds.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Equalized Odds",
+      "description": "See how equalized odds compares true positive and false positive rates across groups and why that matters in high-stakes systems.",
+      "url": "https://www.thefaircode.xyz/explainers/equalized-odds.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/equalized-odds.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Equalized Odds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Equalized Odds is a fairness metric that requires a model to make equally accurate decisions for every demographic group - meaning its true positive rate and false positive rate must be the same across protected groups like race, gender, or age."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people check model accuracy and call it done. This misses the problem entirely."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

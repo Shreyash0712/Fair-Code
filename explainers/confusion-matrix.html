@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is a Confusion Matrix?",
-  "description": "Learn how a confusion matrix breaks down accuracy into true positives, true negatives, false positives, and false negatives, and why derived metrics like FPR and FNR are essential for detecting bias.",
-  "url": "https://www.thefaircode.xyz/explainers/confusion-matrix.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is a Confusion Matrix?",
+      "description": "Learn how a confusion matrix breaks down accuracy into true positives, true negatives, false positives, and false negatives, and why derived metrics like FPR and FNR are essential for detecting bias.",
+      "url": "https://www.thefaircode.xyz/explainers/confusion-matrix.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/confusion-matrix.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is a Confusion Matrix?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A confusion matrix is a table that summarizes a classification model's performance by breaking its predictions down into true positives, true negatives, false positives, and false negatives - the four foundational numbers that drive almost every algorithmic fairness metric."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In high-stakes systems, the type of mistake a model makes is just as important as how often it makes it. A false positive (a false alarm) and a false negative (a missed case) rarely carry the same cost."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

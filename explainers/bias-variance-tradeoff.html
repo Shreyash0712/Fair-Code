@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is the Bias-Variance Trade-off?",
-  "description": "Learn the difference between statistical bias and societal bias, and see how the classic trade-off between underfitting and overfitting impacts fairness across demographic groups.",
-  "url": "https://www.thefaircode.xyz/explainers/bias-variance-tradeoff.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is the Bias-Variance Trade-off?",
+      "description": "Learn the difference between statistical bias and societal bias, and see how the classic trade-off between underfitting and overfitting impacts fairness across demographic groups.",
+      "url": "https://www.thefaircode.xyz/explainers/bias-variance-tradeoff.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/bias-variance-tradeoff.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is the Bias-Variance Trade-off?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The bias-variance trade-off is the tension between a model being too simple to capture real patterns (high statistical bias, or underfitting) and a model being so complex that it memorizes noise in the training data (high variance, or overfitting)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When you tune a model's complexity, you are not just trading off overall accuracy. You are deciding who bears the cost of the model's errors."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

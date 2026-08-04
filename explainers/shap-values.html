@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "SHAP Values",
-  "description": "Use SHAP to trace which inputs pushed a prediction up or down, and where explanation can still be misleading.",
-  "url": "https://www.thefaircode.xyz/explainers/shap-values.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "SHAP Values",
+      "description": "Use SHAP to trace which inputs pushed a prediction up or down, and where explanation can still be misleading.",
+      "url": "https://www.thefaircode.xyz/explainers/shap-values.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/shap-values.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is SHAP Values?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SHAP values (SHapley Additive exPlanations) are a method for explaining individual predictions made by any machine learning model - they tell you exactly how much each feature contributed to a specific output, in a unit you can reason about."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most AI systems deployed in high-stakes domains - criminal justice, hiring, lending, healthcare - are black boxes. They produce a score or a decision, and they don't explain why. This is not just an inconvenience. It is a fairness problem."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

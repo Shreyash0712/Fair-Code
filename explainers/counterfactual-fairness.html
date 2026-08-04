@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Counterfactual Fairness",
-  "description": "Use counterfactual reasoning to ask whether a model would behave differently under a hypothetical protected attribute.",
-  "url": "https://www.thefaircode.xyz/explainers/counterfactual-fairness.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Counterfactual Fairness",
+      "description": "Use counterfactual reasoning to ask whether a model would behave differently under a hypothetical protected attribute.",
+      "url": "https://www.thefaircode.xyz/explainers/counterfactual-fairness.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/counterfactual-fairness.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Counterfactual Fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Counterfactual Fairness is a causal fairness criterion that requires a model to produce the same prediction for an individual in the real world as it would in a counterfactual world where that individual belongs to a different demographic group - with all causally independent factors held constant."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every fairness metric discussed so far - Demographic Parity, Equalized Odds, Individual Fairness - is fundamentally observational. It asks: across people we can see in the data, are outcomes distributed fairly? These metrics operate on what happened. They cannot tell you whether the demographic attribute itself caused the outcome to be different."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

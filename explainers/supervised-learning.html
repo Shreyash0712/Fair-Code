@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Supervised Learning?",
-  "description": "See how a model turns labeled examples into a decision rule by walking through the AI Fair Recruitment audit's train/test split and fit step directly. Includes detection code that compares the gap in a dataset's labels against the gap in a trained model's own predictions.",
-  "url": "https://www.thefaircode.xyz/explainers/supervised-learning.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Supervised Learning?",
+      "description": "See how a model turns labeled examples into a decision rule by walking through the AI Fair Recruitment audit's train/test split and fit step directly. Includes detection code that compares the gap in a dataset's labels against the gap in a trained model's own predictions.",
+      "url": "https://www.thefaircode.xyz/explainers/supervised-learning.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/supervised-learning.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Supervised Learning?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Supervised learning trains a model by showing it many examples of inputs paired with correct labels, so it learns a mapping that generalises to inputs it has never seen before."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "87% of companies now use AI to screen job applicants before a human reads a resume. Every one of those screening models, and every credit scorer, recidivism tool, and insurance triage system in this repo, is built the same way: show the model historical inputs and historical outcomes, let it find the mapping between them, then apply that mapping to new people."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

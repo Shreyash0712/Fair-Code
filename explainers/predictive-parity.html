@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Predictive Parity",
-  "description": "Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.",
-  "url": "https://www.thefaircode.xyz/explainers/predictive-parity.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Predictive Parity",
+      "description": "Learn why Positive Predictive Value equal across groups is a real fairness property, and why the 2016 ProPublica vs Northpointe COMPAS dispute shows it can hold while one group absorbs a much higher false-positive rate.",
+      "url": "https://www.thefaircode.xyz/explainers/predictive-parity.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/predictive-parity.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Predictive Parity?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Predictive parity is satisfied when the Positive Predictive Value, the share of positively-flagged cases that are actually positive, is equal across groups, so a \"high risk\" label carries the same real-world meaning no matter who receives it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Algorithmic risk scores decide who gets held before trial, whose insurance claim gets flagged for review, and whose loan application gets extra scrutiny. Over 1M+ people are assessed by COMPAS-style recidivism tools every year, and 46 US states have used one in criminal sentencing. When a vendor says a \"high risk\" flag is trustworthy, predictive parity is usually the claim being made: given the flag, the predicted outcome holds up at the same rate for every group."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

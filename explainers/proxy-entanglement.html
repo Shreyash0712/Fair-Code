@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Proxy Entanglement",
-  "description": "Explore how correlated proxy bundles can keep bias alive even after individual features are removed.",
-  "url": "https://www.thefaircode.xyz/explainers/proxy-entanglement.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Proxy Entanglement",
+      "description": "Explore how correlated proxy bundles can keep bias alive even after individual features are removed.",
+      "url": "https://www.thefaircode.xyz/explainers/proxy-entanglement.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/proxy-entanglement.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Proxy Entanglement?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Proxy entanglement occurs when two or more features are individually correlated with a protected attribute and also correlated with each other, forming a reinforcing cluster that reconstructs the protected signal even after each variable is removed in isolation."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The standard mitigation playbook says: identify proxy variables, then remove them. That works when proxies are independent - when each one carries a distinct slice of the protected signal and dropping it cuts that slice out cleanly."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

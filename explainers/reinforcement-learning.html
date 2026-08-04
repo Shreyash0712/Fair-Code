@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Reinforcement Learning",
-  "description": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
-  "url": "https://www.thefaircode.xyz/explainers/reinforcement-learning.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Reinforcement Learning",
+      "description": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
+      "url": "https://www.thefaircode.xyz/explainers/reinforcement-learning.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/reinforcement-learning.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Reinforcement Learning?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Reinforcement learning is a training approach where an agent learns to make decisions by receiving numerical rewards or penalties based on the outcomes of its actions, rather than from labelled examples - and in high-stakes domains, whoever defines the reward function decides whose outcomes count."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most ML explainers treat reinforcement learning as a curiosity: robots learning to walk, agents beating chess engines. That framing misses where RL is actually deployed."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

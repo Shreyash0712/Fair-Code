@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Sampling Bias",
-  "description": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
-  "url": "https://www.thefaircode.xyz/explainers/sampling-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Sampling Bias",
+      "description": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
+      "url": "https://www.thefaircode.xyz/explainers/sampling-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/sampling-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Sampling Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sampling bias occurs when the data used to train an AI system doesn't accurately represent the population it will be deployed on - so the model learns patterns that don't generalize, performing well for over-represented groups and failing for under-represented ones."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people assume that if you have a large dataset, the model will be fair. This is wrong."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

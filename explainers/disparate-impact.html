@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Disparate Impact",
-  "description": "Measure whether a model or policy produces unequal results across groups, even when the protected attribute is hidden.",
-  "url": "https://www.thefaircode.xyz/explainers/disparate-impact.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Disparate Impact",
+      "description": "Measure whether a model or policy produces unequal results across groups, even when the protected attribute is hidden.",
+      "url": "https://www.thefaircode.xyz/explainers/disparate-impact.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/disparate-impact.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Disparate Impact?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Disparate Impact is a legal and statistical test that flags a selection process as discriminatory when the selection rate for a protected group (women, racial minorities, applicants over 40, etc.) is less than 80% of the selection rate for the most-selected group."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most fairness metrics are abstract. The 80% rule is not. It is the actual threshold the EEOC, federal courts, and the Department of Labor use to decide whether to investigate an employer for discriminatory hiring, promotion, or firing."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

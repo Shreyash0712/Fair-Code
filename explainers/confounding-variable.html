@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Confounding Variable",
-  "description": "Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.",
-  "url": "https://www.thefaircode.xyz/explainers/confounding-variable.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Confounding Variable",
+      "description": "Learn how a third variable that independently causes both a feature and an outcome creates spurious correlations that survive protected-attribute removal. See why COMPAS stayed biased after race was dropped - until the confounder was removed too.",
+      "url": "https://www.thefaircode.xyz/explainers/confounding-variable.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/confounding-variable.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Confounding Variable?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A confounding variable is a third variable that independently causes both an input feature and an outcome, creating a spurious statistical association between them that persists - and can dominate a model - even after the protected attribute is removed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A model can appear to make a perfectly legitimate prediction - custody history predicts recidivism, healthcare cost predicts medical need, zip code predicts creditworthiness - while all of it is driven by a confounder the model never directly touches. When that confounder correlates with a protected attribute, the model inherits the discrimination and produces biased outcomes without ever using race, sex, or age explicitly."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

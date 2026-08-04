@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is a ROC Curve and AUC?",
-  "description": "Learn what a ROC curve and its area (AUC) actually measure - the model's ability to rank cases by risk - and why that single headline number hides the two things fairness depends on: where you set the decision threshold, and whether ranking quality is equal across groups. See how COMPAS's ordinary 0.68 baseline AUC (frozen from paper/results-frozen) sat on top of a large racial false-positive gap. Includes detection code for per-group AUC and overlaid ROC curves.",
-  "url": "https://www.thefaircode.xyz/explainers/roc-curve-auc.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is a ROC Curve and AUC?",
+      "description": "Learn what a ROC curve and its area (AUC) actually measure - the model's ability to rank cases by risk - and why that single headline number hides the two things fairness depends on: where you set the decision threshold, and whether ranking quality is equal across groups. See how COMPAS's ordinary 0.68 baseline AUC (frozen from paper/results-frozen) sat on top of a large racial false-positive gap. Includes detection code for per-group AUC and overlaid ROC curves.",
+      "url": "https://www.thefaircode.xyz/explainers/roc-curve-auc.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/roc-curve-auc.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is a ROC Curve and AUC?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A ROC curve plots a binary classifier's true positive rate against its false positive rate at every possible decision threshold, and AUC - the area under that curve - collapses the whole curve into one number: the probability that the model gives a randomly chosen positive case a higher score than a randomly chosen negative one. It is a threshold-free measure of ranking quality, which is exactly why it can look reassuring while hiding the two things fairness depends on - where you set the threshold, and whether the ranking is equally good for every group."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AUC is the single number that ends up on the model card, in the paper's abstract, and in the slide that gets the project approved. It earns that spot honestly: it does not depend on an arbitrary threshold, it is not fooled by class imbalance the way raw accuracy is, and it summarizes performance across every operating point at once. For comparing two models in the abstract, it is a reasonable first pass."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

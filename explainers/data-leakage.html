@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Data Leakage?",
-  "description": "Data leakage contaminates a model's training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.",
-  "url": "https://www.thefaircode.xyz/explainers/data-leakage.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Data Leakage?",
+      "description": "Data leakage contaminates a model's training signal with information unavailable at deployment, producing evaluation scores that overstate real-world performance. Learn to identify target leakage and train-test contamination - and detect both before they ship.",
+      "url": "https://www.thefaircode.xyz/explainers/data-leakage.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/data-leakage.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Data Leakage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Data leakage is the contamination of a model's training signal with information that will not be available at prediction time, producing evaluation scores that overstate real-world performance."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A model trained with leakage passes every internal test. It fails at the moment it is deployed - when the future arrives and the borrowed information is no longer there. In high-stakes domains, that failure is not an accuracy metric. It is a parole decision that collapses under scrutiny, a credit denial that cannot survive an audit, a clinical flag that fires or fails at the wrong moment."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

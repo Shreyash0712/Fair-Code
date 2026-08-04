@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is a Protected Attribute?",
-  "description": "Learn what a protected attribute is, how the law recognizes it, and why the \"fairness through unawareness\" approach fails by hiding the bias behind proxies.",
-  "url": "https://www.thefaircode.xyz/explainers/protected-attribute.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is a Protected Attribute?",
+      "description": "Learn what a protected attribute is, how the law recognizes it, and why the \"fairness through unawareness\" approach fails by hiding the bias behind proxies.",
+      "url": "https://www.thefaircode.xyz/explainers/protected-attribute.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/protected-attribute.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is a Protected Attribute?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A protected attribute is a demographic or personal characteristic - such as race, gender, age, or religion - that the law, policy, or a specific fairness standard shields from being used as the basis for adverse decisions like denying a loan, a job, or healthcare."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When developers first try to build a \"fair\" model, their instinct is usually to delete the protected attribute from the dataset before training. This is called fairness through unawareness. The logic seems sound: if the model cannot see race, it cannot discriminate by race."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

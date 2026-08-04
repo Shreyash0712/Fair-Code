@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Unsupervised Learning?",
-  "description": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
-  "url": "https://www.thefaircode.xyz/explainers/unsupervised-learning.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Unsupervised Learning?",
+      "description": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
+      "url": "https://www.thefaircode.xyz/explainers/unsupervised-learning.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/unsupervised-learning.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Unsupervised Learning?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Unsupervised learning finds structure, clusters, patterns, or compressed representations, in unlabelled data, letting the algorithm organise it without being told what to look for."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every audit elsewhere in this repo starts from a label: hired or not, good credit or bad, high-risk or low-risk. Unsupervised learning removes that label entirely. There is no ground truth to check the output against, no y to hold out and score against."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

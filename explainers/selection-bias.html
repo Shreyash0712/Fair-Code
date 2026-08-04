@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Selection Bias?",
-  "description": "Learn why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy is even considered. See why the German Credit Lending dataset's 700/300 good/bad split contains zero rejected applicants, and why that reject-inference gap survives Audit 03's proxy-variable fix untouched. Includes a Berkson's-paradox simulation as detection code.",
-  "url": "https://www.thefaircode.xyz/explainers/selection-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Selection Bias?",
+      "description": "Learn why the process that decides whether someone enters a dataset at all can bias a model before any protected attribute or proxy is even considered. See why the German Credit Lending dataset's 700/300 good/bad split contains zero rejected applicants, and why that reject-inference gap survives Audit 03's proxy-variable fix untouched. Includes a Berkson's-paradox simulation as detection code.",
+      "url": "https://www.thefaircode.xyz/explainers/selection-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/selection-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Selection Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Selection bias occurs when the process that decides whether a unit ends up in a dataset at all is correlated with the outcome being studied, so the sample a model is trained and audited on is not a fair stand-in for the full population, even before any protected attribute or proxy variable is considered."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every audit in this repo starts from a CSV file. unfair.py loads it, fair.py drops a few columns, and both report a fairness gap on the rows in front of them. That workflow, and almost every fairness technique built on top of it, quietly assumes the rows in front of you are the population you care about, minus some random noise."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "How AI Detects Patterns",
-  "description": "Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.",
-  "url": "https://www.thefaircode.xyz/explainers/how-ai-detects-patterns.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "How AI Detects Patterns",
+      "description": "Learn how a Random Forest finds patterns through splits, tree aggregation, and feature importance. See why a high importance score means reliance, not justification.",
+      "url": "https://www.thefaircode.xyz/explainers/how-ai-detects-patterns.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/how-ai-detects-patterns.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is How AI Detects Patterns?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pattern detection in machine learning is the process by which a model finds statistical correlations between input features and an outcome, weighting and combining those correlations to produce a prediction - with no built-in distinction between a causal pattern and a discriminatory one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every audit in this repo runs on the same underlying mechanism: a Random Forest Classifier finds patterns in unfair.py and the exact same patterns, minus a few columns, in fair.py. The gap between those two runs is the entire story of algorithmic bias. In hiring, lending, healthcare, and criminal justice, the \"pattern\" the model found was often a historical record of who got hired, approved, treated, or detained - not a measure of who deserved to be."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

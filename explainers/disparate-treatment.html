@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Disparate Treatment",
-  "description": "Look at the difference between explicitly using protected attributes and indirectly encoding them through features.",
-  "url": "https://www.thefaircode.xyz/explainers/disparate-treatment.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Disparate Treatment",
+      "description": "Look at the difference between explicitly using protected attributes and indirectly encoding them through features.",
+      "url": "https://www.thefaircode.xyz/explainers/disparate-treatment.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/disparate-treatment.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Disparate Treatment?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Disparate treatment is intentional discrimination: a decision-making process that treats an individual differently because of a protected characteristic (race, gender, age, religion, national origin, etc.) - regardless of whether that characteristic is named explicitly or encoded through a feature that serves as a stand-in for it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most algorithmic fairness work focuses on disparate impact - unequal outcomes produced by a model that never explicitly uses a protected attribute. Disparate treatment is the other half of discrimination law, and it is the half that is harder to escape in court."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Neural Networks",
-  "description": "Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.",
-  "url": "https://www.thefaircode.xyz/explainers/neural-networks.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Neural Networks",
+      "description": "Break down how layered models learn patterns, why they are hard to inspect, and why fairness audits matter even more.",
+      "url": "https://www.thefaircode.xyz/explainers/neural-networks.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/neural-networks.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Neural Networks?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A neural network is a stack of mathematical layers that repeatedly transforms an input (a resume, a face, a credit application) into a prediction - learning which patterns to amplify and which to ignore by adjusting millions of internal weights during training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people treat neural networks as black boxes. You put data in, a decision comes out, and what happens in between is someone else's problem."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

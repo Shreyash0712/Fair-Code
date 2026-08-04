@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Feedback Loop Bias",
-  "description": "See how model outputs feed back into future data and amplify unfairness over time.",
-  "url": "https://www.thefaircode.xyz/explainers/feedback-loop-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Feedback Loop Bias",
+      "description": "See how model outputs feed back into future data and amplify unfairness over time.",
+      "url": "https://www.thefaircode.xyz/explainers/feedback-loop-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/feedback-loop-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Feedback Loop Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Feedback loop bias occurs when a model's predictions influence the real-world outcomes it will later be trained on, so the model's existing biases are continuously confirmed and amplified over successive retraining cycles - even without any human ever introducing new discrimination."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Proxy variables and sampling bias are problems you can fix at training time: audit your features, remove the proxies, retrain. Feedback loop bias is different. It's a temporal problem. The model doesn't just learn from biased historical data - it generates biased present-day data that then becomes the training set for the next version of itself."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

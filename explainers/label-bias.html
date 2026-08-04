@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Label Bias",
-  "description": "Explore how historical decisions, biased raters, and unequal reporting can corrupt your labels before training even starts.",
-  "url": "https://www.thefaircode.xyz/explainers/label-bias.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Label Bias",
+      "description": "Explore how historical decisions, biased raters, and unequal reporting can corrupt your labels before training even starts.",
+      "url": "https://www.thefaircode.xyz/explainers/label-bias.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/label-bias.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Label Bias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Label Bias is a form of historical bias that occurs when the ground-truth labels used to train a model reflect past human discrimination rather than actual merit, risk, or outcome - causing the model to learn and perpetuate that discrimination as if it were objective fact."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every supervised learning model learns to predict a label. The quiet assumption is that the label is correct. In practice, labels in real-world datasets are often human decisions - hiring outcomes, parole approvals, loan denials, performance ratings - recorded by people operating inside systems that were already discriminatory."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

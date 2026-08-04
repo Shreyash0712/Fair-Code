@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Fairness Metric Conflicts",
-  "description": "Understand the trade-offs between demographic parity, calibration, and equalized odds before choosing a metric.",
-  "url": "https://www.thefaircode.xyz/explainers/fairness-metric-conflicts.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Fairness Metric Conflicts",
+      "description": "Understand the trade-offs between demographic parity, calibration, and equalized odds before choosing a metric.",
+      "url": "https://www.thefaircode.xyz/explainers/fairness-metric-conflicts.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/fairness-metric-conflicts.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Fairness Metric Conflicts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Fairness metric conflict is the mathematically proven impossibility of satisfying multiple fairness criteria simultaneously when base rates differ across demographic groups - meaning any choice of fairness metric is also a choice about who bears the cost of being wrong."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most people assume that making an AI \"fair\" is a single, solvable problem. It isn't. Researchers have formally proven - not just observed, but proven - that several common fairness definitions are mutually incompatible except in degenerate edge cases."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

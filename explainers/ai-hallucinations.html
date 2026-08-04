@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "AI Hallucinations",
-  "description": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
-  "url": "https://www.thefaircode.xyz/explainers/ai-hallucinations.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "AI Hallucinations",
+      "description": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
+      "url": "https://www.thefaircode.xyz/explainers/ai-hallucinations.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/ai-hallucinations.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is AI Hallucinations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A model \"hallucinates\" when it outputs fluent, confident text or predictions that are factually wrong or entirely fabricated, because it is optimising for plausible outputs rather than verified facts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hallucination is highly domain-dependent and becomes exponentially more dangerous in high-stakes fields. As explored in \"Cognitive Mirage: A Review of Hallucinations in Large Language Models\" (Ye et al., 2023), a hallucination in casual conversation is merely an annoyance, but in legal tech, healthcare, or finance, it can have severe real-world consequences."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

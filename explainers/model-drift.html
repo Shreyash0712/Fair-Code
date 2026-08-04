@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Model Drift?",
-  "description": "Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.",
-  "url": "https://www.thefaircode.xyz/explainers/model-drift.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Model Drift?",
+      "description": "Learn why a fairness gap measured once at launch is not guaranteed to hold months later, and how rolling-window monitoring catches the drift a single audit snapshot misses. Re-measures the German Credit Lending age gap across five sequential windows (4.3%-15.1%) with PSI and a Page-Hinkley change-point test as detection code.",
+      "url": "https://www.thefaircode.xyz/explainers/model-drift.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/model-drift.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Model Drift?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Model drift is the ongoing process by which a deployed model's real-world accuracy and fairness gap change over calendar time, because the population it scores, or the relationship between that population's features and outcomes, keeps moving after the model was trained and audited."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every audit in this repo reports a fairness gap as a single number: run unfair.py, get a gap, run fair.py, get a smaller gap, done. That number is true at the moment it was measured, on the data available at that moment. It says nothing about whether the same gap holds six months later."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "What Is Class Imbalance?",
-  "description": "Learn why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups, and how common fixes (oversampling, undersampling, SMOTE, class weights) can either help or introduce new bias.",
-  "url": "https://www.thefaircode.xyz/explainers/class-imbalance.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is Class Imbalance?",
+      "description": "Learn why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups, and how common fixes (oversampling, undersampling, SMOTE, class weights) can either help or introduce new bias.",
+      "url": "https://www.thefaircode.xyz/explainers/class-imbalance.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/class-imbalance.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Is Class Imbalance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Class imbalance occurs when one outcome in a dataset is overwhelmingly more frequent than another, causing algorithms optimizing for overall accuracy to practically ignore the minority class, which often represents the most critical events."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In high-stakes domains like healthcare, finance, and criminal justice, the events we care about predicting - a patient readmission, a fraudulent transaction, a default - are rare. When a dataset is 99% negative cases and 1% positive cases, the mathematically optimal path to high accuracy is to predict \"negative\" every single time."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

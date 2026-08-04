@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "False Positives vs. False Negatives in Medical Risk Models",
-  "description": "Learn why a single accuracy or AUC number can hide two very different kinds of mistakes, and why a missed diagnosis and a false alarm are almost never equally costly. See how one global decision threshold can produce equal overall accuracy while still leaving very different false negative rates across demographic groups.",
-  "url": "https://www.thefaircode.xyz/explainers/false-positives-vs-false-negatives.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "False Positives vs. False Negatives in Medical Risk Models",
+      "description": "Learn why a single accuracy or AUC number can hide two very different kinds of mistakes, and why a missed diagnosis and a false alarm are almost never equally costly. See how one global decision threshold can produce equal overall accuracy while still leaving very different false negative rates across demographic groups.",
+      "url": "https://www.thefaircode.xyz/explainers/false-positives-vs-false-negatives.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/false-positives-vs-false-negatives.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is False Positives vs. False Negatives in Medical Risk Models?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A false positive vs. false negative trade-off is the unavoidable choice a risk model makes at its decision threshold between flagging people who will not actually experience the outcome (false positives) and missing people who will (false negatives) - and in medical risk models, that choice is rarely paid for equally across demographic groups."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In medicine, the two error types are not interchangeable. A false positive on a sepsis alert means an unnecessary blood draw and a false alarm. A false negative means a patient who needed early antibiotics does not get them. A false positive on a hospital readmission model means a wasted phone call from a care manager. A false negative means a preventable readmission, a penalty for the hospital, and a patient who relapses without support."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

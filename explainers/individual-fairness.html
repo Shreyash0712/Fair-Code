@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Individual Fairness",
-  "description": "Understand the promise and difficulty of fairness definitions that focus on person-by-person consistency.",
-  "url": "https://www.thefaircode.xyz/explainers/individual-fairness.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Individual Fairness",
+      "description": "Understand the promise and difficulty of fairness definitions that focus on person-by-person consistency.",
+      "url": "https://www.thefaircode.xyz/explainers/individual-fairness.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/individual-fairness.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Individual Fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Individual Fairness is a fairness criterion that requires a model to produce similar predictions for individuals who are similar with respect to the task at hand - so that two people who are equally qualified, equally risky, or equally creditworthy receive equally favourable outcomes, regardless of demographic group membership."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every other fairness metric in this series - Demographic Parity, Equalized Odds, Disparate Impact - is a group-level measure. It asks whether two demographic populations receive equal treatment in aggregate. A model can pass every group-level fairness check and still discriminate against a specific individual, so long as that discrimination is consistent enough not to shift the group averages."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>

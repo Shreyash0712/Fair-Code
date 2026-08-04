@@ -71,20 +71,46 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "DefinedTerm",
-  "author": {
-    "@type": "Person",
-    "name": "Yash Kewlani",
-    "url": "https://github.com/yakew7"
-  },
-  "name": "Why Accuracy Is Not Enough in Healthcare AI",
-  "description": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
-  "url": "https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html",
-  "inDefinedTermSet": {
-    "@type": "DefinedTermSet",
-    "name": "Fair Code Explainers",
-    "url": "https://www.thefaircode.xyz/index.html#explainers"
-  }
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Why Accuracy Is Not Enough in Healthcare AI",
+      "description": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
+      "url": "https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Why Accuracy Is Not Enough in Healthcare AI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "\"Accuracy is not enough\" means that the fraction of predictions a model gets right - its accuracy - can stay high while the model systematically fails the specific patients and groups that matter most, because accuracy averages over everyone, is dominated by the majority outcome when events are rare, and says nothing about which patients the errors land on."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In healthcare the outcomes worth predicting - a sepsis onset, a 30-day readmission, a missed cancer, a high-cost complication - are usually rare. When an event happens to only a few percent of patients, a model can score extremely high accuracy by quietly learning to predict \"nothing will happen\" almost every time. That model is accurate and useless: it never flags the people the tool exists to catch."
+          }
+        }
+      ]
+    }
+  ]
 }
 </script>
 <script>
