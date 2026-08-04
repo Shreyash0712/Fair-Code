@@ -1,0 +1,29 @@
+# Pre-commit hooks mirroring Fair Code CI. See CONTRIBUTING.md.
+# One-time install:  pre-commit install
+# Run against the whole repo:  pre-commit run --all-files
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: em-dash
+        name: em-dash-free check
+        entry: python3 scripts/check_em_dash.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: build-explainers
+        name: regenerate explainer pages
+        entry: python3 scripts/build_explainers.py
+        language: system
+        pass_filenames: false
+        files: '^(explainers/.*\.md|assets/explainers-data\.json)$'
+
+      - id: pytest
+        name: pytest (full suite)
+        entry: python3 -m pytest tests/ -q
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
