@@ -16,6 +16,11 @@ requires_openpyxl = pytest.mark.skipif(
     reason="optional 'excel' extra not installed",
 )
 
+requires_pyarrow = pytest.mark.skipif(
+    importlib.util.find_spec("pyarrow") is None,
+    reason="optional 'parquet' extra not installed",
+)
+
 
 ROWS = {
     "patient_id": [1, 2, 3, 4],
@@ -61,10 +66,37 @@ def test_read_table_csv(tmp_path):
     assert list(df.columns) == ["patient_id", "sex", "age"]
 
 
+def test_read_table_json_records(tmp_path):
+    path = tmp_path / "data.json"
+    pd.DataFrame(ROWS).to_json(path, orient="records")
+    df = read_table(str(path))
+    assert list(df.columns) == ["patient_id", "sex", "age"]
+    assert len(df) == 4
+
+
+def test_read_table_json_split(tmp_path):
+    path = tmp_path / "data.json"
+    pd.DataFrame(ROWS).to_json(path, orient="split")
+
+    df = read_table(str(path))
+
+    assert list(df.columns) == ["patient_id", "sex", "age"]
+    assert len(df) == 4
+
+
 @requires_openpyxl
 def test_read_table_xlsx(tmp_path):
     path = tmp_path / "data.xlsx"
     pd.DataFrame(ROWS).to_excel(path, index=False)
+    df = read_table(str(path))
+    assert list(df.columns) == ["patient_id", "sex", "age"]
+    assert len(df) == 4
+
+
+@requires_pyarrow
+def test_read_table_parquet(tmp_path):
+    path = tmp_path / "data.parquet"
+    pd.DataFrame(ROWS).to_parquet(path, index=False)
     df = read_table(str(path))
     assert list(df.columns) == ["patient_id", "sex", "age"]
     assert len(df) == 4
@@ -99,3 +131,29 @@ def test_xlsx_and_csv_profile_identically(tmp_path):
     result_csv = profile(read_table(str(csv_path)))
     result_xlsx = profile(read_table(str(xlsx_path)))
     assert result_csv == result_xlsx
+
+def test_json_and_csv_profile_identically(tmp_path):
+    csv_path = tmp_path / "data.csv"
+    json_path = tmp_path / "data.json"
+
+    _write_csv(csv_path, sep=",")
+    pd.DataFrame(ROWS).to_json(json_path, orient="records")
+
+    result_csv = profile(read_table(str(csv_path)))
+    result_json = profile(read_table(str(json_path)))
+
+    assert result_csv == result_json
+
+
+@requires_pyarrow
+def test_parquet_and_csv_profile_identically(tmp_path):
+    csv_path = tmp_path / "data.csv"
+    parquet_path = tmp_path / "data.parquet"
+
+    _write_csv(csv_path, sep=",")
+    pd.DataFrame(ROWS).to_parquet(parquet_path, index=False)
+
+    result_csv = profile(read_table(str(csv_path)))
+    result_parquet = profile(read_table(str(parquet_path)))
+
+    assert result_csv == result_parquet
