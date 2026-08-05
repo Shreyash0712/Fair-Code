@@ -493,7 +493,7 @@
   }
 
   function reportBaseName() {
-    return (currentName || 'dataset').replace(/\.csv|\.tsv|\.json$/i, '') + '-profile-report';
+    return (currentName || 'dataset').replace(/\.(csv|tsv|json)$/i, '') + '-profile-report';
   }
 
   function downloadHtmlReport() {

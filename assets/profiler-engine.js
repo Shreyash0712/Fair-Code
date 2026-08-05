@@ -134,58 +134,72 @@
     }
     return { columns: columns, rows: data };
   }
-// ── JSON parsing ──────────────────────────────────────────────────────────
-// Handles Pandas/standard JSON in records ([{col: val}]) and split ({columns: [...], data: [[...]]}) formats.
-function parseJSON(text) {
-  if (typeof text !== 'string') text = String(text);
-  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
-  var parsed = JSON.parse(text); // Let invalid JSON syntax throw to caller
-  if (!parsed) return { columns: [], rows: [] };
+  // ── JSON parsing ────────────────────────────────────────────────────────
+  // Handles Pandas/standard JSON in records ([{col: val}]) and split
+  // ({columns: [...], data: [[...]]}) formats.
+  function parseJSON(text) {
+    if (typeof text !== 'string') text = String(text);
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
+    var parsed = JSON.parse(text); // let invalid JSON syntax throw to caller
+    if (!parsed) return { columns: [], rows: [] };
 
-  // 1. Records format: [ { colA: 1, colB: 2 }, ... ]
-  if (Array.isArray(parsed)) {
-    if (!parsed.length) return { columns: [], rows: [] };
-    if (!parsed[0] || typeof parsed[0] !== "object" || Array.isArray(parsed[0])) {
-      throw new Error("Unsupported JSON format (expected records or split orientation).");
-    }
-    var columns = Object.keys(parsed[0] || {});
-    var rows = [];
-
-    for (var i = 0; i < parsed.length; i++) {
-      var item = parsed[i] || {};
-      var obj = {};
-      for (var ci = 0; ci < columns.length; ci++) {
-        var raw = item[columns[ci]];
-        raw = raw === undefined ? '' : raw;
-        obj[columns[ci]] = isMissing(raw) ? null : raw;
+    // 1. Records format: [ { colA: 1, colB: 2 }, ... ]. Columns are the union
+    // of every record's keys (first-seen order), not just the first record's -
+    // pandas' read_json does the same, so a later record with an extra key
+    // (or an earlier one missing a key another has) isn't silently dropped.
+    if (Array.isArray(parsed)) {
+      if (!parsed.length) return { columns: [], rows: [] };
+      if (!parsed[0] || typeof parsed[0] !== "object" || Array.isArray(parsed[0])) {
+        throw new Error("Unsupported JSON format (expected records or split orientation).");
       }
-      rows.push(obj);
-    }
-    return { columns: columns, rows: rows };
-  }
-
-  // 2. Split format: { columns: ["colA", "colB"], data: [[1, 2], ...] }
-  if (typeof parsed === 'object' && Array.isArray(parsed.columns) && Array.isArray(parsed.data)) {
-    
-    var columns = parsed.columns.map(String);
-    var rows = [];
-
-    for (var r = 0; r < parsed.data.length; r++) {
-      var rowVal = parsed.data[r] || [];
-      var obj = {};
-      for (var ci = 0; ci < columns.length; ci++) {
-        var raw = rowVal[ci];
-        raw = raw === undefined ? '' : raw;
-        obj[columns[ci]] = isMissing(raw) ? null : raw;
+      var columns = [];
+      var seen = {};
+      for (var pi = 0; pi < parsed.length; pi++) {
+        var record = parsed[pi];
+        if (!record || typeof record !== "object" || Array.isArray(record)) {
+          throw new Error("Unsupported JSON format (expected records or split orientation).");
+        }
+        var keys = Object.keys(record);
+        for (var ki = 0; ki < keys.length; ki++) {
+          if (!seen[keys[ki]]) { seen[keys[ki]] = true; columns.push(keys[ki]); }
+        }
       }
-      rows.push(obj);
-    }
-    return { columns: columns, rows: rows };
-  }
+      var rows = [];
 
-  // 3. Reject non-tabular / unsupported objects explicitly
-  throw new Error('Unsupported JSON format (expected records or split orientation).');
-}
+      for (var i = 0; i < parsed.length; i++) {
+        var item = parsed[i];
+        var obj = {};
+        for (var ci = 0; ci < columns.length; ci++) {
+          var raw = item[columns[ci]];
+          raw = raw === undefined ? '' : raw;
+          obj[columns[ci]] = isMissing(raw) ? null : raw;
+        }
+        rows.push(obj);
+      }
+      return { columns: columns, rows: rows };
+    }
+
+    // 2. Split format: { columns: ["colA", "colB"], data: [[1, 2], ...] }
+    if (typeof parsed === 'object' && Array.isArray(parsed.columns) && Array.isArray(parsed.data)) {
+      var splitColumns = parsed.columns.map(String);
+      var splitRows = [];
+
+      for (var r = 0; r < parsed.data.length; r++) {
+        var rowVal = parsed.data[r] || [];
+        var splitObj = {};
+        for (var sci = 0; sci < splitColumns.length; sci++) {
+          var splitRaw = rowVal[sci];
+          splitRaw = splitRaw === undefined ? '' : splitRaw;
+          splitObj[splitColumns[sci]] = isMissing(splitRaw) ? null : splitRaw;
+        }
+        splitRows.push(splitObj);
+      }
+      return { columns: splitColumns, rows: splitRows };
+    }
+
+    // 3. Reject non-tabular / unsupported objects explicitly
+    throw new Error('Unsupported JSON format (expected records or split orientation).');
+  }
 
   function isMissing(v) {
     if (v === null || v === undefined) return true;
