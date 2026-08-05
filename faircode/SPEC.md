@@ -202,7 +202,8 @@ in Python, `profile(table, overrides, opts)` in JS, and `--min-share` / `--inter
 
 `compare(A, B)` takes two **profile results** - a baseline `A` (e.g. training data) and a
 current `B` (e.g. production data) - and reports how each demographic dimension's representation
-shifted. It is pure post-processing over two `profile()` outputs, so both engines agree bit-for-bit.
+shifted. It is pure post-processing over two `profile()` outputs, so both engines agree bit-for-bit
+(checked by `tests/test_js_parity.py::test_python_js_compare_parity`, via `scripts/compare-js.js`).
 It reads the already-computed group **shares**; it never re-parses the raw rows.
 
 Dimensions are matched by **name**. A dimension present in both is compared; one present only in `B`

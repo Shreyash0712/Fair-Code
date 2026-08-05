@@ -804,6 +804,7 @@ faircode profile data.csv --html report.html       # standalone HTML report
 faircode profile data.csv --fail-under 70          # fail CI if score is below 70
 faircode profile data.csv --min-group-size 50      # warn on subgroups under 50 rows
 faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
+faircode compare train.csv prod.csv --html drift.html  # standalone HTML drift report
 faircode profile data.csv --map gndr=sex           # fix a missed column
 faircode profile data.csv --cross race,age         # choose the intersection pair
 faircode profile data.csv --reference census.csv   # score vs a population baseline
@@ -818,10 +819,11 @@ successfully.
 
 The engine is domain-agnostic - it works on any tabular CSV (health, hiring, lending, justice),
 auto-detecting demographic columns (sex, race, age, geography) by name. Beyond the single-dataset
-audit it can **compare two datasets** for representation drift (`compare`, web A/B dropzones),
-**manually map** a mis-detected column (`--map`, web dropdowns), **choose** which two columns to
-cross, score against a **reference population baseline** (`--reference`, web upload), surface
-**chi-squared proxy hints**, and take **tunable thresholds**. It depends only on
+audit it can **compare two datasets** for representation drift (`compare`, web A/B dropzones,
+shareable HTML report on both sides), **manually map** a mis-detected column (`--map`, web
+dropdowns), **choose** which two columns to cross, score against a **reference population
+baseline** (`--reference`, web upload), surface **chi-squared proxy hints**, and take **tunable
+thresholds**. It depends only on
 **pandas** (no `ydata-profiling`): that library is a heavy, general-purpose profiler, whereas the
 Profiler needs only a thin, fairness-specific slice, so we compute the representation metrics
 directly. Run the tests with `pytest tests/`.
