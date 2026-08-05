@@ -134,6 +134,58 @@
     }
     return { columns: columns, rows: data };
   }
+// ── JSON parsing ──────────────────────────────────────────────────────────
+// Handles Pandas/standard JSON in records ([{col: val}]) and split ({columns: [...], data: [[...]]}) formats.
+function parseJSON(text) {
+  if (typeof text !== 'string') text = String(text);
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
+  var parsed = JSON.parse(text); // Let invalid JSON syntax throw to caller
+  if (!parsed) return { columns: [], rows: [] };
+
+  // 1. Records format: [ { colA: 1, colB: 2 }, ... ]
+  if (Array.isArray(parsed)) {
+    if (!parsed.length) return { columns: [], rows: [] };
+    if (!parsed[0] || typeof parsed[0] !== "object" || Array.isArray(parsed[0])) {
+      throw new Error("Unsupported JSON format (expected records or split orientation).");
+    }
+    var columns = Object.keys(parsed[0] || {});
+    var rows = [];
+
+    for (var i = 0; i < parsed.length; i++) {
+      var item = parsed[i] || {};
+      var obj = {};
+      for (var ci = 0; ci < columns.length; ci++) {
+        var raw = item[columns[ci]];
+        raw = raw === undefined ? '' : raw;
+        obj[columns[ci]] = isMissing(raw) ? null : raw;
+      }
+      rows.push(obj);
+    }
+    return { columns: columns, rows: rows };
+  }
+
+  // 2. Split format: { columns: ["colA", "colB"], data: [[1, 2], ...] }
+  if (typeof parsed === 'object' && Array.isArray(parsed.columns) && Array.isArray(parsed.data)) {
+    
+    var columns = parsed.columns.map(String);
+    var rows = [];
+
+    for (var r = 0; r < parsed.data.length; r++) {
+      var rowVal = parsed.data[r] || [];
+      var obj = {};
+      for (var ci = 0; ci < columns.length; ci++) {
+        var raw = rowVal[ci];
+        raw = raw === undefined ? '' : raw;
+        obj[columns[ci]] = isMissing(raw) ? null : raw;
+      }
+      rows.push(obj);
+    }
+    return { columns: columns, rows: rows };
+  }
+
+  // 3. Reject non-tabular / unsupported objects explicitly
+  throw new Error('Unsupported JSON format (expected records or split orientation).');
+}
 
   function isMissing(v) {
     if (v === null || v === undefined) return true;
@@ -663,7 +715,7 @@
     };
   }
 
-  global.FairCodeProfiler = { parseCSV: parseCSV, sniffDelimiter: sniffDelimiter,
+  global.FairCodeProfiler = { parseCSV: parseCSV, parseJSON: parseJSON, sniffDelimiter: sniffDelimiter,
                               profile: profile, compare: compare,
                               parseReference: parseReference };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

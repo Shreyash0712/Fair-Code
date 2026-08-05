@@ -107,12 +107,12 @@
   function readFile(file) {
     if (/\.xlsx$/i.test(file.name)) {
       return showError('Excel (.xlsx) isn\'t supported in the browser profiler yet - ' +
-        'run "faircode profile ' + file.name + '" from the CLI, or export to CSV/TSV first.');
+        'run "faircode profile ' + file.name + '" from the CLI, or export to CSV/TSV/JSON first.');
     }
-    var okExt = /\.(csv|tsv)$/i.test(file.name);
-    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values';
+    var okExt = /\.(csv|tsv|json)$/i.test(file.name);
+    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' || file.type === 'application/json';
     if (!okExt && !okType) {
-      return showError('Please choose a .csv or .tsv file.');
+      return showError('Please choose a .csv, .tsv or .json file.');
     }
     var reader = new FileReader();
     reader.onload = function () { runText(String(reader.result), file.name); };
@@ -122,9 +122,13 @@
 
   function runText(text, name) {
     try {
-      var table = E.parseCSV(text);
+      if (/\.json$/i.test(name) || text.trim().startsWith('{')) {
+        var table = E.parseJSON(text);
+      } else {
+        var table = E.parseCSV(text);
+      }
       if (!table.columns.length || !table.rows.length) {
-        return showError('That CSV looks empty or has no data rows.');
+        return showError('That file looks empty or has no data rows.');
       }
       currentTable = table;
       currentOverrides = {};
@@ -399,7 +403,11 @@
     var reader = new FileReader();
     reader.onload = function () {
       try {
-        currentOpts.reference = E.parseReference(E.parseCSV(String(reader.result)));
+        if (/\.json$/i.test(f.name) || f.type === 'application/json') {
+          currentOpts.reference = E.parseReference(E.parseJSON(String(reader.result)));
+        } else {
+          currentOpts.reference = E.parseReference(E.parseCSV(String(reader.result)));
+        }
         referenceStatus.textContent = '⚖ scored vs ' + f.name;
         referenceClearBtn.hidden = false;
         reprofile(false);
@@ -485,7 +493,7 @@
   }
 
   function reportBaseName() {
-    return (currentName || 'dataset').replace(/\.csv$/i, '') + '-profile-report';
+    return (currentName || 'dataset').replace(/\.csv|\.tsv|\.json$/i, '') + '-profile-report';
   }
 
   function downloadHtmlReport() {

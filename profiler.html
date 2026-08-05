@@ -157,12 +157,12 @@
     </section>
 
     <section class="dropzone" id="dropzone" tabindex="0" role="button"
-             aria-label="Upload a CSV or TSV file, or click to browse"
+             aria-label="Upload a CSV, TSV or JSON file, or click to browse"
              aria-describedby="dropzoneHint">
-      <input type="file" id="fileInput" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+      <input type="file" id="fileInput" accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,text/plain,application/json" hidden>
       <div class="dropzone-inner">
         <div class="dropzone-icon" aria-hidden="true">⊕</div>
-        <p class="dropzone-title">Drop a CSV or TSV here, or <span class="link">browse</span></p>
+        <p class="dropzone-title">Drop a CSV, TSV or JSON file here, or <span class="link">browse</span></p>
         <p class="dropzone-hint" id="dropzoneHint">Comma- or tab-separated values, with a header row. (Excel files:
         use <code>faircode profile data.xlsx</code> from the CLI.)</p>
         <button class="sample-btn" id="sampleBtn" type="button">Try it with a sample dataset</button>
@@ -191,7 +191,7 @@
         <button class="action-btn" id="copyJsonBtn" type="button">⧉ Copy as JSON</button>
         <button class="action-btn" id="referenceBtn" type="button">⚖ Score vs reference…</button>
         <button class="action-btn" id="referenceClearBtn" type="button" hidden>✕ Clear reference</button>
-        <input type="file" id="referenceInput" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+        <input type="file" id="referenceInput" accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,application/json" hidden>
         <span class="reference-status" id="referenceStatus"></span>
       </div>
 
@@ -241,16 +241,16 @@
 
       <div class="compare-drops">
         <div class="mini-drop" id="dropA" tabindex="0" role="button"
-             aria-label="Upload baseline dataset A (CSV or TSV)">
-          <input type="file" id="fileA" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+             aria-label="Upload baseline dataset A (CSV, TSV or JSON)">
+          <input type="file" id="fileA" accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,application/json" hidden>
           <span class="mini-drop-tag">A · Baseline</span>
-          <span class="mini-drop-name" id="nameA">Drop CSV/TSV, or <span class="link">browse</span></span>
+          <span class="mini-drop-name" id="nameA">Drop CSV/TSV/JSON, or <span class="link">browse</span></span>
         </div>
         <div class="mini-drop" id="dropB" tabindex="0" role="button"
-             aria-label="Upload current dataset B (CSV or TSV)">
-          <input type="file" id="fileB" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+             aria-label="Upload current dataset B (CSV, TSV or JSON)">
+          <input type="file" id="fileB" accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,application/json" hidden>
           <span class="mini-drop-tag">B · Current</span>
-          <span class="mini-drop-name" id="nameB">Drop CSV/TSV, or <span class="link">browse</span></span>
+          <span class="mini-drop-name" id="nameB">Drop CSV/TSV/JSON, or <span class="link">browse</span></span>
         </div>
       </div>
       <div class="compare-actions">
