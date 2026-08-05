@@ -261,7 +261,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script>
   (function () {
-    var saved = localStorage.getItem('fc-theme') || 'light';
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var saved = localStorage.getItem('fc-theme') || systemPref;
     document.documentElement.setAttribute('data-theme', saved);
   })();
 </script>
@@ -3174,7 +3175,8 @@
   // Theme toggle
   const toggle = document.getElementById('themeToggle');
   const html = document.documentElement;
-  const saved = localStorage.getItem('fc-theme') || 'light';
+  const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  const saved = localStorage.getItem('fc-theme') || systemPref;
   html.setAttribute('data-theme', saved);
   toggle.textContent = saved === 'light' ? '☾' : '☀';
   toggle.setAttribute('aria-label', saved === 'light' ? 'Switch to dark mode' : 'Switch to light mode');

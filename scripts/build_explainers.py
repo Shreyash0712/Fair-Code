@@ -296,7 +296,8 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script>
   (function () {{
-    const saved = localStorage.getItem('fc-theme') || 'light';
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = localStorage.getItem('fc-theme') || systemPref;
     document.documentElement.setAttribute('data-theme', saved);
   }})();
 </script>
@@ -382,9 +383,10 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
     (function () {{
       const toggle = document.getElementById('explainerThemeToggle');
       const html = document.documentElement;
+      const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
       function syncTheme() {{
-        const current = html.getAttribute('data-theme') || 'dark';
+        const current = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = current === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
       }}
@@ -392,7 +394,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
       syncTheme();
 
       toggle.addEventListener('click', () => {{
-        const current = html.getAttribute('data-theme') || 'dark';
+        const current = html.getAttribute('data-theme') || systemPref;
         const next = current === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
         localStorage.setItem('fc-theme', next);
