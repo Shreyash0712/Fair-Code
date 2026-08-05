@@ -93,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
                    help="cross these two columns for the intersectional gap "
                         "(default: the first two detected dimensions)")
     p.add_argument("--reference", metavar="PATH",
-                   help="score against a reference baseline CSV (columns: column,group,share)")
+                   help="score against a reference baseline dataset (columns: column,group,share)")
     p.add_argument("--proxy-hints", action="store_true",
                    help="flag strongly-associated column pairs via chi-squared (needs scipy)")
     p.add_argument("--min-share", type=float, metavar="F",
