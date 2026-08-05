@@ -54,6 +54,33 @@ def test_python_js_profiler_parity(csv_name):
     assert javascript_result == python_result
 
 
+def test_python_js_json_parity_inconsistent_keys():
+    """Records-orient JSON where later records add columns the first one
+    doesn't have (#144). The JS parseJSON() used to derive columns from only
+    the first record, silently dropping any column that first appeared later
+    - pandas' read_json unions keys across every record instead."""
+
+    json_path = FIXTURES / "inconsistent_keys.json"
+
+    python_result = profile(pd.read_json(json_path))
+
+    completed = subprocess.run(
+        ["node", "scripts/profile-json-js.js", str(json_path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    javascript_result = json.loads(completed.stdout)
+
+    python_result = dict(python_result)
+    javascript_result = dict(javascript_result)
+    python_result.pop("flags", None)
+    javascript_result.pop("flags", None)
+
+    assert javascript_result == python_result
+
+
 @pytest.mark.parametrize("csv_name", list(CSV_PATHS))
 def test_python_js_compare_parity(csv_name):
     """faircode.compare() and the JS engine's compare() should agree too (#111).

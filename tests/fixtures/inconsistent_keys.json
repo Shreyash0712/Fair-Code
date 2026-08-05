@@ -1,0 +1,5 @@
+[
+  {"sex": "male", "age": 24},
+  {"sex": "female", "age": 31, "race": "Asian"},
+  {"sex": "male", "age": 45, "race": "White"}
+]
