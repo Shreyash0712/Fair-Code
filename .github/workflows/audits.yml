@@ -23,7 +23,7 @@ jobs:
           - "Healthcare Readmission"
           - "Tenant Screening"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
@@ -50,7 +50,7 @@ jobs:
     # Test + smoke-test the faircode dataset profiler (the diagnostic tool).
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
@@ -86,7 +86,7 @@ jobs:
     # README.md: run the full benchmark locally and commit results/ output.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
