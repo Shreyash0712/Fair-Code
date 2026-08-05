@@ -22,9 +22,13 @@
   var errorEl = document.getElementById('compareError');
   var resultsEl = document.getElementById('compareResults');
   var announcer = document.getElementById('compareAnnouncer');
+  var reportActionsEl = document.getElementById('compareReportActions');
+  var downloadHtmlBtn = document.getElementById('compareDownloadHtmlBtn');
+  var copyJsonBtn = document.getElementById('compareCopyJsonBtn');
 
   // Loaded datasets: each { table, name } once a valid file is parsed.
   var slot = { A: null, B: null };
+  var currentCmp = null; // last successful compare() result, for export
 
   function pct(x) { return (x * 100).toFixed(1) + '%'; }
   function esc(s) {
@@ -116,10 +120,14 @@
     errorEl.textContent = msg;
     errorEl.hidden = false;
     resultsEl.hidden = true;
+    reportActionsEl.hidden = true;
+    currentCmp = null;
   }
 
   // ── Rendering ──────────────────────────────────────────────────────────
   function render(cmp) {
+    currentCmp = cmp;
+    reportActionsEl.hidden = false;
     var d = cmp.score_delta;
     var deltaClass = d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
     var arrow = d === 0 ? '=' : '→';
@@ -212,6 +220,193 @@
     return '<div class="drift-card">' + head + rows + more + '</div>';
   }
 
+  // ── Report export: "Download report (HTML)" / "Copy as JSON" ────────────
+  // Ports faircode/report.py's compare_to_html so the browser report matches
+  // the CLI's `faircode compare --html` output (same palette, same layout,
+  // same field names as the DOM render above).
+  function buildCompareHtmlReport(cmp) {
+    var a = cmp.a, b = cmp.b;
+    var scoreDelta = cmp.score_delta;
+    var deltaClass = scoreDelta > 0 ? 'up' : (scoreDelta < 0 ? 'down' : 'flat');
+    var arrow = scoreDelta === 0 ? '=' : '→';
+
+    var summaryHtml =
+      '<div class="drift-summary">' +
+      '<div class="drift-score"><span class="n">' + a.overall_score + '</span><span class="l">' +
+        esc(a.name) + ' (' + a.n_rows.toLocaleString() + ' rows, Grade ' + a.grade + ')</span></div>' +
+      '<div class="drift-arrow" aria-hidden="true">' + arrow + '</div>' +
+      '<div class="drift-score"><span class="n">' + b.overall_score + '</span><span class="l">' +
+        esc(b.name) + ' (' + b.n_rows.toLocaleString() + ' rows, Grade ' + b.grade + ')</span></div>' +
+      '<div class="drift-delta ' + deltaClass + '">score ' + signed(scoreDelta, 0) + ' pts</div>' +
+      '</div>';
+
+    var cardsHtml;
+    if (!cmp.dimensions.length) {
+      cardsHtml = '<p class="section-note">No demographic dimension is present in both datasets to compare.</p>';
+    } else {
+      cardsHtml = cmp.dimensions.map(function (cd) {
+        var maxShare = 0;
+        cd.groups.forEach(function (g) { maxShare = Math.max(maxShare, g.share_a, g.share_b); });
+        if (maxShare <= 0) maxShare = 1;
+
+        var rows = cd.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
+          var cls = g.status === 'disappeared' ? ' gone' : (g.status === 'appeared' ? ' new' : '');
+          var wa = (g.share_a / maxShare) * 100;
+          var wb = (g.share_b / maxShare) * 100;
+          var deltaPP = g.share_delta * 100;
+          var dCls = deltaPP > 0 ? 'up' : (deltaPP < 0 ? 'down' : '');
+          var tag = (g.status === 'appeared' || g.status === 'disappeared')
+            ? ' <span class="tag">' + esc(g.status) + '</span>' : '';
+
+          return '<tr class="drift-row' + cls + '">' +
+            '<td class="label">' + esc(g.label) + tag + '</td>' +
+            '<td class="num">' + (g.share_a * 100).toFixed(1) + '% → ' + (g.share_b * 100).toFixed(1) + '%</td>' +
+            '<td class="num"><span class="' + dCls + '">' + signed(deltaPP) + ' pp</span></td>' +
+            '<td class="bar"><div class="bar-container">' +
+              '<span class="bar-a" style="width:' + wa.toFixed(1) + '%"></span>' +
+              '<span class="bar-b" style="width:' + wb.toFixed(1) + '%"></span>' +
+            '</div></td></tr>';
+        }).join('');
+
+        var moreHtml = cd.groups.length > DISPLAY_GROUPS
+          ? '<div class="dim-more">… and ' + (cd.groups.length - DISPLAY_GROUPS) + ' more groups</div>' : '';
+
+        return '<section class="drift-card"><div class="drift-card-head">' +
+          '<h2>' + esc(cd.name) + ' <span class="kind">' + esc(cd.kind) + '</span> ' +
+          '<span class="drift-badge ' + cd.drift_level + '">' + esc(cd.drift_level) + ' drift</span></h2>' +
+          '<div class="drift-metrics">PSI ' + cd.psi.toFixed(3) + ' · TVD ' + cd.tvd.toFixed(3) +
+          ' · score ' + cd.dimension_score_a + '→' + cd.dimension_score_b +
+          ' (' + signed(cd.dimension_score_delta, 0) + ')</div></div>' +
+          '<table>' + rows + '</table>' + moreHtml + '</section>';
+      }).join('');
+    }
+
+    var flagsHtml = '';
+    if (cmp.flags.length) {
+      var items = cmp.flags.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('');
+      flagsHtml = '<section class="flags"><h2>Drift Flags</h2><ul>' + items + '</ul></section>';
+    }
+
+    var onlyHtml = '';
+    if (cmp.added_dimensions.length) {
+      onlyHtml += '<div class="drift-only">Only in B (' + esc(b.name) + '): <strong>' +
+        cmp.added_dimensions.map(esc).join(', ') + '</strong></div>';
+    }
+    if (cmp.removed_dimensions.length) {
+      onlyHtml += '<div class="drift-only">Only in A (' + esc(a.name) + '): <strong>' +
+        cmp.removed_dimensions.map(esc).join(', ') + '</strong></div>';
+    }
+
+    var style =
+      ':root { --bg:#f4f1e8; --surface:#ebe7d9; --border:#d9d3c0; --accent:#a63a22; ' +
+      '--accent3:#2f6b4f; --text:#36321f; --muted:#7d7459; --bar-a:#7d7459; --bar-b:#2f6b4f; } ' +
+      'body { font-family:\'Helvetica Neue\',sans-serif; background:var(--bg); color:var(--text); ' +
+      'max-width:820px; margin:0 auto; padding:48px 24px; } ' +
+      'h1 { font-family:Georgia,serif; margin-bottom:8px; } ' +
+      '.head { border-bottom:2px solid var(--accent); padding-bottom:12px; margin-bottom:20px; } ' +
+      '.drift-summary { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:20px; } ' +
+      '.drift-score { font-weight:bold; font-size:14px; display:flex; flex-direction:column; } ' +
+      '.drift-score .n { font-size:24px; color:var(--accent3); } ' +
+      '.drift-score .l { font-size:12px; color:var(--muted); font-weight:normal; } ' +
+      '.drift-arrow { font-size:20px; color:var(--muted); } ' +
+      '.drift-delta { font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; } ' +
+      '.drift-delta.down { color:var(--accent); background:#fbeae3; } ' +
+      '.drift-delta.up { color:var(--accent3); background:#e2f0e8; } ' +
+      '.drift-delta.flat { color:var(--muted); } ' +
+      '.kind { color:var(--muted); font-size:.6em; text-transform:uppercase; letter-spacing:.08em; font-weight:normal; } ' +
+      '.drift-badge { font-size:11px; padding:2px 6px; border-radius:4px; text-transform:uppercase; font-weight:bold; background:var(--border); margin-left:8px; } ' +
+      '.drift-badge.significant { background:var(--accent); color:#fff; } ' +
+      '.drift-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin:16px 0; } ' +
+      '.drift-card-head { display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px; } ' +
+      '.drift-card-head h2 { margin:0; font-size:18px; } ' +
+      '.drift-metrics { font-size:12px; color:var(--muted); } ' +
+      'table { width:100%; border-collapse:collapse; } ' +
+      'td { padding:6px 8px; font-size:14px; border-bottom:1px solid var(--border); } ' +
+      'td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-size:13px; } ' +
+      'td.label { width:25%; } ' +
+      'td.bar { width:40%; } ' +
+      '.bar-container { display:flex; flex-direction:column; gap:3px; } ' +
+      '.bar-a { display:block; height:6px; background:var(--bar-a); border-radius:2px; opacity:0.6; } ' +
+      '.bar-b { display:block; height:6px; background:var(--bar-b); border-radius:2px; } ' +
+      'tr.gone td.label { color:var(--accent); text-decoration:line-through; } ' +
+      'tr.new td.label { color:var(--accent3); font-weight:bold; } ' +
+      '.tag { font-size:10px; font-weight:bold; text-transform:uppercase; padding:1px 4px; border-radius:3px; border:1px solid currentColor; margin-left:4px; } ' +
+      '.up { color:var(--accent3); } ' +
+      '.down { color:var(--accent); } ' +
+      '.dim-more { font-size:12px; color:var(--muted); margin-top:8px; font-style:italic; } ' +
+      '.flags ul { list-style:none; padding:0; } ' +
+      '.flags li { background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; font-size:14px; } ' +
+      '.drift-only { font-size:13px; color:var(--muted); margin-top:8px; } ' +
+      '.print-btn { position:fixed; top:16px; right:16px; background:var(--accent); color:#fff; border:0; border-radius:6px; padding:8px 14px; font-size:13px; cursor:pointer; font-family:inherit; } ' +
+      '@media print { .print-btn { display:none; } body { padding:24px; max-width:none; } }';
+
+    return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+      '<title>Fair Code - Representation Drift</title><style>' + style + '</style></head><body>' +
+      '<button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>' +
+      '<div class="head"><h1>Representation Drift (A → B)</h1></div>' +
+      summaryHtml + cardsHtml + flagsHtml + onlyHtml +
+      '<p style="color:var(--muted);font-size:12px;margin-top:32px">' +
+      'Generated by <a href="https://github.com/yakew7/Fair-Code">Fair Code</a> - diagnostic only.</p>' +
+      '</body></html>';
+  }
+
+  function compareReportBaseName() {
+    var an = ((slot.A && slot.A.name) || 'A').replace(/\.(csv|tsv)$/i, '');
+    var bn = ((slot.B && slot.B.name) || 'B').replace(/\.(csv|tsv)$/i, '');
+    return an + '-vs-' + bn + '-drift-report';
+  }
+
+  function downloadCompareHtmlReport() {
+    if (!currentCmp) return;
+    var blob = new Blob([buildCompareHtmlReport(currentCmp)], { type: 'text/html' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = compareReportBaseName() + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function flashButton(btn, msg) {
+    var original = btn.textContent;
+    btn.textContent = msg;
+    btn.disabled = true;
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.disabled = false;
+    }, 1500);
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyCompareResultAsJSON() {
+    if (!currentCmp) return;
+    var text = JSON.stringify(currentCmp, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        flashButton(copyJsonBtn, '✓ Copied');
+      }, function () {
+        flashButton(copyJsonBtn, fallbackCopy(text) ? '✓ Copied' : 'Copy failed');
+      });
+    } else {
+      flashButton(copyJsonBtn, fallbackCopy(text) ? '✓ Copied' : 'Copy failed');
+    }
+  }
+
   // ── Sample drift data ───────────────────────────────────────────────────
   // Baseline A is broadly balanced; current B drifts male-skewed, older, more
   // Caucasian, with one region collapsing and 'Asian' disappearing entirely -
@@ -243,4 +438,6 @@
     setSlot('A', E.parseCSV(buildSample('A')), 'sample-baseline.csv', dropA, nameAEl);
     setSlot('B', E.parseCSV(buildSample('B')), 'sample-current.csv', dropB, nameBEl);
   });
+  downloadHtmlBtn.addEventListener('click', downloadCompareHtmlReport);
+  copyJsonBtn.addEventListener('click', copyCompareResultAsJSON);
 })();

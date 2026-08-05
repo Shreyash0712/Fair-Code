@@ -7,7 +7,7 @@ import subprocess
 import pandas as pd
 import pytest
 
-from faircode import profile
+from faircode import compare, profile
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
@@ -50,5 +50,45 @@ def test_python_js_profiler_parity(csv_name):
 
     python_result.pop("flags", None)
     javascript_result.pop("flags", None)
+
+    assert javascript_result == python_result
+
+
+@pytest.mark.parametrize("csv_name", list(CSV_PATHS))
+def test_python_js_compare_parity(csv_name):
+    """faircode.compare() and the JS engine's compare() should agree too (#111).
+
+    Compares each fixture against itself - not meant to exercise every drift
+    level, just to confirm the two independent compare()/compare_to_html()
+    implementations (faircode/report.py and assets/profiler-compare.js) are
+    working off identically-shaped, identically-valued structured data.
+    """
+
+    csv = CSV_PATHS[csv_name]
+    df = pd.read_csv(csv)
+
+    python_result = compare(profile(df), profile(df), "a.csv", "b.csv")
+
+    completed = subprocess.run(
+        ["node", "scripts/compare-js.js", str(csv), str(csv)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    javascript_result = json.loads(completed.stdout)
+
+    # As above: flags are human-readable and float-formatted differently
+    # between Python and JS. Compare the structured data instead. Names also
+    # differ (JS uses the file's basename via path.basename, Python uses
+    # whatever the caller passed) - normalize both before comparing.
+    python_result = dict(python_result)
+    javascript_result = dict(javascript_result)
+
+    for result in (python_result, javascript_result):
+        result.pop("flags", None)
+        for side in ("a", "b"):
+            result[side] = dict(result[side])
+            result[side].pop("name", None)
 
     assert javascript_result == python_result
