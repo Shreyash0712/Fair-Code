@@ -1,0 +1,41 @@
+# =========================
+# Core library (high-stakes)
+# =========================
+/faircode/ @yakew7
+
+# Research artifacts
+/paper/ @yakew7
+**/audit.yaml @yakew7
+
+# Project policy / frozen files
+/CLAUDE.md @yakew7
+/CONTRIBUTING.md @yakew7
+
+# CI / automation
+/.github/workflows/ @yakew7
+/.github/CODEOWNERS @yakew7
+
+# Python packaging
+/pyproject.toml @yakew7
+/Makefile @yakew7
+
+# =========================
+# Website & web profiler
+# =========================
+/assets/profiler-engine.js @yakew7
+/assets/profiler-compare.js @yakew7
+/profiler.html @yakew7
+/index.html @yakew7
+
+# =========================
+# Educational content
+# =========================
+/explainers/ @yakew7
+
+# =========================
+# Website assets
+# =========================
+/assets/fonts/ @yakew7
+/assets/og/ @yakew7
+/robots.txt @yakew7
+/sitemap.xml @yakew7
