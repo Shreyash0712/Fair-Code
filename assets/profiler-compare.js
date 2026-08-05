@@ -74,16 +74,20 @@
   function readFile(key, file, drop, nameEl) {
     if (/\.xlsx$/i.test(file.name)) {
       return showError('Excel (.xlsx) isn\'t supported in the browser profiler yet - ' +
-        'export to CSV/TSV first, or use the "faircode compare" CLI.');
+        'export to CSV/TSV/JSON first, or use the "faircode compare" CLI.');
     }
-    var okExt = /\.(csv|tsv)$/i.test(file.name);
-    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values';
-    if (!okExt && !okType) return showError('Please choose a .csv or .tsv file.');
+    var okExt = /\.(csv|tsv|json)$/i.test(file.name);
+    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' || file.type === 'application/json';
+    if (!okExt && !okType) return showError('Please choose a .csv, .tsv, or .json file.');
 
     var reader = new FileReader();
     reader.onload = function () {
       try {
-        var table = E.parseCSV(String(reader.result));
+        if (/\.json$/i.test(file.name) || file.type === 'application/json') {
+          var table = E.parseJSON(String(reader.result));
+        } else {
+          var table = E.parseCSV(String(reader.result));
+        }
         if (!table.columns.length || !table.rows.length) {
           return showError('Dataset ' + key + ' looks empty or has no data rows.');
         }
@@ -352,8 +356,8 @@
   }
 
   function compareReportBaseName() {
-    var an = ((slot.A && slot.A.name) || 'A').replace(/\.(csv|tsv)$/i, '');
-    var bn = ((slot.B && slot.B.name) || 'B').replace(/\.(csv|tsv)$/i, '');
+    var an = ((slot.A && slot.A.name) || 'A').replace(/\.(csv|tsv|json)$/i, '');
+    var bn = ((slot.B && slot.B.name) || 'B').replace(/\.(csv|tsv|json)$/i, '');
     return an + '-vs-' + bn + '-drift-report';
   }
 
