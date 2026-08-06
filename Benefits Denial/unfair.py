@@ -53,7 +53,7 @@ print("=" * 62)
 
 print("\nrelationship distribution by sex:")
 rel_sex = pd.crosstab(df['relationship'], df['sex'], normalize='columns').round(3)
-print(rel_sex)
+print(rel_sex)  # lgtm[py/clear-text-logging-sensitive-data] - aggregate crosstab, not individual PII
 print("  → 'Husband' is 0% female; 'Wife' is 0% male.")
 print("    relationship is sex encoded as a family role.")
 
@@ -140,16 +140,16 @@ print("=" * 62)
 print(f"\nModel Accuracy: {accuracy:.2%}\n")
 
 print("── Ineligibility Flag Rate by Sex ───────────────────────")
-print(f"  Male applicants    : {sex_flag[0]:.2%} flagged ineligible")
-print(f"  Female applicants  : {sex_flag[1]:.2%} flagged ineligible")
+print(f"  Male applicants    : {sex_flag[0]:.2%} flagged ineligible")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
+print(f"  Female applicants  : {sex_flag[1]:.2%} flagged ineligible")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
 sex_sig = significance_report(results[results['is_female'] == 0]['pred'],
                               results[results['is_female'] == 1]['pred'])
-print(f"\n  Fairness Gap (Sex): {sex_sig['gap']:.2%}")
-print(f"  95% CI: [{sex_sig['ci_low']:.2%}, {sex_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
-print(f"  Permutation p-value: {sex_sig['p_value']:.4f} "
+print(f"\n  Fairness Gap (Sex): {sex_sig['gap']:.2%}")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
+print(f"  95% CI: [{sex_sig['ci_low']:.2%}, {sex_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
+print(f"  Permutation p-value: {sex_sig['p_value']:.4f} "  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
       f"({'significant' if sex_sig['significant'] else 'not significant'} at α=0.05)")
 if sex_sig['small_sample_warning']:
-    print(f"  Small-sample warning: n={sex_sig['n_a']} vs {sex_sig['n_b']} (<30)")
+    print(f"  Small-sample warning: n={sex_sig['n_a']} vs {sex_sig['n_b']} (<30)")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
 
 print("\n── Ineligibility Flag Rate by National Origin ───────────")
 print(f"  US-born            : {geo_flag[0]:.2%} flagged ineligible")
