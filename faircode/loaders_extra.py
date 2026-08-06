@@ -11,6 +11,7 @@ to the frozen `read_table()` for everything it already handles.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -22,6 +23,17 @@ def read_table(path: str) -> pd.DataFrame:
     suffix = Path(path).suffix.lower()
 
     if suffix == ".json":
+        with open(path, "r", encoding="utf-8") as f:
+            raw = f.read()
+        try:
+            json.loads(raw)
+        except json.JSONDecodeError as exc:
+            # pandas' own parser error for malformed JSON (e.g. a truncated
+            # file) is an internal/version-specific message, and calling
+            # pd.read_json() a second time with orient="split" below would
+            # just fail again with an equally confusing one. Fail fast with
+            # a clear message instead, mirroring the JS engine's parseJSON().
+            raise ValueError(f"Unsupported JSON format (not valid JSON: {exc}).") from exc
         try:
             return pd.read_json(path)
         except ValueError:
