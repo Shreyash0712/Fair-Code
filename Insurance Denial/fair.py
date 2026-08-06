@@ -79,17 +79,17 @@ if age_sig['small_sample_warning']:
 
 print("\n── High-Cost Claim Flag Rate by Gender ───────────────")
 for group, rate in gender_approval.items():
-    print(f"  {group:<20} {rate:.2%}")
+    print(f"  {group:<20} {rate:.2%}")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
 gender_sig = significance_report(
     df_test[df_test['gender'] == 'male']['prediction'],
     df_test[df_test['gender'] == 'female']['prediction'],
 )
-print(f"\n  Fairness Gap (Gender): {gender_sig['gap']:.2%}")
-print(f"  95% CI: [{gender_sig['ci_low']:.2%}, {gender_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")
-print(f"  Permutation p-value:   {gender_sig['p_value']:.4f} "
+print(f"\n  Fairness Gap (Gender): {gender_sig['gap']:.2%}")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
+print(f"  95% CI: [{gender_sig['ci_low']:.2%}, {gender_sig['ci_high']:.2%}] (bootstrap, n=10,000 resamples)")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
+print(f"  Permutation p-value:   {gender_sig['p_value']:.4f} "  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
       f"({'significant' if gender_sig['significant'] else 'not significant'} at α=0.05)")
 if gender_sig['small_sample_warning']:
-    print(f"  Small-sample warning: n={gender_sig['n_a']} vs {gender_sig['n_b']} (<30)")
+    print(f"  Small-sample warning: n={gender_sig['n_a']} vs {gender_sig['n_b']} (<30)")  # lgtm[py/clear-text-logging-sensitive-data] - aggregate group stat, not individual PII
 
 # ── INTERSECTIONAL GAP: Young × Female ───────────────────────
 # Same cross as unfair.py, so the mitigation can be judged on the
