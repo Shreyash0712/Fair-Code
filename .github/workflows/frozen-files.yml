@@ -1,0 +1,75 @@
+name: Frozen Files
+
+# Prevent accidental modifications to the paper-frozen analysis code,
+# datasets, and published results. See CLAUDE.md §1.
+
+on:
+  pull_request:
+
+jobs:
+  check-frozen-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check for modifications to frozen files
+        run: |
+          set -euo pipefail
+
+          changed_files="$(git diff --name-only \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}")"
+
+          blocked=""
+
+          while IFS= read -r file; do
+            case "$file" in
+              paper/results-frozen/*)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+
+              results/*)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+
+              faircode/benchmark.py|\
+              faircode/metrics.py|\
+              faircode/strategies.py|\
+              faircode/models.py|\
+              faircode/manifest.py|\
+              faircode/loaders.py|\
+              faircode/significance.py|\
+              faircode/figures.py)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+
+              */audit.yaml)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+
+              COMPAS/*.csv|\
+              "AI Fair Recruitment"/*.csv|\
+              "Benefits Denial"/*.csv|\
+              "German Credit Lending"/*.csv|\
+              "Healthcare Readmission"/*.csv|\
+              "Insurance Denial"/*.csv|\
+              "Tenant Screening"/*.csv)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+            esac
+          done <<< "$changed_files"
+
+          if [ -n "$blocked" ]; then
+            echo "::error::This PR modifies files protected by CLAUDE.md §1."
+            echo
+            echo "Protected files:"
+            printf "%s" "$blocked"
+            echo
+            echo "If this change is intentional, follow the escape hatch in CLAUDE.md §6: flag the issue instead of modifying the frozen files directly."
+            exit 1
+          fi
+
+          echo "No protected files were modified."
