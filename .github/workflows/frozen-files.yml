@@ -50,6 +50,10 @@ jobs:
                 blocked="${blocked}${file}"$'\n'
                 ;;
 
+              requirements-lock.txt)
+                blocked="${blocked}${file}"$'\n'
+                ;;
+
               COMPAS/*.csv|\
               "AI Fair Recruitment"/*.csv|\
               "Benefits Denial"/*.csv|\

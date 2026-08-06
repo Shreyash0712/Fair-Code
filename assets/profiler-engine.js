@@ -197,8 +197,42 @@
       return { columns: splitColumns, rows: splitRows };
     }
 
-    // 3. Reject non-tabular / unsupported objects explicitly
-    throw new Error('Unsupported JSON format (expected records or split orientation).');
+    // 3. Columns format: { colA: { "0": v0, "1": v1 }, colB: { ... } }.
+    // pandas' read_json defaults to this orientation for a plain object, so
+    // the CLI already accepts it (README/#155) - match that here too. Row
+    // order/index keys are the union across every column's keys, first-seen
+    // order, same reasoning as the records branch above.
+    if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+      var colNames = Object.keys(parsed);
+      var looksColumnar = colNames.length > 0 && colNames.every(function (c) {
+        var v = parsed[c];
+        return v && typeof v === 'object' && !Array.isArray(v);
+      });
+      if (looksColumnar) {
+        var indexKeys = [];
+        var indexSeen = {};
+        for (var cni = 0; cni < colNames.length; cni++) {
+          var idxKeys = Object.keys(parsed[colNames[cni]]);
+          for (var iki = 0; iki < idxKeys.length; iki++) {
+            if (!indexSeen[idxKeys[iki]]) { indexSeen[idxKeys[iki]] = true; indexKeys.push(idxKeys[iki]); }
+          }
+        }
+        var colRows = [];
+        for (var ri = 0; ri < indexKeys.length; ri++) {
+          var colObj = {};
+          for (var cni2 = 0; cni2 < colNames.length; cni2++) {
+            var colRaw = parsed[colNames[cni2]][indexKeys[ri]];
+            colRaw = colRaw === undefined ? '' : colRaw;
+            colObj[colNames[cni2]] = isMissing(colRaw) ? null : colRaw;
+          }
+          colRows.push(colObj);
+        }
+        return { columns: colNames, rows: colRows };
+      }
+    }
+
+    // 4. Reject non-tabular / unsupported objects explicitly
+    throw new Error('Unsupported JSON format (expected records, split, or columns orientation).');
   }
 
   function isMissing(v) {

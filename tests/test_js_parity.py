@@ -81,6 +81,33 @@ def test_python_js_json_parity_inconsistent_keys():
     assert javascript_result == python_result
 
 
+def test_python_js_json_parity_columns_orientation():
+    """Columns-orient JSON ({"col": {"0": v, ...}}, pandas' read_json default
+    for a plain object) - #155 documented and tested this for the CLI, but
+    the JS engine's parseJSON() only handled records/split and threw on it.
+    Now handled the same way as the records branch (union of index keys)."""
+
+    json_path = FIXTURES / "columns_orient.json"
+
+    python_result = profile(pd.read_json(json_path))
+
+    completed = subprocess.run(
+        ["node", "scripts/profile-json-js.js", str(json_path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    javascript_result = json.loads(completed.stdout)
+
+    python_result = dict(python_result)
+    javascript_result = dict(javascript_result)
+    python_result.pop("flags", None)
+    javascript_result.pop("flags", None)
+
+    assert javascript_result == python_result
+
+
 @pytest.mark.parametrize("csv_name", list(CSV_PATHS))
 def test_python_js_compare_parity(csv_name):
     """faircode.compare() and the JS engine's compare() should agree too (#111).

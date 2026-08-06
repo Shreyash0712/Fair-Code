@@ -24,6 +24,7 @@ The **analysis side is frozen**; the **educational side stays fully active** (se
 - **Any `audit.yaml`** manifest in any audit folder.
 - **Any dataset CSV** in any audit folder.
 - **The `v1.0-paper` tag.**
+- **`requirements-lock.txt`** (root) - the exact `pip freeze` snapshot that produced `results/`. Dependabot's `pip` ecosystem scan targets this file (it can't be scoped to skip one file in a directory it manages) and has repeatedly bumped peripheral packages in it - revert those, don't accept them. `paper/results-frozen/requirements-lock.txt` is a separate, untouched copy; if the two ever disagree, the frozen-folder copy is correct.
 
 ## 2. Parameters that MUST NOT change
 
