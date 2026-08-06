@@ -785,9 +785,10 @@ same CSV produces the same numbers in both:
 All analysis runs client-side - **your file never leaves your browser**, which matters for health
 data. (Excel `.xlsx`, JSON, and Parquet aren't supported client-side yet - use the CLI below.)
 
-**CLI - `faircode`.** Reads `.csv`, `.tsv`, `.xlsx`, `.json`, and `.parquet` (delimiter is
-auto-detected for anything else); `.xlsx` needs the optional `excel` extra, `.parquet` needs the
-optional `parquet` extra.
+**CLI - `faircode`.** Reads `.csv`, `.tsv`, `.xlsx`, `.json`, and `.parquet`
+(delimiter is auto-detected for anything else). JSON input supports the
+Pandas `records`, `split`, and `columns` orientations. `.xlsx` needs the
+optional `excel` extra, `.parquet` needs the optional `parquet` extra.
 
 ```bash
 pip install -e .                                   # installs the faircode console script

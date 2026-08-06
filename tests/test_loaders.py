@@ -66,24 +66,21 @@ def test_read_table_csv(tmp_path):
     df = read_table(str(path))
     assert list(df.columns) == ["patient_id", "sex", "age"]
 
-
-def test_read_table_json_records(tmp_path):
+@pytest.mark.parametrize(
+    "orient",
+    ["records", "split", "columns"],
+)
+def test_read_table_json_orientations(tmp_path, orient):
     path = tmp_path / "data.json"
-    pd.DataFrame(ROWS).to_json(path, orient="records")
-    df = read_table(str(path))
-    assert list(df.columns) == ["patient_id", "sex", "age"]
-    assert len(df) == 4
-
-
-def test_read_table_json_split(tmp_path):
-    path = tmp_path / "data.json"
-    pd.DataFrame(ROWS).to_json(path, orient="split")
-
+    expected = pd.DataFrame(ROWS)
+    expected.to_json(path, orient=orient)
     df = read_table(str(path))
 
-    assert list(df.columns) == ["patient_id", "sex", "age"]
-    assert len(df) == 4
-
+    pd.testing.assert_frame_equal(
+        df.reset_index(drop=True),
+        expected.reset_index(drop=True),
+        check_dtype=False,
+    )
 
 @requires_openpyxl
 def test_read_table_xlsx(tmp_path):
