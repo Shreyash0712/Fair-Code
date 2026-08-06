@@ -14,11 +14,26 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.9] - 06 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **Web profiler: JSON "columns" orientation** - `assets/profiler-engine.js`'s `parseJSON()` now handles `{"col": {"0": v, ...}}` (pandas' default `read_json` orientation for a plain object), matching the CLI (#155 documented and tested it there, but nothing had checked the browser engine actually agreed - it threw). Added `test_python_js_json_parity_columns_orientation` alongside the existing records/split parity tests.
+- **CI: Frozen Files check** (#157, by [@ahmdkaml](https://github.com/ahmdkaml)) - `.github/workflows/frozen-files.yml` fails a PR that touches anything on CLAUDE.md §1's list (`paper/results-frozen/`, `results/`, the eight `faircode/` core files, any `audit.yaml`, any audit-folder dataset CSV), so a repeat of the #127 incident gets caught before merge instead of after. Extended its protected-path list to also cover `requirements-lock.txt` (see Fixed).
+- **CI: CodeQL scanning** (#153, closes #139, by [@ahmdkaml](https://github.com/ahmdkaml)) - weekly + per-push/PR security analysis of the Python codebase.
+- **CI: audit manifest column validation** (#156, closes #136, by [@ahmdkaml](https://github.com/ahmdkaml)) - `tests/test_manifest.py` now loads every shipped audit's actual dataset CSV and asserts the manifest's target and protected-attribute columns exist in it, not just that the manifest itself parses.
+- **Static favicon assets** (#154, closes #134, by [@ahmdkaml](https://github.com/ahmdkaml)) - `favicon.ico`, 16x16/32x32 PNGs, and an `apple-touch-icon.png` (from a new `logo.svg` source), wired into `index.html`, `profiler.html`, every explainer page, and the page-generator template, alongside the existing inline-SVG favicon.
+- **Dependabot: GitHub Actions ecosystem** (#146, closes #137, by [@ahmdkaml](https://github.com/ahmdkaml)) - action versions in `.github/workflows/*.yml` now get automated update PRs too, not just pip packages.
+- **JSON orientation docs** (#155, by [@ahmdkaml](https://github.com/ahmdkaml)) - README and `tests/test_loaders.py` now cover and test all three orientations `read_table()` already accepted (`records`, `split`, `columns` - the last one worked all along via pandas' default, just wasn't documented or tested).
+### Fixed
+- **`requirements-lock.txt` had drifted from its frozen snapshot** - Dependabot's `pip` ecosystem scan can't be scoped to skip one file in a directory it manages, so it had repeatedly bumped peripheral packages (`click`, `fastjsonschema`, `fonttools`, `mistune`, `narwhals`, `pillow`, `platformdirs`, `prompt_toolkit`, `pyreadstat`, `soupsieve`, `traitlets`, `xlrd`) in this file over time, all merged without anyone noticing it's supposed to be a fixed `pip freeze` snapshot. The numerically-relevant packages (`numpy`, `pandas`, `scikit-learn`, `scipy`, `fairlearn`) were never touched, so the paper's actual numbers were never at risk - but the file's own "this is the exact environment" claim was false. Reverted to match the untouched copy in `paper/results-frozen/requirements-lock.txt`, and added it to CLAUDE.md §1 and the new Frozen Files check so future Dependabot PRs against it get flagged instead of silently merged.
+- The Web paragraph in README's Open Dataset Profiler section still said "Excel `.xlsx`, JSON, and Parquet aren't supported client-side yet," left over from before #144 added client-side JSON support - JSON just wasn't in that sentence's exclusion list anymore.
+### Note
+- The new `check-frozen-files` job (like `Build Explainers` before it) is not yet a *required* branch-protection status check, so a PR that fails it can still be merged - I attempted to add it to the ruleset and the action was blocked by this session's permission settings as too sensitive to change autonomously. Recommend doing this by hand: Settings → Rules → "Protect main" → add `check-frozen-files` to the required status checks alongside `run-audits`.
 
 ## [2.0.8] - 04 Aug 2026 *(pending - will be tagged after the paper is published)*
 ### Added
