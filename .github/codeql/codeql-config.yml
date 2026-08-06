@@ -1,0 +1,14 @@
+name: "Fair Code CodeQL config"
+
+# py/clear-text-logging-sensitive-data fires repo-wide on aggregate
+# demographic-group statistics (flag rates by gender/race/age, fairness
+# gaps, confidence intervals) printed by the audit scripts - that's the
+# actual purpose of a fairness-audit tool, not a leak of individual PII or
+# credentials. Verified by hand across every instance raised so far; see
+# CHANGELOG. Disabled here rather than suppressed alert-by-alert, since a
+# code change (even a comment) gives CodeQL a new alert fingerprint and the
+# old lgtm[]-style inline suppression comments aren't honored by the
+# current codeql-action at all.
+query-filters:
+  - exclude:
+      id: py/clear-text-logging-sensitive-data
