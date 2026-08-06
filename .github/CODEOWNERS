@@ -12,8 +12,8 @@
 /CONTRIBUTING.md @yakew7
 
 # CI / automation
-/.github/workflows/ @yakew7
-/.github/CODEOWNERS @yakew7
+/.github/workflows/ @yakew7 @ahmdkaml
+/.github/CODEOWNERS @yakew7 @ahmdkaml
 
 # Python packaging
 /pyproject.toml @yakew7
