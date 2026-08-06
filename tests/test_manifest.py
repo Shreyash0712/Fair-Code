@@ -177,3 +177,10 @@ def test_every_shipped_manifest_loads_without_error(path):
     assert manifest.core_features
     assert manifest.protected_attributes
     assert manifest.random_state == 42   # the pinned reproducibility convention (see MANIFEST_SPEC.md)
+
+    df = pd.read_csv(manifest.dataset_path)
+
+    assert manifest.target.column in df.columns
+
+    for attr in manifest.protected_attributes:
+        assert attr.column in df.columns
