@@ -40,6 +40,7 @@ def read_table(path: str) -> pd.DataFrame:
     return pd.read_csv(path, sep=_sniff_delimiter(sample))
 
 
+
 def _sniff_delimiter(sample: str, default: str = ",") -> str:
     try:
         return csv.Sniffer().sniff(sample, delimiters=SNIFF_DELIMITERS).delimiter
