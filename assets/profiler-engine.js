@@ -140,7 +140,15 @@
   function parseJSON(text) {
     if (typeof text !== 'string') text = String(text);
     if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
-    var parsed = JSON.parse(text); // let invalid JSON syntax throw to caller
+    var parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (syntaxErr) {
+      // Raw SyntaxError messages are browser-specific (e.g. "Unexpected end
+      // of JSON input" vs "Unexpected token") and confusing in the dropzone's
+      // error banner - wrap them like the tabular-shape checks below do.
+      throw new Error('Unsupported JSON format (not valid JSON: ' + syntaxErr.message + ').');
+    }
     if (!parsed) return { columns: [], rows: [] };
 
     // 1. Records format: [ { colA: 1, colB: 2 }, ... ]. Columns are the union
@@ -206,7 +214,15 @@
       var colNames = Object.keys(parsed);
       var looksColumnar = colNames.length > 0 && colNames.every(function (c) {
         var v = parsed[c];
-        return v && typeof v === 'object' && !Array.isArray(v);
+        if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+        // Each entry must be a scalar (index -> value), not itself a nested
+        // object - otherwise a deeply-nested, non-tabular structure like
+        // {"a": {"b": {"c": 1}}} is silently misread as one column "a" with
+        // a row "b" whose cell value is the object {"c": 1}.
+        return Object.keys(v).every(function (k) {
+          var cell = v[k];
+          return cell === null || typeof cell !== 'object';
+        });
       });
       if (looksColumnar) {
         var indexKeys = [];
