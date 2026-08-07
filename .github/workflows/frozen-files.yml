@@ -19,8 +19,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          changed_files="$(git diff --name-only \
+          # Diff against the merge-base, not the base branch tip directly -
+          # a two-dot diff (base_sha..head_sha) can include files main picked
+          # up after this PR branched, which aren't actually part of the PR.
+          merge_base="$(git merge-base \
             "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}")"
+          changed_files="$(git diff --name-only \
+            "$merge_base" \
             "${{ github.event.pull_request.head.sha }}")"
 
           blocked=""
