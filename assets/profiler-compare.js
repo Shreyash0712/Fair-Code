@@ -89,16 +89,16 @@
     }
 
     if (/\.xlsx$/i.test(file.name)) {
-      reader.onload = function () {
+      reader.onload = async function () {
         try {
-          applyTable(E.parseXLSX(reader.result));
+          applyTable(await E.parseXLSX(reader.result));
         } catch (err) {
           showError('Could not read dataset ' + key + ': ' + err.message);
         }
       };
       reader.readAsArrayBuffer(file);
     } else {
-      reader.onload = function () {
+      reader.onload = async function () {
         try {
           var text = String(reader.result);
           var table = (/\.json$/i.test(file.name) || file.type === 'application/json')

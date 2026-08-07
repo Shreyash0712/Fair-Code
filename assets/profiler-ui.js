@@ -115,9 +115,9 @@
     var reader = new FileReader();
     reader.onerror = function () { showError('Could not read that file.'); };
     if (/\.xlsx$/i.test(file.name)) {
-      reader.onload = function () {
+      reader.onload = async function () {
         try {
-          runTable(E.parseXLSX(reader.result), file.name);
+          runTable(await E.parseXLSX(reader.result), file.name);
         } catch (err) {
           showError('Could not profile that file: ' + err.message);
         }
@@ -428,9 +428,9 @@
       }
     }
     if (/\.xlsx$/i.test(f.name)) {
-      reader.onload = function () {
+      reader.onload =async function () {
         try {
-          applyReferenceTable(E.parseXLSX(reader.result));
+          applyReferenceTable(await E.parseXLSX(reader.result));
         } catch (err) {
           showError('Could not read reference baseline: ' + err.message);
         }
