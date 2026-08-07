@@ -14,6 +14,9 @@ import pytest
 
 from faircode.loaders import read_table
 
+if importlib.util.find_spec("openpyxl") is not None:
+    import openpyxl
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
