@@ -1,6 +1,7 @@
 """Parity tests between the Python and JavaScript profiler implementations."""
 
 from pathlib import Path
+import importlib.util
 import json
 import subprocess
 
@@ -11,6 +12,11 @@ from faircode import compare, profile
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+requires_openpyxl = pytest.mark.skipif(
+    importlib.util.find_spec("openpyxl") is None,
+    reason="optional 'excel' extra not installed",
+)
 
 # Real audit datasets are already tracked in their own audit folders - reuse
 # them instead of keeping a second multi-megabyte copy under tests/fixtures.
@@ -108,6 +114,7 @@ def test_python_js_json_parity_columns_orientation():
     assert javascript_result == python_result
 
 
+@requires_openpyxl
 def test_python_js_xlsx_parity():
     """.xlsx support (#158) - the JS engine's parseXLSX() (via SheetJS,
     fetched from the same pinned CDN profiler.html loads) should agree with
