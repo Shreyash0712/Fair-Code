@@ -35,6 +35,7 @@ Fair Code's benchmark results are cited in a research paper currently in peer re
 
 - **New audits** — the paper covers exactly seven domains, so new audits cannot merge into `main` yet. This is a **timing hold, not a rejection**: open a PR anyway (it will be parked on a branch or labeled `post-paper`) and it merges once the freeze lifts.
 - **Any change to the frozen results** or the reproducibility parameters (`random_state`, split, iteration counts, the fairness constraint or metrics). If you think you found a bug in the analysis code, **flag it in an issue — do not silently fix it.**
+- **`requirements-lock.txt`** — this is a fixed `pip freeze` snapshot, not a normal dependency file. Dependabot doesn't know that and will keep opening version-bump PRs against it; **please close those without merging**, even though they look like routine, safe updates. See [CLAUDE.md](CLAUDE.md) §1.
 
 **One rule for explainers:** if your explainer quotes a Fair Code result, use the frozen numbers in [`paper/results-frozen/`](paper/results-frozen/) — never re-run your own.
 
