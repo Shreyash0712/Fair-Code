@@ -105,19 +105,28 @@
   copyJsonBtn.addEventListener('click', copyResultAsJSON);
 
   function readFile(file) {
-    if (/\.xlsx$/i.test(file.name)) {
-      return showError('Excel (.xlsx) isn\'t supported in the browser profiler yet - ' +
-        'run "faircode profile ' + file.name + '" from the CLI, or export to CSV/TSV/JSON first.');
-    }
-    var okExt = /\.(csv|tsv|json)$/i.test(file.name);
-    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' || file.type === 'application/json';
+    var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
+    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
+      file.type === 'application/json' ||
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     if (!okExt && !okType) {
-      return showError('Please choose a .csv, .tsv or .json file.');
+      return showError('Please choose a .csv, .tsv, .json, or .xlsx file.');
     }
     var reader = new FileReader();
-    reader.onload = function () { runText(String(reader.result), file.name); };
     reader.onerror = function () { showError('Could not read that file.'); };
-    reader.readAsText(file);
+    if (/\.xlsx$/i.test(file.name)) {
+      reader.onload = function () {
+        try {
+          runTable(E.parseXLSX(reader.result), file.name);
+        } catch (err) {
+          showError('Could not profile that file: ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = function () { runText(String(reader.result), file.name); };
+      reader.readAsText(file);
+    }
   }
 
   function runText(text, name) {
@@ -127,22 +136,28 @@
       } else {
         var table = E.parseCSV(text);
       }
-      if (!table.columns.length || !table.rows.length) {
-        return showError('That file looks empty or has no data rows.');
-      }
-      currentTable = table;
-      currentOverrides = {};
-      currentOpts = {};
-      resetReference();
-      var result = E.profile(table);
-      autoKinds = {};
-      result.dimensions.forEach(function (d) { autoKinds[d.name] = d.kind; });
-      errorEl.hidden = true;
-      render(result, name, true);
-      renderMapping(table.columns);
+      runTable(table, name);
     } catch (err) {
       showError('Could not profile that file: ' + err.message);
     }
+  }
+
+  // Shared tail for every input format (CSV/TSV, JSON, XLSX): validate the
+  // parsed table isn't empty, then profile and render it.
+  function runTable(table, name) {
+    if (!table.columns.length || !table.rows.length) {
+      return showError('That file looks empty or has no data rows.');
+    }
+    currentTable = table;
+    currentOverrides = {};
+    currentOpts = {};
+    resetReference();
+    var result = E.profile(table);
+    autoKinds = {};
+    result.dimensions.forEach(function (d) { autoKinds[d.name] = d.kind; });
+    errorEl.hidden = true;
+    render(result, name, true);
+    renderMapping(table.columns);
   }
 
   // Re-run the engine with the current overrides + opts and re-render in place.
@@ -401,22 +416,39 @@
     var f = e.target.files && e.target.files[0];
     if (!f) return;
     var reader = new FileReader();
-    reader.onload = function () {
+    reader.onerror = function () { showError('Could not read the reference file.'); };
+    function applyReferenceTable(table) {
       try {
-        if (/\.json$/i.test(f.name) || f.type === 'application/json') {
-          currentOpts.reference = E.parseReference(E.parseJSON(String(reader.result)));
-        } else {
-          currentOpts.reference = E.parseReference(E.parseCSV(String(reader.result)));
-        }
+        currentOpts.reference = E.parseReference(table);
         referenceStatus.textContent = '⚖ scored vs ' + f.name;
         referenceClearBtn.hidden = false;
         reprofile(false);
       } catch (err) {
         showError('Could not read reference baseline: ' + err.message);
       }
-    };
-    reader.onerror = function () { showError('Could not read the reference file.'); };
-    reader.readAsText(f);
+    }
+    if (/\.xlsx$/i.test(f.name)) {
+      reader.onload = function () {
+        try {
+          applyReferenceTable(E.parseXLSX(reader.result));
+        } catch (err) {
+          showError('Could not read reference baseline: ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(f);
+    } else {
+      reader.onload = function () {
+        try {
+          var text = String(reader.result);
+          var table = (/\.json$/i.test(f.name) || f.type === 'application/json')
+            ? E.parseJSON(text) : E.parseCSV(text);
+          applyReferenceTable(table);
+        } catch (err) {
+          showError('Could not read reference baseline: ' + err.message);
+        }
+      };
+      reader.readAsText(f);
+    }
   });
   referenceClearBtn.addEventListener('click', function () {
     delete currentOpts.reference;
@@ -493,7 +525,7 @@
   }
 
   function reportBaseName() {
-    return (currentName || 'dataset').replace(/\.(csv|tsv|json)$/i, '') + '-profile-report';
+    return (currentName || 'dataset').replace(/\.(csv|tsv|json|xlsx)$/i, '') + '-profile-report';
   }
 
   function downloadHtmlReport() {

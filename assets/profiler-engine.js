@@ -134,6 +134,40 @@
     }
     return { columns: columns, rows: data };
   }
+  // Shared by parseJSON's records branch and parseXLSX: turn an array of
+  // plain-object records into { columns, rows }. Columns are the union of
+  // every record's keys (first-seen order), not just the first record's -
+  // pandas' read_json/read_excel do the same, so a later record with an
+  // extra key (or an earlier one missing a key another has) isn't silently
+  // dropped.
+  function recordsToTable(records) {
+    if (!records.length) return { columns: [], rows: [] };
+    var columns = [];
+    var seen = {};
+    for (var pi = 0; pi < records.length; pi++) {
+      var record = records[pi];
+      if (!record || typeof record !== "object" || Array.isArray(record)) {
+        throw new Error("Unsupported JSON format (expected records or split orientation).");
+      }
+      var keys = Object.keys(record);
+      for (var ki = 0; ki < keys.length; ki++) {
+        if (!seen[keys[ki]]) { seen[keys[ki]] = true; columns.push(keys[ki]); }
+      }
+    }
+    var rows = [];
+    for (var i = 0; i < records.length; i++) {
+      var item = records[i];
+      var obj = {};
+      for (var ci = 0; ci < columns.length; ci++) {
+        var raw = item[columns[ci]];
+        raw = raw === undefined ? '' : raw;
+        obj[columns[ci]] = isMissing(raw) ? null : raw;
+      }
+      rows.push(obj);
+    }
+    return { columns: columns, rows: rows };
+  }
+
   // ── JSON parsing ────────────────────────────────────────────────────────
   // Handles Pandas/standard JSON in records ([{col: val}]) and split
   // ({columns: [...], data: [[...]]}) formats.
@@ -151,40 +185,13 @@
     }
     if (!parsed) return { columns: [], rows: [] };
 
-    // 1. Records format: [ { colA: 1, colB: 2 }, ... ]. Columns are the union
-    // of every record's keys (first-seen order), not just the first record's -
-    // pandas' read_json does the same, so a later record with an extra key
-    // (or an earlier one missing a key another has) isn't silently dropped.
+    // 1. Records format: [ { colA: 1, colB: 2 }, ... ].
     if (Array.isArray(parsed)) {
       if (!parsed.length) return { columns: [], rows: [] };
       if (!parsed[0] || typeof parsed[0] !== "object" || Array.isArray(parsed[0])) {
         throw new Error("Unsupported JSON format (expected records or split orientation).");
       }
-      var columns = [];
-      var seen = {};
-      for (var pi = 0; pi < parsed.length; pi++) {
-        var record = parsed[pi];
-        if (!record || typeof record !== "object" || Array.isArray(record)) {
-          throw new Error("Unsupported JSON format (expected records or split orientation).");
-        }
-        var keys = Object.keys(record);
-        for (var ki = 0; ki < keys.length; ki++) {
-          if (!seen[keys[ki]]) { seen[keys[ki]] = true; columns.push(keys[ki]); }
-        }
-      }
-      var rows = [];
-
-      for (var i = 0; i < parsed.length; i++) {
-        var item = parsed[i];
-        var obj = {};
-        for (var ci = 0; ci < columns.length; ci++) {
-          var raw = item[columns[ci]];
-          raw = raw === undefined ? '' : raw;
-          obj[columns[ci]] = isMissing(raw) ? null : raw;
-        }
-        rows.push(obj);
-      }
-      return { columns: columns, rows: rows };
+      return recordsToTable(parsed);
     }
 
     // 2. Split format: { columns: ["colA", "colB"], data: [[1, 2], ...] }
@@ -249,6 +256,29 @@
 
     // 4. Reject non-tabular / unsupported objects explicitly
     throw new Error('Unsupported JSON format (expected records, split, or columns orientation).');
+  }
+
+  // ── XLSX parsing ────────────────────────────────────────────────────────
+  // Reads the first sheet via SheetJS (loaded separately - see profiler.html
+  // / assets/sheetjs.min.js), converts to records, and reuses the same
+  // union-of-columns table builder as parseJSON. SheetJS isn't bundled into
+  // this file since it's a large third-party library with its own license -
+  // profiler.html loads it from a pinned CDN URL only when needed.
+  function parseXLSX(arrayBuffer) {
+    if (typeof global.XLSX === 'undefined') {
+      throw new Error('The Excel parsing library failed to load (check your network connection), ' +
+        'or use the CLI instead: faircode profile data.xlsx');
+    }
+    var workbook;
+    try {
+      workbook = global.XLSX.read(arrayBuffer, { type: 'array' });
+    } catch (readErr) {
+      throw new Error('Unsupported .xlsx file (' + readErr.message + ').');
+    }
+    var sheetName = workbook.SheetNames[0];
+    if (!sheetName) return { columns: [], rows: [] };
+    var records = global.XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: null, raw: true });
+    return recordsToTable(records);
   }
 
   function isMissing(v) {
@@ -779,7 +809,8 @@
     };
   }
 
-  global.FairCodeProfiler = { parseCSV: parseCSV, parseJSON: parseJSON, sniffDelimiter: sniffDelimiter,
+  global.FairCodeProfiler = { parseCSV: parseCSV, parseJSON: parseJSON, parseXLSX: parseXLSX,
+                              sniffDelimiter: sniffDelimiter,
                               profile: profile, compare: compare,
                               parseReference: parseReference };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

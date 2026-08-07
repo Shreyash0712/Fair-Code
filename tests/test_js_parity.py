@@ -108,6 +108,37 @@ def test_python_js_json_parity_columns_orientation():
     assert javascript_result == python_result
 
 
+def test_python_js_xlsx_parity():
+    """.xlsx support (#158) - the JS engine's parseXLSX() (via SheetJS,
+    fetched from the same pinned CDN profiler.html loads) should agree with
+    pandas.read_excel() on the same workbook. Skips if the CDN is
+    unreachable rather than failing the suite - see scripts/profile-xlsx-js.js.
+    """
+    xlsx_path = FIXTURES / "adult_sample.xlsx"
+
+    python_result = profile(pd.read_excel(xlsx_path))
+
+    completed = subprocess.run(
+        ["node", "scripts/profile-xlsx-js.js", str(xlsx_path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+    if completed.returncode == 3:
+        pytest.skip("SheetJS CDN unreachable: " + completed.stderr.strip())
+    assert completed.returncode == 0, completed.stderr
+
+    javascript_result = json.loads(completed.stdout)
+
+    python_result = dict(python_result)
+    javascript_result = dict(javascript_result)
+    python_result.pop("flags", None)
+    javascript_result.pop("flags", None)
+
+    assert javascript_result == python_result
+
+
 @pytest.mark.parametrize("csv_name", list(CSV_PATHS))
 def test_python_js_compare_parity(csv_name):
     """faircode.compare() and the JS engine's compare() should agree too (#111).

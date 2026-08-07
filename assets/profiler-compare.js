@@ -72,32 +72,44 @@
   }
 
   function readFile(key, file, drop, nameEl) {
-    if (/\.xlsx$/i.test(file.name)) {
-      return showError('Excel (.xlsx) isn\'t supported in the browser profiler yet - ' +
-        'export to CSV/TSV/JSON first, or use the "faircode compare" CLI.');
-    }
-    var okExt = /\.(csv|tsv|json)$/i.test(file.name);
-    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' || file.type === 'application/json';
-    if (!okExt && !okType) return showError('Please choose a .csv, .tsv, or .json file.');
+    var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
+    var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
+      file.type === 'application/json' ||
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    if (!okExt && !okType) return showError('Please choose a .csv, .tsv, .json, or .xlsx file.');
 
     var reader = new FileReader();
-    reader.onload = function () {
-      try {
-        if (/\.json$/i.test(file.name) || file.type === 'application/json') {
-          var table = E.parseJSON(String(reader.result));
-        } else {
-          var table = E.parseCSV(String(reader.result));
-        }
-        if (!table.columns.length || !table.rows.length) {
-          return showError('Dataset ' + key + ' looks empty or has no data rows.');
-        }
-        setSlot(key, table, file.name, drop, nameEl);
-      } catch (err) {
-        showError('Could not read dataset ' + key + ': ' + err.message);
-      }
-    };
     reader.onerror = function () { showError('Could not read dataset ' + key + '.'); };
-    reader.readAsText(file);
+
+    function applyTable(table) {
+      if (!table.columns.length || !table.rows.length) {
+        return showError('Dataset ' + key + ' looks empty or has no data rows.');
+      }
+      setSlot(key, table, file.name, drop, nameEl);
+    }
+
+    if (/\.xlsx$/i.test(file.name)) {
+      reader.onload = function () {
+        try {
+          applyTable(E.parseXLSX(reader.result));
+        } catch (err) {
+          showError('Could not read dataset ' + key + ': ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = function () {
+        try {
+          var text = String(reader.result);
+          var table = (/\.json$/i.test(file.name) || file.type === 'application/json')
+            ? E.parseJSON(text) : E.parseCSV(text);
+          applyTable(table);
+        } catch (err) {
+          showError('Could not read dataset ' + key + ': ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
   }
 
   function setSlot(key, table, name, drop, nameEl) {
@@ -356,8 +368,8 @@
   }
 
   function compareReportBaseName() {
-    var an = ((slot.A && slot.A.name) || 'A').replace(/\.(csv|tsv|json)$/i, '');
-    var bn = ((slot.B && slot.B.name) || 'B').replace(/\.(csv|tsv|json)$/i, '');
+    var an = ((slot.A && slot.A.name) || 'A').replace(/\.(csv|tsv|json|xlsx)$/i, '');
+    var bn = ((slot.B && slot.B.name) || 'B').replace(/\.(csv|tsv|json|xlsx)$/i, '');
     return an + '-vs-' + bn + '-drift-report';
   }
 
