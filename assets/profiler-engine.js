@@ -264,11 +264,8 @@
   // union-of-columns table builder as parseJSON. SheetJS isn't bundled into
   // this file since it's a large third-party library with its own license -
   // profiler.html loads it from a pinned CDN URL only when needed.
-  function parseXLSX(arrayBuffer) {
-    if (typeof global.XLSX === 'undefined') {
-      throw new Error('The Excel parsing library failed to load (check your network connection), ' +
-        'or use the CLI instead: faircode profile data.xlsx');
-    }
+  async function parseXLSX(arrayBuffer) {
+    await loadSheetJS();  // ensure global.XLSX is present
     var workbook;
     try {
       workbook = global.XLSX.read(arrayBuffer, { type: 'array' });
@@ -281,6 +278,40 @@
     return recordsToTable(records);
   }
 
+  var sheetJsPromise = null;
+
+async function loadSheetJS() {
+  if (global.XLSX) {
+    return Promise.resolve();
+  }
+
+  if (sheetJsPromise) {
+    return sheetJsPromise;
+  }
+
+  sheetJsPromise = new Promise(function (resolve, reject) {
+    var script = document.createElement("script");
+
+    script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+    script.integrity = "sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw";
+    script.crossOrigin = "anonymous";
+
+    script.onload = function () {
+      resolve();
+    };
+
+    script.onerror = function () {
+      reject(new Error(
+        "The Excel parsing library failed to load (check your network connection), " +
+        "or use the CLI instead: faircode profile data.xlsx"
+      ));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return sheetJsPromise;
+}
   function isMissing(v) {
     if (v === null || v === undefined) return true;
     return NA_TOKENS.hasOwnProperty(String(v).trim().toLowerCase());

@@ -75,16 +75,17 @@ async function main() {
     const E = loadEngine();
     const buf = fs.readFileSync(args[0]);
     const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-    process.stdout.write(JSON.stringify(E.profile(E.parseXLSX(arrayBuffer))));
+    const table = await E.parseXLSX(arrayBuffer);
+    process.stdout.write(JSON.stringify(E.profile(table)));
     return;
   }
 
   if (command === "compare" && args.length === 2) {
     const E = loadEngine();
     const [pathA, pathB] = args;
-    const resultA = E.profile(E.parseCSV(fs.readFileSync(pathA, "utf8")));
-    const resultB = E.profile(E.parseCSV(fs.readFileSync(pathB, "utf8")));
-    const cmp = E.compare(resultA, resultB, path.basename(pathA), path.basename(pathB));
+    const resultA = await E.profile(await E.parseCSV(fs.readFileSync(pathA, "utf8")));
+    const resultB = await E.profile(await E.parseCSV(fs.readFileSync(pathB, "utf8")));
+    const cmp = await E.compare(resultA, resultB, path.basename(pathA), path.basename(pathB));
     process.stdout.write(JSON.stringify(cmp));
     return;
   }
