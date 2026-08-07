@@ -134,6 +134,14 @@ The main runtime dependencies are listed in [`requirements.txt`](requirements.tx
 
 ---
 
+## Automated Scanning
+
+[CodeQL](https://github.com/yakew7/Fair-Code/security/code-scanning) runs on every push to `main`, every PR, and weekly on a schedule (`.github/workflows/codeql.yml`). Findings go to the repo's Security tab and trigger a GitHub notification email - the maintainer (@yakew7) triages those as they come in, same as an externally reported vulnerability. There's no separate SLA for automated findings beyond the [response timeline](#response-timeline) above; a scan result gets the same treatment as a report through Option 1 or 2.
+
+If a CodeQL alert turns out to be a false positive for this project's domain (e.g. logging aggregate fairness statistics isn't a PII leak), it's dismissed with a comment explaining why rather than left open indefinitely - see `CHANGELOG.md` for past examples.
+
+---
+
 ## Credits
 
 Responsible disclosure is appreciated. Reporters who identify valid vulnerabilities will be credited here (with permission):
