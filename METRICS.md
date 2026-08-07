@@ -7,6 +7,7 @@
 ![Forks](https://img.shields.io/badge/Forks-19-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-36-blueviolet?style=flat-square)
+![Countries](https://img.shields.io/badge/Countries-16-informational?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.
@@ -29,13 +30,13 @@ Weekly snapshot of project health. Updated every Friday.
 
 ## Weekly Metrics
 
-| Week | Stars | Forks | Watching | Contributors | Social Views | Issues Closed | Code Audits |
-|------|------:|------:|---------:|-------------:|-------------:|--------------:|------------:|
-| 2026-W26 (baseline) | 27 | 8 | - | 7 | ~10K total | - | 6 total |
-| 2026-W27 | 27 | 8 | - | 7 | ~10K total | - | 6 total |
-| 2026-W30 | 40 | 17 | 8 | 11 | ~21K total | 3 | 7 total |
-| 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | 22 | 7 total |
-| 2026-W32 | 42 | 19 | 8 | 13 | ~25K total | 11 | 7 total |
+| Week | Stars | Forks | Watching | Contributors | Social Views | Countries | Issues Closed | Code Audits |
+|------|------:|------:|---------:|-------------:|-------------:|----------:|--------------:|------------:|
+| 2026-W26 (baseline) | 27 | 8 | - | 7 | ~10K total | - | - | 6 total |
+| 2026-W27 | 27 | 8 | - | 7 | ~10K total | - | - | 6 total |
+| 2026-W30 | 40 | 17 | 8 | 11 | ~21K total | - | 3 | 7 total |
+| 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | - | 22 | 7 total |
+| 2026-W32 | 42 | 19 | 8 | 13 | 26K+ total | 16 | 11 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -44,6 +45,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W31 - tooling + healthcare push under the freeze:** profiler confidence intervals (#83), shareable HTML/PDF report (#85), a `--fail-under` CI gate (#115) and `--min-group-size` small-subgroup warnings (#124), an automated em-dash CI lint (#112), and the "Why Accuracy Is Not Enough in Healthcare AI" explainer (#64). New contributors @tomatotomata and @ahmdkaml. **Note on issues-closed (22):** inflated by a one-time triage - 11 new-audit proposals were closed as `post-paper` (a timing hold aligning the tracker with the paper freeze, not rejected work), the rest are the tooling/explainer issues shipped above.
 >
 > **2026-W32 - GEO/SEO push, JSON/Parquet input, compare HTML reports, and a theme-toggle fix:** JSON-LD/FAQPage/Dataset schema, OpenGraph social-preview images, and an expanded `robots.txt` for AI crawlers across the site; `faircode profile`/`compare` gained `.json` and `.parquet` input (#127) and `faircode compare --html` plus a matching web-UI download button (#111, #128); `.github/CODEOWNERS` (#142, closes #138) and a theme toggle that now respects `prefers-color-scheme` (#143, closes #135). New contributor @anujkamdar. **Note on issues-closed (11):** the tooling issues shipped above, not a triage batch like W31's.
+>
+> **2026-W32 (later in week) - JS parity, client-side Excel, and a CI/security hardening batch:** JSON edge-case coverage and clearer parse errors (#175), client-side `.xlsx` support for the web profiler with a Subresource Integrity hash on its CDN script (#158), a `results/`-vs-`paper/results-frozen/` drift check (#173), a merge-base fix for the frozen-files check (#163), CodeQL extended to JavaScript (#162), a scripted favicon pipeline (#164), consolidated JS CLI-bridge scripts (#170), an audit-manifest `row_filters` validation test (#168), a GitHub Actions version-bump audit process (#167), removal of ~35K lines of dead vendored CI code, and CodeQL/Dependabot process docs (#161, #165). **Countries tracked for the first time this week** (16, via Instagram/LinkedIn audience insights).
 
 ---
 
@@ -55,7 +58,8 @@ Weekly snapshot of project health. Updated every Friday.
 | Forks | 19 | 20+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 13 | 15+ | End of 2026 |
-| Social reach | ~25K | 40K+ | End of 2026 |
+| Social reach | 26K+ | 40K+ | End of 2026 |
+| Countries reached | 16 | 20+ | End of 2026 |
 | Issues closed | 11 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 36 | 60+ | End of 2026 |
@@ -65,6 +69,7 @@ Weekly snapshot of project health. Updated every Friday.
 ## Notes
 
 - Social views = combined Instagram + LinkedIn impressions
+- Countries = unique countries represented in Instagram + LinkedIn audience insights
 - Contributors = external contributors only (excluding Yash), via GitHub's contributors API
 - Watching = GitHub repo watchers/subscribers, via GitHub's repo API
 - Issues closed = issues merged or resolved that week, not total open
@@ -75,4 +80,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **13 contributors**, **19 forks**, and **~25K social views**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **13 contributors**, **19 forks**, and **26K+ social views across 16 countries**.
