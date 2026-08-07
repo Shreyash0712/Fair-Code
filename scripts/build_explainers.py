@@ -29,8 +29,10 @@ DATA_JSON = ROOT / "assets" / "explainers-data.json"
 DATA_JS = ROOT / "assets" / "explainers-data.js"
 SITEMAP = ROOT / "sitemap.xml"
 LLMS_FULL = ROOT / "llms-full.txt"
+OG_DIR = ROOT / "assets" / "og"
 SITE_URL = "https://www.thefaircode.xyz"
 REPO_URL = "https://github.com/yakew7/Fair-Code"
+
 
 PROJECT_ANCHORS = {
     "COMPAS": "project-compas",
@@ -621,10 +623,29 @@ def main():
     entries = json.loads(DATA_JSON.read_text(encoding="utf-8"))
     known_slugs = {entry["slug"] for entry in entries}
 
-    missing = [e["slug"] for e in entries if not (EXPLAINERS_DIR / f"{e['slug']}.md").exists()]
-    if missing:
-        raise SystemExit(f"Missing markdown file(s) for: {', '.join(missing)}")
+    missing = [
+        e["slug"]
+        for e in entries
+        if not (EXPLAINERS_DIR / f"{e['slug']}.md").exists()
+    ]
 
+    if missing:
+        raise SystemExit(
+            f"Missing markdown file(s) for: {', '.join(missing)}"
+        )
+
+    missing_og = [
+        e["slug"]
+        for e in entries
+        if not (OG_DIR / f"{e['slug']}.png").exists()
+    ]
+
+    if missing_og:
+        raise SystemExit(
+            "Missing Open Graph image(s) for: "
+            + ", ".join(missing_og)
+            + ". Run scripts/generate_og_images.py first."
+        )
     for entry in entries:
         page_html = build_page(entry, known_slugs)
         out_path = EXPLAINERS_DIR / f"{entry['slug']}.html"
