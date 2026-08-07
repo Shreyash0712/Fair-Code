@@ -265,53 +265,66 @@
   // this file since it's a large third-party library with its own license -
   // profiler.html loads it from a pinned CDN URL only when needed.
   async function parseXLSX(arrayBuffer) {
-    await loadSheetJS();  // ensure global.XLSX is present
+    await loadSheetJS();
+
     var workbook;
     try {
-      workbook = global.XLSX.read(arrayBuffer, { type: 'array' });
+      workbook = global.XLSX.read(arrayBuffer, { type: "array" });
     } catch (readErr) {
-      throw new Error('Unsupported .xlsx file (' + readErr.message + ').');
+      throw new Error("Unsupported .xlsx file (" + readErr.message + ").");
     }
+
     var sheetName = workbook.SheetNames[0];
-    if (!sheetName) return { columns: [], rows: [] };
-    var records = global.XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: null, raw: true });
+    if (!sheetName) {
+      throw new Error("The workbook contains no usable data.");
+    }
+
+    var records = global.XLSX.utils.sheet_to_json(
+      workbook.Sheets[sheetName],
+      { defval: null, raw: true }
+    );
+
+    if (records.length === 0) {
+      throw new Error("The workbook contains no usable data.");
+    }
+
     return recordsToTable(records);
   }
 
   var sheetJsPromise = null;
 
-async function loadSheetJS() {
-  if (global.XLSX) {
-    return Promise.resolve();
-  }
+  async function loadSheetJS() {
+    if (global.XLSX) {
+      return Promise.resolve();
+    }
 
-  if (sheetJsPromise) {
+    if (sheetJsPromise) {
+      return sheetJsPromise;
+    }
+
+    sheetJsPromise = new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+
+      script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+      script.integrity = "sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw";
+      script.crossOrigin = "anonymous";
+
+      script.onload = function () {
+        resolve();
+      };
+
+      script.onerror = function () {
+        reject(new Error(
+          "The Excel parsing library failed to load (check your network connection), " +
+          "or use the CLI instead: faircode profile data.xlsx"
+        ));
+      };
+
+      document.head.appendChild(script);
+    });
+
     return sheetJsPromise;
   }
-
-  sheetJsPromise = new Promise(function (resolve, reject) {
-    var script = document.createElement("script");
-
-    script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
-    script.integrity = "sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw";
-    script.crossOrigin = "anonymous";
-
-    script.onload = function () {
-      resolve();
-    };
-
-    script.onerror = function () {
-      reject(new Error(
-        "The Excel parsing library failed to load (check your network connection), " +
-        "or use the CLI instead: faircode profile data.xlsx"
-      ));
-    };
-
-    document.head.appendChild(script);
-  });
-
-  return sheetJsPromise;
-}
   function isMissing(v) {
     if (v === null || v === undefined) return true;
     return NA_TOKENS.hasOwnProperty(String(v).trim().toLowerCase());
