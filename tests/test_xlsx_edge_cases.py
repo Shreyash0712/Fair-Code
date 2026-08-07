@@ -10,7 +10,6 @@ import json
 import subprocess
 from pathlib import Path
 
-import openpyxl
 import pytest
 
 from faircode.loaders import read_table
