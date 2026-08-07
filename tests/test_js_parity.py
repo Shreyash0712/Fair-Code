@@ -7,6 +7,7 @@ import subprocess
 
 import pandas as pd
 import pytest
+import re
 
 from faircode import compare, profile
 
@@ -17,7 +18,21 @@ requires_openpyxl = pytest.mark.skipif(
     importlib.util.find_spec("openpyxl") is None,
     reason="optional 'excel' extra not installed",
 )
+def _extract(pattern: str, text: str) -> str:
+    match = re.search(pattern, text)
+    assert match, f"Could not find {pattern!r}"
+    return match.group(1)
 
+
+def test_sheetjs_cdn_url_matches():
+    engine = (REPO_ROOT / "assets" / "profiler-engine.js").read_text(encoding="utf-8")
+    cli = (REPO_ROOT / "scripts" / "engine-js.js").read_text(encoding="utf-8")
+
+    engine_url = _extract(r'script\.src\s*=\s*"([^"]+)"', engine)
+    cli_url = _extract(r'XLSX_CDN_URL\s*=\s*"([^"]+)"', cli)
+
+
+    assert engine_url == cli_url
 # Real audit datasets are already tracked in their own audit folders - reuse
 # them instead of keeping a second multi-megabyte copy under tests/fixtures.
 CSV_PATHS = {
@@ -27,8 +42,6 @@ CSV_PATHS = {
     "credit_customers.csv": REPO_ROOT / "German Credit Lending" / "credit_customers.csv",
     "AI_Fair_Recruitment_Dataset.csv": REPO_ROOT / "AI Fair Recruitment" / "AI_Fair_Recruitment_Dataset.csv",
 }
-
-
 @pytest.mark.parametrize("csv_name", list(CSV_PATHS))
 def test_python_js_profiler_parity(csv_name):
     """The Python and JavaScript profilers should produce equivalent structured JSON."""
