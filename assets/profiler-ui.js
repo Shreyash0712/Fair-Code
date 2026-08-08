@@ -428,7 +428,7 @@
       }
     }
     if (/\.xlsx$/i.test(f.name)) {
-      reader.onload =async function () {
+      reader.onload = async function () {
         try {
           applyReferenceTable(await E.parseXLSX(reader.result));
         } catch (err) {

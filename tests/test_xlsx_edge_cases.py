@@ -8,6 +8,7 @@ Run from the repo root:
 """
 
 import importlib.util
+import json
 import subprocess
 from pathlib import Path
 
@@ -92,13 +93,19 @@ def _hidden_first_sheet_workbook():
         (_hidden_first_sheet_workbook, "hidden_first.xlsx"),
     ],
 )
-def test_xlsx_js_edge_cases(tmp_path, builder, filename):
+def test_xlsx_js_edge_cases_match_python(tmp_path, builder, filename):
+    """A headers-only or empty-first-sheet workbook is a valid (if empty)
+    dataset in faircode.loaders.read_table - the JS engine must agree
+    instead of erroring where the Python CLI would succeed."""
     path = _save_workbook(tmp_path, builder(), filename)
 
+    df = read_table(str(path))
     result = _run_js_parse(path)
 
-    assert result.returncode != 0
-    assert "The workbook contains no usable data." in result.stderr
+    assert result.returncode == 0, result.stderr
+    js_profile = json.loads(result.stdout)
+    assert js_profile["n_rows"] == len(df)
+    assert js_profile["n_cols"] == len(df.columns)
 
 
 @requires_openpyxl

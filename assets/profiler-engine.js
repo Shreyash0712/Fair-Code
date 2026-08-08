@@ -275,17 +275,21 @@
     }
 
     var sheetName = workbook.SheetNames[0];
-    if (!sheetName) {
-      throw new Error("The workbook contains no usable data.");
-    }
+    if (!sheetName) return { columns: [], rows: [] };
 
-    var records = global.XLSX.utils.sheet_to_json(
-      workbook.Sheets[sheetName],
-      { defval: null, raw: true }
-    );
+    var sheet = workbook.Sheets[sheetName];
+    var records = global.XLSX.utils.sheet_to_json(sheet, { defval: null, raw: true });
 
     if (records.length === 0) {
-      throw new Error("The workbook contains no usable data.");
+      // sheet_to_json() drops the header row entirely when there are no data
+      // rows beneath it, which would silently lose a headers-only sheet's
+      // column names. pandas.read_excel() keeps them (0 rows, N columns) -
+      // read the raw header row instead of erroring, to match.
+      var headerRow = global.XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true })[0] || [];
+      var columns = headerRow.map(function (h) {
+        return h === null || h === undefined ? '' : String(h);
+      });
+      return { columns: columns, rows: [] };
     }
 
     return recordsToTable(records);
@@ -314,6 +318,8 @@
       };
 
       script.onerror = function () {
+        script.remove();
+        sheetJsPromise = null;  // let the next .xlsx upload retry instead of reusing this rejection forever
         reject(new Error(
           "The Excel parsing library failed to load (check your network connection), " +
           "or use the CLI instead: faircode profile data.xlsx"
