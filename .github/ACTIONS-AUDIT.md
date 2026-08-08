@@ -52,3 +52,7 @@ now collide with the injected parameter of the same name.
 All four version jumps are confirmed safe for how this repo actually uses them.
 None of the breaking changes in any release apply to the specific inputs/triggers
 configured here.
+
+**Maintenance:** If Dependabot (or a manual update) proposes a future **major
+version bump** for any audited GitHub Action, repeat this audit and update this
+document with the findings for the new version(s).
