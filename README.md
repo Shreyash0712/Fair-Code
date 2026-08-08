@@ -784,9 +784,9 @@ same CSV produces the same numbers in both:
 **[profiler.html](profiler.html)** (linked from the site nav, live at
 [thefaircode.xyz](https://www.thefaircode.xyz)). All analysis runs client-side - **your file never
 leaves your browser** - which matters for health data; `.xlsx` parsing uses
-[SheetJS](https://sheetjs.com) loaded from a pinned CDN version purely to read the bytes already in
-your browser, nothing is uploaded anywhere. Parquet isn't supported client-side yet - use the CLI
-below.
+[SheetJS](https://sheetjs.com), lazy-loaded from a pinned CDN version only when you actually drop in
+an Excel file, purely to read the bytes already in your browser - nothing is uploaded anywhere.
+Parquet isn't supported client-side yet - use the CLI below.
 
 **CLI - `faircode`.** Reads `.csv`, `.tsv`, `.xlsx`, `.json`, and `.parquet`
 (delimiter is auto-detected for anything else). JSON input supports the
