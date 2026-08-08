@@ -130,7 +130,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 
 ## Phase 4 - Contributor Expansion 🔄 In Progress
 
-**Status: Active - 12 external contributors, growing toward 15+**
+**Status: Active - 13 external contributors, growing toward 15+**
 
 Goal: grow to 15+ contributors with quality-controlled contributions.
 

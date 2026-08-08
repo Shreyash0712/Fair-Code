@@ -22,9 +22,10 @@ Weekly snapshot of project health. Updated every Friday.
 
 1. Check GitHub for stars, forks, watchers, and contributor count
 2. Check Instagram and LinkedIn for combined impressions/followers
-3. Count issues closed this week
-4. Count code audits published this week
-5. Add a new row to the table below
+3. Check site analytics for the count of unique countries visiting thefaircode.xyz
+4. Count issues closed this week
+5. Count code audits published this week
+6. Add a new row to the table below
 
 ---
 
@@ -46,7 +47,7 @@ Weekly snapshot of project health. Updated every Friday.
 >
 > **2026-W32 - GEO/SEO push, JSON/Parquet input, compare HTML reports, and a theme-toggle fix:** JSON-LD/FAQPage/Dataset schema, OpenGraph social-preview images, and an expanded `robots.txt` for AI crawlers across the site; `faircode profile`/`compare` gained `.json` and `.parquet` input (#127) and `faircode compare --html` plus a matching web-UI download button (#111, #128); `.github/CODEOWNERS` (#142, closes #138) and a theme toggle that now respects `prefers-color-scheme` (#143, closes #135). New contributor @anujkamdar. **Note on issues-closed (11):** the tooling issues shipped above, not a triage batch like W31's.
 >
-> **2026-W32 (later in week) - JS parity, client-side Excel, and a CI/security hardening batch:** JSON edge-case coverage and clearer parse errors (#175), client-side `.xlsx` support for the web profiler with a Subresource Integrity hash on its CDN script (#158), a `results/`-vs-`paper/results-frozen/` drift check (#173), a merge-base fix for the frozen-files check (#163), CodeQL extended to JavaScript (#162), a scripted favicon pipeline (#164), consolidated JS CLI-bridge scripts (#170), an audit-manifest `row_filters` validation test (#168), a GitHub Actions version-bump audit process (#167), removal of ~35K lines of dead vendored CI code, and CodeQL/Dependabot process docs (#161, #165). **Countries tracked for the first time this week** (16, via Instagram/LinkedIn audience insights).
+> **2026-W32 (later in week) - JS parity, client-side Excel, and a CI/security hardening batch:** JSON edge-case coverage and clearer parse errors (#175), client-side `.xlsx` support for the web profiler with a Subresource Integrity hash on its CDN script (#158), a `results/`-vs-`paper/results-frozen/` drift check (#173), a merge-base fix for the frozen-files check (#163), CodeQL extended to JavaScript (#162), a scripted favicon pipeline (#164), consolidated JS CLI-bridge scripts (#170), an audit-manifest `row_filters` validation test (#168), a GitHub Actions version-bump audit process (#167), removal of ~35K lines of dead vendored CI code, and CodeQL/Dependabot process docs (#161, #165). **Countries tracked for the first time this week** (16, unique countries visiting [thefaircode.xyz](https://www.thefaircode.xyz) per site analytics - distinct from the Instagram/LinkedIn-based social views figure).
 
 ---
 
@@ -69,7 +70,7 @@ Weekly snapshot of project health. Updated every Friday.
 ## Notes
 
 - Social views = combined Instagram + LinkedIn impressions
-- Countries = unique countries represented in Instagram + LinkedIn audience insights
+- Countries = unique countries visiting the live website ([thefaircode.xyz](https://www.thefaircode.xyz)), via site analytics - not the social-views figure above
 - Contributors = external contributors only (excluding Yash), via GitHub's contributors API
 - Watching = GitHub repo watchers/subscribers, via GitHub's repo API
 - Issues closed = issues merged or resolved that week, not total open
@@ -80,4 +81,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **13 contributors**, **19 forks**, and **26K+ social views across 16 countries**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **13 contributors**, **19 forks**, **26K+ social views**, and website visitors from **16 countries**.

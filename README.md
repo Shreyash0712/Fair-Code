@@ -993,7 +993,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Forks | 19 |
 | Watching | 8 |
 | Combined Social Reach (Instagram + LinkedIn) | 26K+ |
-| Countries Reached | 16 |
+| Countries Reached (Website Visitors) | 16 |
 | Code Audits Published | 7 |
 | Explainers Published | 36 |
 
