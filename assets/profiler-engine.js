@@ -275,7 +275,7 @@
     }
 
     var sheetName = workbook.SheetNames[0];
-    if (!sheetName) return { columns: [], rows: [] };
+    if (!sheetName) return { table: { columns: [], rows: [] }, ignoredSheets: [], sheetName: null };
 
     var sheet = workbook.Sheets[sheetName];
     var records = global.XLSX.utils.sheet_to_json(sheet, { defval: null, raw: true });
@@ -289,10 +289,10 @@
       var columns = headerRow.map(function (h) {
         return h === null || h === undefined ? '' : String(h);
       });
-      return { columns: columns, rows: [] };
+      return { table: { columns: columns, rows: [] }, ignoredSheets: workbook.SheetNames.slice(1), sheetName: sheetName };
     }
 
-    return recordsToTable(records);
+    return { table: recordsToTable(records), ignoredSheets: workbook.SheetNames.slice(1), sheetName: sheetName };
   }
 
   var sheetJsPromise = null;

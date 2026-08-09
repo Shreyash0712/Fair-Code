@@ -20,6 +20,8 @@
   var nameBEl = document.getElementById('nameB');
   var sampleBtn = document.getElementById('compareSampleBtn');
   var errorEl = document.getElementById('compareError');
+  var fileStatusA = document.getElementById('statusA');
+  var fileStatusB = document.getElementById('statusB');
   var resultsEl = document.getElementById('compareResults');
   var announcer = document.getElementById('compareAnnouncer');
   var reportActionsEl = document.getElementById('compareReportActions');
@@ -72,6 +74,7 @@
   }
 
   function readFile(key, file, drop, nameEl) {
+    var statusEl = key === 'A' ? fileStatusA : fileStatusB;
     var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
     var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
       file.type === 'application/json' ||
@@ -91,7 +94,20 @@
     if (/\.xlsx$/i.test(file.name)) {
       reader.onload = async function () {
         try {
-          applyTable(await E.parseXLSX(reader.result));
+          var result = await E.parseXLSX(reader.result);
+
+          applyTable(result.table);
+
+          if (result.ignoredSheets.length > 0) {
+            statusEl.textContent =
+              'Read sheet "' + result.sheetName + '" — ' +
+              result.ignoredSheets.length + ' other sheet(s) ignored.';
+            statusEl.hidden = false;
+          } else {
+            statusEl.textContent =
+              'Read sheet "' + result.sheetName + '".';
+            statusEl.hidden = false;
+          }
         } catch (err) {
           showError('Could not read dataset ' + key + ': ' + err.message);
         }
