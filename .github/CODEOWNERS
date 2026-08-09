@@ -19,12 +19,17 @@
 /pyproject.toml @yakew7
 /Makefile @yakew7
 
+# Scripts & tests
+/scripts/ @yakew7 @ahmdkaml
+/tests/ @yakew7 @ahmdkaml
+
 # =========================
 # Website & web profiler
 # =========================
-/assets/profiler-engine.js @yakew7
-/assets/profiler-compare.js @yakew7
-/profiler.html @yakew7
+/assets/profiler-engine.js @yakew7 @ahmdkaml
+/assets/profiler-compare.js @yakew7 @ahmdkaml
+/assets/profiler-ui.js @yakew7 @ahmdkaml
+/profiler.html @yakew7 @ahmdkaml
 /index.html @yakew7
 
 # =========================
