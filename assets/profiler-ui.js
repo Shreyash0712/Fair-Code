@@ -434,12 +434,12 @@
       if (sheetInfo && sheetInfo.ignoredSheets.length > 0) {
         referenceStatus.textContent =
           '⚖ scored vs ' + f.name +
-          ' — read sheet "' + sheetInfo.sheetName + '" — ' +
+          ' - read sheet "' + sheetInfo.sheetName + '" - ' +
           sheetInfo.ignoredSheets.length + ' other sheet(s) ignored';
       } else if (sheetInfo) {
         referenceStatus.textContent =
           '⚖ scored vs ' + f.name +
-          ' — read sheet "' + sheetInfo.sheetName + '"';
+          ' - read sheet "' + sheetInfo.sheetName + '"';
       } else {
         referenceStatus.textContent = '⚖ scored vs ' + f.name;
       }
