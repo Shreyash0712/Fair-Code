@@ -100,7 +100,7 @@
 
           if (result.ignoredSheets.length > 0) {
             statusEl.textContent =
-              'Read sheet "' + result.sheetName + '" — ' +
+              'Read sheet "' + result.sheetName + '" - ' +
               result.ignoredSheets.length + ' other sheet(s) ignored.';
             statusEl.hidden = false;
           } else {
