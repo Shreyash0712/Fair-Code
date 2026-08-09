@@ -117,21 +117,21 @@
     reader.onerror = function () { showError('Could not read that file.'); };
     if (/\.xlsx$/i.test(file.name)) {
       reader.onload = async function () {
-      try {
-        var result = await E.parseXLSX(reader.result);
+        try {
+          var result = await E.parseXLSX(reader.result);
 
-        runTable(result.table, file.name);
+          runTable(result.table, file.name);
 
-        if (result.ignoredSheets.length > 0) {
-          fileStatus.textContent =
-          'Reading sheet "' + result.sheetName + '" - ' +
-          result.ignoredSheets.length + ' other sheet(s) ignored.';
-          fileStatus.hidden = false;
+          if (result.ignoredSheets.length > 0) {
+            fileStatus.textContent =
+              'Reading sheet "' + result.sheetName + '" - ' +
+              result.ignoredSheets.length + ' other sheet(s) ignored.';
+            fileStatus.hidden = false;
+          }
+        } catch (err) {
+          showError('Could not profile that file: ' + err.message);
         }
-      } catch (err) {
-        showError('Could not profile that file: ' + err.message);
-      }
-    };
+      };
       reader.readAsArrayBuffer(file);
     } else {
       reader.onload = function () { runText(String(reader.result), file.name); };
@@ -428,27 +428,27 @@
     var reader = new FileReader();
     reader.onerror = function () { showError('Could not read the reference file.'); };
     function applyReferenceTable(table, sheetInfo) {
-    try {
-      currentOpts.reference = E.parseReference(table);
+      try {
+        currentOpts.reference = E.parseReference(table);
 
-      if (sheetInfo && sheetInfo.ignoredSheets.length > 0) {
-        referenceStatus.textContent =
-          '⚖ scored vs ' + f.name +
-          ' - read sheet "' + sheetInfo.sheetName + '" - ' +
-          sheetInfo.ignoredSheets.length + ' other sheet(s) ignored';
-      } else if (sheetInfo) {
-        referenceStatus.textContent =
-          '⚖ scored vs ' + f.name +
-          ' - read sheet "' + sheetInfo.sheetName + '"';
-      } else {
-        referenceStatus.textContent = '⚖ scored vs ' + f.name;
+        if (sheetInfo && sheetInfo.ignoredSheets.length > 0) {
+          referenceStatus.textContent =
+            '⚖ scored vs ' + f.name +
+            ' - read sheet "' + sheetInfo.sheetName + '" - ' +
+            sheetInfo.ignoredSheets.length + ' other sheet(s) ignored';
+        } else if (sheetInfo) {
+          referenceStatus.textContent =
+            '⚖ scored vs ' + f.name +
+            ' - read sheet "' + sheetInfo.sheetName + '"';
+        } else {
+          referenceStatus.textContent = '⚖ scored vs ' + f.name;
+        }
+        referenceStatus.hidden = false;
+        referenceClearBtn.hidden = false;
+        reprofile(false);
+      } catch (err) {
+        showError('Could not read reference baseline: ' + err.message);
       }
-      referenceStatus.hidden = false;
-      referenceClearBtn.hidden = false;
-      reprofile(false);
-    } catch (err) {
-      showError('Could not read reference baseline: ' + err.message);
-    }
     }
     if (/\.xlsx$/i.test(f.name)) {
       reader.onload = async function () {
