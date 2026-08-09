@@ -75,7 +75,8 @@ async function main() {
     const E = loadEngine();
     const buf = fs.readFileSync(args[0]);
     const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-    const table = await E.parseXLSX(arrayBuffer);
+    const result = await E.parseXLSX(arrayBuffer);
+    const table = result.table;
     process.stdout.write(JSON.stringify(E.profile(table)));
     return;
   }
