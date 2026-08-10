@@ -1,6 +1,14 @@
+import importlib.util
 import json
 
+import pytest
+
 from faircode.cli import main
+
+requires_openpyxl = pytest.mark.skipif(
+    importlib.util.find_spec("openpyxl") is None,
+    reason="optional 'excel' extra not installed",
+)
 
 
 def test_profile_fail_under_returns_nonzero_and_explains_score(tmp_path, capsys):
@@ -38,3 +46,45 @@ def test_profile_fail_under_equal_threshold_returns_zero(tmp_path, capsys):
     assert exit_code == 0
     assert "Representation score: 100/100" in captured.out
     assert captured.err == ""
+
+
+@requires_openpyxl
+def test_profile_xlsx_reports_ignored_sheets(tmp_path, capsys):
+    import openpyxl
+
+    path = tmp_path / "multi_sheet.xlsx"
+    wb = openpyxl.Workbook()
+    first = wb.active
+    first.title = "Data"
+    first.append(["sex"])
+    first.append(["M"])
+    first.append(["F"])
+    wb.create_sheet("Notes")
+    wb.create_sheet("Extra")
+    wb.save(path)
+
+    exit_code = main(["profile", str(path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Read sheet 'Data' - 2 other sheet(s) ignored." in captured.err
+
+
+@requires_openpyxl
+def test_profile_xlsx_single_sheet_stays_silent(tmp_path, capsys):
+    import openpyxl
+
+    path = tmp_path / "single_sheet.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Data"
+    ws.append(["sex"])
+    ws.append(["M"])
+    ws.append(["F"])
+    wb.save(path)
+
+    exit_code = main(["profile", str(path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "ignored" not in captured.err

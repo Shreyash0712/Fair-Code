@@ -30,7 +30,7 @@ import sys
 from . import __version__
 from .compare import compare
 from .detect import VALID_KINDS
-from .loaders_extra import read_table
+from .loaders_extra import get_xlsx_sheet_info, read_table
 from .profiler import parse_reference, profile
 from .proxy import proxy_hints
 from .report import compare_to_terminal, to_html, compare_to_html, to_json, to_terminal
@@ -136,6 +136,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "profile":
         df = _read_or_exit(args.csv)
+
+        sheet_info = get_xlsx_sheet_info(args.csv)
+        if sheet_info is not None:
+            sheet_name, ignored_sheets = sheet_info
+            if ignored_sheets:
+                print(
+                    f"Read sheet '{sheet_name}' - {len(ignored_sheets)} "
+                    f"other sheet(s) ignored.",
+                    file=sys.stderr,
+                )
 
         opts = {
             "min_share": args.min_share,
