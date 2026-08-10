@@ -992,10 +992,10 @@ The full public roadmap - with phases, completion status, and content schedule -
 |--------|------:|
 | GitHub Stars | 42 |
 | External Contributors | 14 |
-| Forks | 19 |
+| Forks | 22 |
 | Watching | 8 |
 | Combined Social Reach (Instagram + LinkedIn) | 26K+ |
-| Countries Reached (Website Visitors) | 16 |
+| Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
 | Explainers Published | 36 |
 
