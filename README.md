@@ -810,6 +810,7 @@ faircode profile data.csv --min-group-size 50      # warn on subgroups under 50 
 faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
 faircode compare train.csv prod.csv --html drift.html  # standalone HTML drift report
 faircode compare train.csv prod.csv --map gndr=sex # --map/threshold flags apply to both sides
+faircode compare train.csv prod.csv --fail-on-drift # fail CI if any dimension drifted
 faircode profile data.csv --map gndr=sex           # fix a missed column
 faircode profile data.csv --cross race,age         # choose the intersection pair
 faircode profile data.csv --reference census.csv   # score vs a population baseline

@@ -48,6 +48,44 @@ def test_profile_fail_under_equal_threshold_returns_zero(tmp_path, capsys):
     assert captured.err == ""
 
 
+def test_compare_fail_on_drift_returns_nonzero_and_explains(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\n" + "M\n" * 50 + "F\n" * 50, encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\n" + "M\n" * 90 + "F\n" * 10, encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--fail-on-drift"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "representation drift detected" in captured.err
+    assert "--fail-on-drift" in captured.err
+
+
+def test_compare_without_fail_on_drift_still_returns_zero(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\n" + "M\n" * 50 + "F\n" * 50, encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\n" + "M\n" * 90 + "F\n" * 10, encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b)])
+
+    assert exit_code == 0
+
+
+def test_compare_fail_on_drift_returns_zero_when_stable(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\nM\nF\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\nM\nF\n", encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--fail-on-drift"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.err == ""
+
+
 def test_compare_applies_map_override_to_both_datasets(tmp_path, capsys):
     path_a = tmp_path / "a.csv"
     path_a.write_text("gndr\n" + "M\n" * 8 + "F\n" * 2, encoding="utf-8")

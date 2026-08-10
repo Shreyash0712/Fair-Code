@@ -128,6 +128,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="missing-data flag threshold (default 0.05)")
     c.add_argument("--min-group-size", type=int, default=100, metavar="N",
                    help="warn when a subgroup has fewer than N rows (default: 100)")
+    c.add_argument("--fail-on-drift", action="store_true",
+                   help="exit 1 when any dimension shows drift or the overall score drops")
 
     b = sub.add_parser("benchmark",
                        help="run the cross-domain fairness benchmark harness over every audit.yaml")
@@ -231,6 +233,13 @@ def main(argv: list[str] | None = None) -> int:
             print(to_json(result))
         else:
             print(compare_to_terminal(result))
+        if args.fail_on_drift and result["flags"]:
+            print(
+                f"error: representation drift detected ({len(result['flags'])} flag(s)) "
+                f"with --fail-on-drift set",
+                file=sys.stderr,
+            )
+            return 1
         return 0
 
     if args.command == "benchmark":
