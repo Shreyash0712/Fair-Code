@@ -265,6 +265,16 @@
         <button class="sample-btn" id="compareSampleBtn" type="button">Try with sample drift data</button>
       </div>
 
+      <details class="mapping-block" id="compareMappingBlock" hidden>
+        <summary class="mapping-summary">
+          <span class="section-title" style="margin:0">Column mapping</span>
+          <span class="mapping-hint">auto-detection missed a column? map it here</span>
+        </summary>
+        <p class="section-note">Applies to both datasets A and B - override any column below and
+        the comparison re-runs instantly on both sides, nothing leaves your browser.</p>
+        <div class="mapping-list" id="compareMappingList"></div>
+      </details>
+
       <p class="profiler-error" id="compareError" role="alert" hidden></p>
       <p class="sr-only" id="compareAnnouncer" aria-live="polite" aria-atomic="true"></p>
       <div class="results-actions" id="compareReportActions" hidden>
