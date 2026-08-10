@@ -7,6 +7,10 @@ one-time read of each action's release notes to confirm nothing behavior-relevan
 changed silently. Findings below - re-run this check the next time any of these
 jump a major version.
 
+`github/codeql-action` (pinned at v3 in `codeql.yml`) is also Dependabot-managed
+and in scope for this same habit (#188) - it just hasn't had a major bump yet, so
+there's no release notes to read today. See its section below.
+
 ## `actions/checkout` (v4 → v7)
 
 **Real change:** v4.4.0+/v7.0.0 added a safety block for checking out fork PRs
@@ -47,11 +51,25 @@ now collide with the injected parameter of the same name.
 `github`/`context` globals directly - no `require()`, no `getOctokit` redeclaration.
 **Not applicable.**
 
+## `github/codeql-action` (v3, no major bump yet)
+
+**Status:** pinned at `@v3` for all three steps (`init`, `autobuild`, `analyze`) in
+`.github/workflows/codeql.yml`. No major version bump has landed since #146 added
+this action to Dependabot's `github-actions` ecosystem, so there is nothing to
+audit yet - this section exists so the next v4+ proposal lands here instead of
+merging on green CI alone, the same gap #167 closed for the other four actions.
+
+**When it bumps:** read the release notes for breaking changes, check them
+against how `init`/`autobuild`/`analyze` are actually invoked here (default
+inputs, Python-only `languages: ['python', 'javascript-typescript']`, no custom
+`config-file`), and record the finding in this section.
+
 ## Conclusion
 
-All four version jumps are confirmed safe for how this repo actually uses them.
-None of the breaking changes in any release apply to the specific inputs/triggers
-configured here.
+All four already-audited version jumps are confirmed safe for how this repo
+actually uses them. None of the breaking changes in any release apply to the
+specific inputs/triggers configured here. `github/codeql-action` is tracked
+above and awaiting its first major bump.
 
 **Maintenance:** If Dependabot (or a manual update) proposes a future **major
 version bump** for any audited GitHub Action, repeat this audit and update this
