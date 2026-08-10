@@ -23,7 +23,7 @@ pytest.importorskip("sklearn", reason="the benchmark harness needs the optional 
 pytest.importorskip("fairlearn", reason="the benchmark harness needs the optional benchmark extra")
 pytest.importorskip("yaml", reason="the benchmark harness needs the optional benchmark extra")
 
-from faircode.benchmark import run_audit
+from faircode.benchmark import run_audit, write_report
 from faircode.manifest import load_manifest
 from faircode.metrics import METRICS, PERFORMANCE_METRICS
 from faircode.strategies import STRATEGIES
@@ -98,3 +98,49 @@ def test_baseline_demographic_parity_gap_is_a_plausible_fraction(result):
     baseline_dp = df[(df["strategy"] == "baseline") & (df["metric"] == "demographic_parity_diff")]
     assert len(baseline_dp) == 3   # one per model
     assert baseline_dp["value"].between(-1.0, 1.0).all()
+
+
+# ── write_report() / --no-plots (#210) ──────────────────────────────────────
+# write_report() itself is frozen (CLAUDE.md) - these only call it, they never
+# modify faircode/benchmark.py.
+
+@pytest.fixture(scope="module")
+def result_dfs(result):
+    fairness_rows, performance_rows = result
+    return pd.DataFrame(fairness_rows), pd.DataFrame(performance_rows)
+
+
+def test_write_report_always_writes_the_three_csvs(tmp_path, result_dfs):
+    fairness_df, performance_df = result_dfs
+
+    out_dir = write_report(fairness_df, performance_df, tmp_path / "no_plots", make_plots=False)
+
+    assert (out_dir / "results_fairness.csv").is_file()
+    assert (out_dir / "results_performance.csv").is_file()
+    assert (out_dir / "summary.csv").is_file()
+
+
+def test_write_report_no_plots_skips_figures_directory(tmp_path, result_dfs):
+    fairness_df, performance_df = result_dfs
+
+    out_dir = write_report(fairness_df, performance_df, tmp_path / "no_plots", make_plots=False)
+
+    assert not (out_dir / "figures").exists()
+
+
+def test_write_report_default_writes_figures(tmp_path, result_dfs):
+    pytest.importorskip("matplotlib", reason="figure generation needs matplotlib")
+    fairness_df, performance_df = result_dfs
+
+    out_dir = write_report(fairness_df, performance_df, tmp_path / "with_plots")
+
+    figures = list((out_dir / "figures").glob("*.png"))
+    assert len(figures) == 1
+    assert figures[0].name == "german_credit_lending_strategies.png"
+
+
+def test_write_report_skips_figures_for_empty_fairness_df(tmp_path):
+    out_dir = write_report(pd.DataFrame(), pd.DataFrame(), tmp_path / "empty", make_plots=True)
+
+    assert (out_dir / "results_fairness.csv").is_file()
+    assert not (out_dir / "figures").exists()
