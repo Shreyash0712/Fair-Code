@@ -15,4 +15,4 @@ jobs:
           python-version: "3.11"
 
       - name: Enforce em-dash-free rule (use ' - ', not an em dash)
-        run: python3 scripts/check_em_dash.py
+        run: make lint

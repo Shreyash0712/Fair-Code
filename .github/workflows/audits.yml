@@ -67,7 +67,7 @@ jobs:
           pip install -e ".[excel,parquet]" pytest
 
       - name: Run profiler tests
-        run: pytest tests/ -q
+        run: make test
 
       - name: Smoke-test the CLI
         run: |
