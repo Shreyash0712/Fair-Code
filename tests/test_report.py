@@ -88,6 +88,24 @@ def test_to_html_renders_key_figures(mock_profile_result):
     assert "Gender" in html_out
 
 
+def test_to_html_renders_proxy_hints(mock_profile_result):
+    mock_profile_result["proxy_hints"] = [
+        {"a": "sex", "b": "region", "p_value": 1.64e-22, "cramers_v": 0.98}
+    ]
+
+    html_out = to_html(mock_profile_result)
+
+    assert "Proxy Hints" in html_out
+    assert "sex" in html_out and "region" in html_out
+    assert "0.98" in html_out
+
+
+def test_to_html_omits_proxy_hints_section_when_absent(mock_profile_result):
+    html_out = to_html(mock_profile_result)
+
+    assert "Proxy Hints" not in html_out
+
+
 def test_compare_to_html_smoke(mock_compare_result):
     """Smoke test for comparison drift report rendering."""
     html_out = compare_to_html(mock_compare_result)
