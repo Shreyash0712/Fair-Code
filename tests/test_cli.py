@@ -48,6 +48,35 @@ def test_profile_fail_under_equal_threshold_returns_zero(tmp_path, capsys):
     assert captured.err == ""
 
 
+def test_compare_applies_map_override_to_both_datasets(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("gndr\n" + "M\n" * 8 + "F\n" * 2, encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("gndr\n" + "M\n" * 5 + "F\n" * 5, encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--json", "--map", "gndr=sex"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    assert [d["name"] for d in result["dimensions"]] == ["gndr"]
+    assert [d["kind"] for d in result["dimensions"]] == ["sex"]
+
+
+def test_compare_without_map_leaves_column_generically_categorical(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("gndr\n" + "M\n" * 8 + "F\n" * 2, encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("gndr\n" + "M\n" * 5 + "F\n" * 5, encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    assert [d["kind"] for d in result["dimensions"]] == ["categorical"]
+
+
 @requires_openpyxl
 def test_profile_xlsx_reports_ignored_sheets(tmp_path, capsys):
     import openpyxl

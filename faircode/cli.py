@@ -114,6 +114,20 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
     c.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
+    c.add_argument("--map", action="append", metavar="COL=KIND",
+                   help="force a column's dimension when auto-detection misses it "
+                        "(applied to both datasets); KIND is one of " +
+                        ", ".join(_MAP_CHOICES) + " (repeatable)")
+    c.add_argument("--min-share", type=float, metavar="F",
+                   help="under-representation threshold (default 0.05)")
+    c.add_argument("--intersection-floor", type=float, metavar="F",
+                   help="near-empty intersection-cell threshold (default 0.01)")
+    c.add_argument("--imbalance-flag", type=float, metavar="F",
+                   help="imbalance-ratio flag threshold (default 3.0)")
+    c.add_argument("--missing-flag", type=float, metavar="F",
+                   help="missing-data flag threshold (default 0.05)")
+    c.add_argument("--min-group-size", type=int, default=100, metavar="N",
+                   help="warn when a subgroup has fewer than N rows (default: 100)")
 
     b = sub.add_parser("benchmark",
                        help="run the cross-domain fairness benchmark harness over every audit.yaml")
@@ -196,9 +210,17 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "compare":
+        overrides = _parse_map(args.map)
+        opts = {
+            "min_share": args.min_share,
+            "intersection_floor": args.intersection_floor,
+            "imbalance_flag": args.imbalance_flag,
+            "missing_flag": args.missing_flag,
+            "min_group_size": args.min_group_size,
+        }
         result = compare(
-            profile(_read_or_exit(args.csv_a)),
-            profile(_read_or_exit(args.csv_b)),
+            profile(_read_or_exit(args.csv_a), overrides, opts),
+            profile(_read_or_exit(args.csv_b), overrides, opts),
             name_a=args.csv_a, name_b=args.csv_b,
         )
         if args.html:
