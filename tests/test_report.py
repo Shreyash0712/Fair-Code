@@ -106,6 +106,28 @@ def test_to_html_omits_proxy_hints_section_when_absent(mock_profile_result):
     assert "Proxy Hints" not in html_out
 
 
+def test_to_html_renders_reference_baseline_section(mock_profile_result):
+    mock_profile_result["dimensions"][0]["reference"] = {
+        "deviation": 0.2,
+        "groups": [
+            {"label": "Female", "expected": 0.5, "actual": 0.45, "delta": -0.05},
+        ],
+    }
+
+    html_out = to_html(mock_profile_result)
+
+    assert "Reference" in html_out
+    assert "deviation 20.0%" in html_out
+    assert "50.0%" in html_out and "45.0%" in html_out
+    assert "-5.0 pp" in html_out
+
+
+def test_to_html_omits_reference_section_when_absent(mock_profile_result):
+    html_out = to_html(mock_profile_result)
+
+    assert '<div class="reference">' not in html_out
+
+
 def test_compare_to_html_smoke(mock_compare_result):
     """Smoke test for comparison drift report rendering."""
     html_out = compare_to_html(mock_compare_result)

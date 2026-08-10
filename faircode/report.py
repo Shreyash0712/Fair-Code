@@ -178,11 +178,29 @@ def to_html(result: dict) -> str:
                 f'<td class="num">{g["count"]:,}</td>'
                 f'<td class="bar"><span style="width:{g["share"] * 100:.1f}%"></span></td></tr>'
             )
+        reference_html = ""
+        if d.get("reference"):
+            ref = d["reference"]
+            ref_rows = "".join(
+                f'<tr><td>{esc(g["label"])}</td>'
+                f'<td class="num">{g["expected"] * 100:.1f}%</td>'
+                f'<td class="num">{g["actual"] * 100:.1f}%</td>'
+                f'<td class="num">{g["delta"] * 100:+.1f} pp</td></tr>'
+                for g in ref["groups"][:DISPLAY_GROUPS]
+            )
+            reference_html = (
+                f'<div class="reference"><h3>Reference '
+                f'<span class="kind">deviation {ref["deviation"] * 100:.1f}%</span></h3>'
+                f'<table><tr><th></th><th class="num">Expected</th>'
+                f'<th class="num">Actual</th><th class="num">Delta</th></tr>'
+                f'{ref_rows}</table></div>'
+            )
+
         dim_blocks.append(
             f'<section class="dim"><h2>{esc(d["name"])} '
             f'<span class="kind">{esc(d["kind"])}</span> '
             f'<span class="score">{d["dimension_score"]}/100</span></h2>'
-            f'<table>{"".join(rows)}</table></section>'
+            f'<table>{"".join(rows)}</table>{reference_html}</section>'
         )
 
     flag_html = ""
@@ -226,6 +244,10 @@ def to_html(result: dict) -> str:
  tr.under td.bar span {{ background:var(--accent); }}
  tr.under td:first-child::after {{ content:' (under-represented)'; color:var(--accent); font-size:11px; }}
  tr.small-group td:first-child::before {{content:'⚠ small group ';color:var(--accent);}}
+ .reference {{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); }}
+ .reference h3 {{ font-size:.75em; margin:0 0 6px; }}
+ .reference th {{ text-align:right; font-size:11px; color:var(--muted); font-weight:normal; }}
+ .reference th:first-child {{ text-align:left; }}
  .flags ul {{ list-style:none; padding:0; }}
  .flags li {{ background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; }}
  .head {{ border-bottom:2px solid var(--accent); padding-bottom:12px; }}
