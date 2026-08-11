@@ -1,0 +1,33 @@
+name: Validate workflow YAML
+
+on:
+  push:
+    paths:
+      - '.github/workflows/*.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+
+jobs:
+  validate:
+    name: Validate workflow YAML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install PyYAML
+        run: python -m pip install pyyaml
+
+      - name: Validate workflow YAML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for path in sorted(Path(".github/workflows").glob("*.yml")):
+              with path.open(encoding="utf-8") as handle:
+                  yaml.safe_load(handle)
+              print(f"Valid YAML: {path}")
+          PY
