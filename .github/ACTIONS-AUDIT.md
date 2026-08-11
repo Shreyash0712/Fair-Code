@@ -7,9 +7,8 @@ one-time read of each action's release notes to confirm nothing behavior-relevan
 changed silently. Findings below - re-run this check the next time any of these
 jump a major version.
 
-`github/codeql-action` (pinned at v3 in `codeql.yml`) is also Dependabot-managed
-and in scope for this same habit (#188) - it just hasn't had a major bump yet, so
-there's no release notes to read today. See its section below.
+`github/codeql-action` (bumped v3 → v4 in `codeql.yml`, see below) is also
+Dependabot-managed and in scope for this same habit (#188).
 
 ## `actions/checkout` (v4 → v7)
 
@@ -51,25 +50,33 @@ now collide with the injected parameter of the same name.
 `github`/`context` globals directly - no `require()`, no `getOctokit` redeclaration.
 **Not applicable.**
 
-## `github/codeql-action` (v3, no major bump yet)
+## `github/codeql-action` (v3 → v4)
 
-**Status:** pinned at `@v3` for all three steps (`init`, `autobuild`, `analyze`) in
-`.github/workflows/codeql.yml`. No major version bump has landed since #146 added
-this action to Dependabot's `github-actions` ecosystem, so there is nothing to
-audit yet - this section exists so the next v4+ proposal lands here instead of
-merging on green CI alone, the same gap #167 closed for the other four actions.
+**Real changes:** runs on the Node 24 runtime instead of Node 20; bumped the
+minimum CodeQL bundle version to 2.19.4; removed the `add-snippets` input on
+`analyze` (deprecated since 3.26.4); deprecated the undocumented
+`CODEQL_ACTION_CLEANUP_TRAP_CACHES` env var; starting April 2026, file coverage
+collection is skipped on pull-request analyses (still computed on push/schedule
+runs). v3 itself is now deprecated, scheduled for removal alongside GHES 3.19 in
+December 2026.
 
-**When it bumps:** read the release notes for breaking changes, check them
-against how `init`/`autobuild`/`analyze` are actually invoked here (default
-inputs, Python-only `languages: ['python', 'javascript-typescript']`, no custom
-`config-file`), and record the finding in this section.
+**Applicability:** `.github/workflows/codeql.yml`'s three steps
+(`init`/`autobuild`/`analyze`) only set `languages` and `config-file` - no
+`add-snippets`, no `CODEQL_ACTION_CLEANUP_TRAP_CACHES` anywhere in this repo.
+`ubuntu-latest` already runs Node 24 (needed for `actions/setup-python` v6+
+too, audited above), so the runtime bump is a non-issue. The skipped
+PR-only file coverage doesn't affect analysis results, only an informational
+UI panel. **Not applicable** - this bump was safe, though it landed via a
+direct commit (`b632cfb`) rather than going through this audit first, exactly
+the gap #188 asked to close. Treat this entry as the audit that should have
+gated that merge, not one that happened before it.
 
 ## Conclusion
 
-All four already-audited version jumps are confirmed safe for how this repo
-actually uses them. None of the breaking changes in any release apply to the
-specific inputs/triggers configured here. `github/codeql-action` is tracked
-above and awaiting its first major bump.
+All five audited version jumps (including `github/codeql-action`'s first
+major bump since it was added to Dependabot's ecosystem) are confirmed safe
+for how this repo actually uses them. None of the breaking changes in any
+release apply to the specific inputs/triggers configured here.
 
 **Maintenance:** If Dependabot (or a manual update) proposes a future **major
 version bump** for any audited GitHub Action, repeat this audit and update this
