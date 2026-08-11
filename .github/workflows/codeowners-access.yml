@@ -1,15 +1,16 @@
 name: CODEOWNERS Access
 
-# GitHub only routes a review request to a CODEOWNERS entry if that user
-# actually has write access to the repo - a valid-looking @handle with read
-# access or no access at all is silently skipped, no error anywhere. That's
-# exactly what happened when @ahmdkaml was first added to CODEOWNERS: the
-# entries existed but did nothing until he was also invited as a
-# collaborator and accepted (#219). tests/test_codeowners.py (#207) checks
-# that paths exist and handles look syntactically valid, but can't check
-# real repo permissions without a GITHUB_TOKEN/API call, so that lives here
-# instead. Runs on every CODEOWNERS change, plus weekly since access can
-# drift (e.g. a collaborator removed) without the file itself changing.
+# GitHub only routes a review request to a CODEOWNERS entry - user or team -
+# if it actually has write access to the repo; a valid-looking @handle with
+# read access or no access at all is silently skipped, no error anywhere.
+# That's exactly what happened when @ahmdkaml was first added to
+# CODEOWNERS: the entries existed but did nothing until he was also invited
+# as a collaborator and accepted (#219). tests/test_codeowners.py (#207)
+# checks that paths exist and handles look syntactically valid, but can't
+# check real repo permissions without a GITHUB_TOKEN/API call, so that
+# lives here instead. Runs on every CODEOWNERS change, plus weekly since
+# access can drift (e.g. a collaborator removed, a team's repo access
+# revoked) without the file itself changing.
 
 on:
   push:
@@ -30,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Verify every CODEOWNERS user has write access
+      - name: Verify every CODEOWNERS user/team has write access
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,11 +72,33 @@ jobs:
               }
             }
 
+            // Team access is repo-wide (there's no per-user "collaborator
+            // permission" lookup for a team), so fetch every team that has
+            // any access to this repo once, then check each CODEOWNERS team
+            // entry against that list instead of querying per-team.
             if (teams.size > 0) {
-              console.log(
-                "Skipped team entries (checked via org membership, not a single collaborator lookup): " +
-                [...teams].map((t) => "@" + t).join(", ")
-              );
+              const repoTeams = await github.paginate(github.rest.repos.listTeams, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              const { data: repoInfo } = await github.rest.repos.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              const userOwnedNote = repoInfo.owner.type === "User"
+                ? ` (this repo is owned by a user, not an organization, so it can never grant a team access at all)`
+                : "";
+              for (const orgSlug of teams) {
+                const [org, slug] = orgSlug.split("/");
+                const team = repoTeams.find(
+                  (t) => t.slug === slug && t.organization?.login === org
+                );
+                if (!team) {
+                  problems.push(`@${orgSlug}: team has no access to this repo at all${userOwnedNote}`);
+                } else if (!team.permissions?.push) {
+                  problems.push(`@${orgSlug}: has '${team.permission}' access - CODEOWNERS needs at least 'write' (push) for review requests to actually route to them`);
+                }
+              }
             }
 
             if (problems.length > 0) {
@@ -84,5 +107,5 @@ jobs:
                 problems.map((p) => "  - " + p).join("\n")
               );
             } else {
-              console.log(`OK: all ${users.size} CODEOWNERS-listed user(s) have write access.`);
+              console.log(`OK: all ${users.size} user(s) and ${teams.size} team(s) listed in CODEOWNERS have write access.`);
             }
