@@ -250,6 +250,21 @@ def main(argv: list[str] | None = None) -> int:
                   f"(pip install faircode[benchmark]): {exc}", file=sys.stderr)
             return 2
 
+        overridden = []
+        if args.n_resamples != 2000:
+            overridden.append(f"--n-resamples={args.n_resamples}")
+        if args.n_permutations != 2000:
+            overridden.append(f"--n-permutations={args.n_permutations}")
+
+        if overridden:
+            print(
+                "warning: "
+                + ", ".join(overridden)
+                + " differs from the frozen paper-run default (2000); "
+                "output will not match the frozen paper reference.",
+                file=sys.stderr,
+            )
+
         fairness_df, performance_df = run_benchmark(
             root=args.root, audits=args.manifests or None,
             n_resamples=args.n_resamples, n_permutations=args.n_permutations,
