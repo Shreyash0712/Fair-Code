@@ -25,9 +25,31 @@ DATA_JSON = ROOT / "assets" / "explainers-data.json"
 W, H = 1200, 630
 BG = (21, 19, 13)          # --bg (dark)
 ACCENT = (207, 111, 73)    # --accent (dark theme)
-ACCENT2 = (184, 84, 50)    # --accent2 (dark theme)
 WHITE = (241, 233, 212)    # --white (dark theme)
 MUTED = (141, 131, 103)    # --muted (dark theme)
+MARK_GREEN = (79, 122, 91)  # #4F7A5B - the corrected-F crossbar accent, see logo.svg
+
+# The "corrected F" mark's three rects, in their native 0-100 viewBox space
+# (stem, top bar, accent crossbar) - kept in sync with logo.svg by hand,
+# since this script draws it at OG-card scale rather than rasterizing the SVG.
+MARK_SHAPES = [(32, 18, 45, 82), (32, 18, 74, 31)]  # stem, top bar (WHITE)
+MARK_ACCENT = (32, 44, 68, 57)                      # crossbar (MARK_GREEN)
+
+
+def draw_brand_mark(draw, x, y, height):
+    """Draw the corrected-F mark with its top-left corner at (x, y), scaled
+    so the mark (viewBox 0-100, tall side) renders at `height` px."""
+    scale = height / 100
+    for x0, y0, x1, y1 in MARK_SHAPES:
+        draw.rectangle(
+            (x + x0 * scale, y + y0 * scale, x + x1 * scale, y + y1 * scale),
+            fill=WHITE,
+        )
+    x0, y0, x1, y1 = MARK_ACCENT
+    draw.rectangle(
+        (x + x0 * scale, y + y0 * scale, x + x1 * scale, y + y1 * scale),
+        fill=MARK_GREEN,
+    )
 BORDER = (46, 42, 31)      # --border (dark theme)
 
 TITLE_FONT = FONTS_DIR / "InstrumentSerif-Italic.ttf"
@@ -73,8 +95,8 @@ def render_card(out_path, kicker, title, subtitle, footer="thefaircode.xyz"):
 
     margin = 88
 
-    # brand mark: filled circle + "Fair Code."
-    draw.ellipse((margin, 80, margin + 22, 102), fill=ACCENT2)
+    # brand mark: the corrected-F symbol + "Fair Code."
+    draw_brand_mark(draw, margin, 70, 54)
     mark_font = title_font(36)
     draw.text((margin + 34, 68), "Fair Code", font=mark_font, fill=WHITE)
     fc_w = draw.textlength("Fair Code", font=mark_font)

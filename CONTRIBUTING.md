@@ -74,7 +74,7 @@ make setup             # install faircode + pytest + pre-commit
 make check             # everything CI runs: em-dash lint + full test suite
 make test              # just the test suite
 make build-explainers  # regenerate explainer pages, sitemap, and OG images after editing explainers/*.md
-make favicons          # regenerate favicon.ico/PNGs + apple-touch-icon.png after editing logo.svg
+make favicons          # regenerate favicon.ico, apple-touch-icon.png, icon-{192,512}.png after editing logo.svg
 make lint              # em-dash-free check only
 ```
 
