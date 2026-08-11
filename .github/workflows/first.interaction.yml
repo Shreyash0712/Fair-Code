@@ -26,12 +26,24 @@ jobs:
             const isPR = !!context.payload.pull_request;
             const typeQuery = isPR ? 'is:pr' : 'is:issue';
             
-            // Search for previous issues or PRs by the same author
+            // Find this author's earliest issue/PR of this type in the repo (#216).
+            // The search API's default sort is undocumented "best match" with no
+            // guaranteed order for a query with no free-text terms - it happens to
+            // come back newest-first today, but that's not a contract, so pin it
+            // explicitly to sort=created&order=asc. With that, the single oldest
+            // result answers "is this their first?" directly - no need to guess
+            // how many of their recent contributions might fit in a top-N page.
             const query = `repo:${owner}/${repo} ${typeQuery} author:${creator}`;
-            const result = await github.rest.search.issuesAndPullRequests({ q: query, per_page: 5 });
-            
-            // Check if any returned item was created before the current one
-            const hasPrior = result.data.items.some(item => item.number < number);
+            const result = await github.rest.search.issuesAndPullRequests({
+              q: query,
+              sort: 'created',
+              order: 'asc',
+              per_page: 1,
+            });
+
+            // If their earliest match isn't this one, they've contributed before.
+            const earliest = result.data.items[0];
+            const hasPrior = !!earliest && earliest.number < number;
             
             if (!hasPrior) {
               const issueMsg = `Hey @${creator}, thanks for raising this. I really appreciate it.\n\nFair Code exists because bias in AI has real consequences for real people, so every issue matters here, whether it's a bug, a dataset question, or something that just didn't feel right. We'll take a look and get back to you.\n\nIn the meantime, feel free to explore the [live audits](https://www.thefaircode.xyz) or check the [contributing guide](CONTRIBUTING.md) if you want to dig deeper.`;
