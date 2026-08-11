@@ -1,0 +1,88 @@
+name: CODEOWNERS Access
+
+# GitHub only routes a review request to a CODEOWNERS entry if that user
+# actually has write access to the repo - a valid-looking @handle with read
+# access or no access at all is silently skipped, no error anywhere. That's
+# exactly what happened when @ahmdkaml was first added to CODEOWNERS: the
+# entries existed but did nothing until he was also invited as a
+# collaborator and accepted (#219). tests/test_codeowners.py (#207) checks
+# that paths exist and handles look syntactically valid, but can't check
+# real repo permissions without a GITHUB_TOKEN/API call, so that lives here
+# instead. Runs on every CODEOWNERS change, plus weekly since access can
+# drift (e.g. a collaborator removed) without the file itself changing.
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/CODEOWNERS"]
+  pull_request:
+    paths: [".github/CODEOWNERS"]
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-write-access:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify every CODEOWNERS user has write access
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+
+            const content = fs.readFileSync(".github/CODEOWNERS", "utf8");
+            const users = new Set();
+            const teams = new Set();
+
+            for (const rawLine of content.split("\n")) {
+              const line = rawLine.trim();
+              if (!line || line.startsWith("#")) continue;
+              for (const token of line.split(/\s+/).slice(1)) {
+                if (!token.startsWith("@")) continue;
+                const handle = token.slice(1);
+                if (handle.includes("/")) teams.add(handle);
+                else users.add(handle);
+              }
+            }
+
+            const problems = [];
+            for (const username of users) {
+              let permission;
+              try {
+                const res = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  username,
+                });
+                permission = res.data.permission;
+              } catch (err) {
+                problems.push(`@${username}: not a collaborator on this repo (${err.status || err.message})`);
+                continue;
+              }
+              if (permission !== "admin" && permission !== "write") {
+                problems.push(`@${username}: has '${permission}' access - CODEOWNERS needs at least 'write' for review requests to actually route to them`);
+              }
+            }
+
+            if (teams.size > 0) {
+              console.log(
+                "Skipped team entries (checked via org membership, not a single collaborator lookup): " +
+                [...teams].map((t) => "@" + t).join(", ")
+              );
+            }
+
+            if (problems.length > 0) {
+              core.setFailed(
+                "CODEOWNERS lists user(s) without write access - GitHub silently skips them for review requests:\n" +
+                problems.map((p) => "  - " + p).join("\n")
+              );
+            } else {
+              console.log(`OK: all ${users.size} CODEOWNERS-listed user(s) have write access.`);
+            }
