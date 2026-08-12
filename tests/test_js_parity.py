@@ -1,9 +1,10 @@
 """Parity tests between the Python and JavaScript profiler implementations."""
 
-from pathlib import Path
 import importlib.util
 import json
+import re
 import subprocess
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -17,6 +18,23 @@ requires_openpyxl = pytest.mark.skipif(
     importlib.util.find_spec("openpyxl") is None,
     reason="optional 'excel' extra not installed",
 )
+
+
+def _extract(pattern: str, text: str) -> str:
+    match = re.search(pattern, text)
+    assert match, f"Could not find {pattern!r}"
+    return match.group(1)
+
+
+def test_sheetjs_cdn_url_matches():
+    engine = (REPO_ROOT / "assets" / "profiler-engine.js").read_text(encoding="utf-8")
+    cli = (REPO_ROOT / "scripts" / "engine-js.js").read_text(encoding="utf-8")
+
+    engine_url = _extract(r'script\.src\s*=\s*"([^"]+)"', engine)
+    cli_url = _extract(r'XLSX_CDN_URL\s*=\s*"([^"]+)"', cli)
+
+    assert engine_url == cli_url
+
 
 # Real audit datasets are already tracked in their own audit folders - reuse
 # them instead of keeping a second multi-megabyte copy under tests/fixtures.

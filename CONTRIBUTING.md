@@ -73,8 +73,8 @@ A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can 
 make setup             # install faircode + pytest + pre-commit
 make check             # everything CI runs: em-dash lint + full test suite
 make test              # just the test suite
-make build-explainers  # regenerate explainer pages, sitemap, and OG images after editing explainers/*.md
-make favicons          # regenerate favicon.ico/PNGs + apple-touch-icon.png after editing logo.svg
+make build-explainers  # regenerate explainer pages, sitemap, and OG images (dark + light) after editing explainers/*.md
+make favicons          # regenerate favicon.ico, apple-touch-icon.png, icon-{192,512}.png after editing logo.svg
 make lint              # em-dash-free check only
 ```
 
@@ -354,6 +354,9 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `class-imbalance.md` | Why skewed positive/negative ratios wreck naive accuracy and hit minority subgroups hardest, and when resampling helps or hurts fairness |
 | `bias-variance-tradeoff.md` | The classic underfit/overfit trade-off, and why statistical "bias" here is not the societal bias the rest of these explainers mean |
 | `accuracy-not-enough-healthcare-ai.md` | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare clinical outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
+| `clinical-score-miscalibration.md` | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, with per-group reliability and calibration-slope detection code |
+| `missing-data-bias-ehr.md` | Why unequal access to care turns into unequal missingness in EHR data, and why naive imputation encodes the disparity rather than fixing it |
+| `medical-imaging-representation-gaps.md` | Why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the shortcut-learning failure mode where a model keys off scanner or hospital-site artifacts instead of the pathology |
 
 ### A good explainer should include
 

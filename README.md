@@ -99,21 +99,24 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 
 - [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
 - [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups
+- [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) - why a risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group
+- [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) - why unequal access to care turns into unequal missingness, and how naive imputation makes it worse
+- [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) - representation gaps and shortcut learning on device/site artifacts in dermatology, radiology, and retinal imaging models
 
 **On the roadmap (the freeze-safe focus while new audits are on hold):**
 
 - Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR, spirometry, VBAC) bake bias into the math itself
 - The Obermeyer Case: When Cost Becomes a Proxy for Health Need
 - Underdiagnosis Bias: When the Label Itself Is Sicker for One Group
-- Miscalibration in Clinical Risk Scores Across Groups
-- Missing Data as Bias in Electronic Health Records
-- Why Medical Imaging Models Fail on Underrepresented Groups
 
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
 ---
 
 ## Repository Structure
+
+<details>
+<summary><strong>Show the full directory tree →</strong></summary>
 
 ```
 Fair-Code/
@@ -242,6 +245,8 @@ Fair-Code/
 └── requirements-lock.txt                # exact `pip freeze` - for reproducing results/
 ```
 
+</details>
+
 ---
 
 ## Projects
@@ -249,6 +254,9 @@ Fair-Code/
 ### 01 · COMPAS - Criminal Justice Bias
 
 > *"A real algorithm used in US courtrooms flags Black defendants as high-risk at 87%. White defendants? 0.4%. Same system. Different outcomes."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `compas-scores-raw.csv` - ProPublica's public COMPAS dataset (70,000+ records)
 
@@ -290,11 +298,16 @@ X = pd.get_dummies(df[[
 
 📓 **[Full notebook walkthrough →](notebooks/01_compas_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 02 · AI Fair Recruitment - Hiring Bias
 
 > *"Women were hired 20.9% less than equally qualified men. The algorithm wasn't told to discriminate. It learned to."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `AI_Fair_Recruitment_Dataset.csv` - Recruitment dataset with gender, age, experience, and technical test scores
 
@@ -333,11 +346,16 @@ X = df[['experience_years', 'test_score']]
 
 📓 **[Full notebook walkthrough →](notebooks/02_hiring_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 03 · German Credit Lending - Lending Bias
 
 > *"A credit scoring model rates young applicants as bad credit risks at 6.39 percentage points higher than older applicants with identical financial profiles. It learned age from job tenure."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `credit_customers.csv` - UCI Statlog German Credit dataset (1,000 records) · [Kaggle source](https://www.kaggle.com/datasets/ppb00x/credit-risk-customers)
 
@@ -383,11 +401,16 @@ Dropped `age` and `employment`. Retained only objective financial signals.
 
 📓 **[Full notebook walkthrough →](notebooks/03_german_credit_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 04 · Insurance Denial - Healthcare Bias
 
 > *"An insurance AI flags older patients for high-cost claims at 7.93 percentage points higher than younger patients - using BMI, smoking status, and diabetes status as proxies for race and class."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `insurance.csv` - [Kaggle: Insurance Claim Analysis](https://www.kaggle.com/datasets/thedevastator/insurance-claim-analysis-demographic-and-health) (1,340 records)
 
@@ -427,11 +450,16 @@ Dropped `age`, `gender`, `bmi`, `smoker`, and `diabetic`. Retained only objectiv
 
 📓 **[Full notebook walkthrough →](notebooks/04_insurance_denial_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 05 · Benefits Denial - Welfare Eligibility Bias
 
 > *"An automated means-test flags male applicants as ineligible at 18 percentage points higher than female applicants - not because of what they earn, but because of who they're married to."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `adult.csv` - UCI Adult Census Income dataset (48,842 records) · [Kaggle source](https://www.kaggle.com/datasets/wenruliu/adult-income-dataset)
 
@@ -494,11 +522,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/05_benefits_denial_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 06 · Healthcare Readmission - Clinical Bias
 
 > *"A hospital readmission model flags patients for high clinical risk using payer code and discharge destination - variables that measure insurance access, not medical severity."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `diabetic_data.csv` - Diabetes 130-US Hospitals 1999–2008 (101,766 records) · [Kaggle source](https://www.kaggle.com/datasets/brandao/diabetes)
 
@@ -586,11 +619,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 07 · Tenant Screening - Rental Application Bias
 
 > *"A tenant-screening company buys a criminal-history risk score and hands the landlord a high-risk flag on the applicant - a flag that fires 7 points more often for Black applicants than white ones, before the landlord reads a single word of the application."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `tenant-screening-data.csv` - NIJ's Recidivism Challenge Full Dataset, Georgia Dept. of Community Supervision (25,835 records) · [DOJ/NIJ source](https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk)
 
@@ -657,9 +695,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/07_tenant_screening_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ## Explainers
+
+39 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
+
+<details>
+<summary><strong>Show all 39 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -699,8 +744,13 @@ features = [
 | [What Is a Confusion Matrix?](explainers/confusion-matrix.md) | The foundational building block behind most fairness metrics |
 | [What Is a ROC Curve and AUC?](explainers/roc-curve-auc.md) | Why a single threshold-free AUC can look strong while hiding where the decision threshold sits and whether ranking quality is equal across groups |
 | [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
+| [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, and why small subgroups make that hardest to verify at the score that matters most |
+| [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) | Why unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as "nothing notable" is really reading "less-observed" |
+| [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) | Why dermatology, radiology, and retinal models underperform on groups thin in the training data, and the more insidious failure mode: shortcut learning on a scanner or hospital site instead of the pathology |
 
- ---
+</details>
+
+---
 
 ## Methodology
 
@@ -784,9 +834,9 @@ same CSV produces the same numbers in both:
 **[profiler.html](profiler.html)** (linked from the site nav, live at
 [thefaircode.xyz](https://www.thefaircode.xyz)). All analysis runs client-side - **your file never
 leaves your browser** - which matters for health data; `.xlsx` parsing uses
-[SheetJS](https://sheetjs.com) loaded from a pinned CDN version purely to read the bytes already in
-your browser, nothing is uploaded anywhere. Parquet isn't supported client-side yet - use the CLI
-below.
+[SheetJS](https://sheetjs.com), lazy-loaded from a pinned CDN version only when you actually drop in
+an Excel file, purely to read the bytes already in your browser - nothing is uploaded anywhere.
+Parquet isn't supported client-side yet - use the CLI below.
 
 **CLI - `faircode`.** Reads `.csv`, `.tsv`, `.xlsx`, `.json`, and `.parquet`
 (delimiter is auto-detected for anything else). JSON input supports the
@@ -809,6 +859,8 @@ faircode profile data.csv --fail-under 70          # fail CI if score is below 7
 faircode profile data.csv --min-group-size 50      # warn on subgroups under 50 rows
 faircode compare train.csv prod.csv                # representation drift, A → B (PSI)
 faircode compare train.csv prod.csv --html drift.html  # standalone HTML drift report
+faircode compare train.csv prod.csv --map gndr=sex # --map/threshold flags apply to both sides
+faircode compare train.csv prod.csv --fail-on-drift # fail CI if any dimension drifted
 faircode profile data.csv --map gndr=sex           # fix a missed column
 faircode profile data.csv --cross race,age         # choose the intersection pair
 faircode profile data.csv --reference census.csv   # score vs a population baseline
@@ -929,6 +981,15 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 
 ## What's Next
 
+**Not yet done:**
+
+- [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
+- [ ] HMDA mortgage lending bias
+- [ ] LLM bias audit
+
+<details>
+<summary><strong>Show 44 completed items →</strong></summary>
+
 - [x] COMPAS Criminal Justice Bias
 - [x] AI Fair Recruitment Bias
 - [x] German Credit Lending Bias
@@ -967,12 +1028,14 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 - [x] Explainer: What Is Model Drift?
 - [x] Explainer: What Is Selection Bias?
 - [x] Explainer: What Is Automation Bias?
-- [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
-- [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
-- [ ] HMDA mortgage lending bias
-- [ ] LLM bias audit
+- [x] Explainer: Why Accuracy Is Not Enough in Healthcare AI
+- [x] Explainer: Miscalibration in Clinical Risk Scores Across Groups
+- [x] Explainer: Missing Data as Bias in Electronic Health Records
+- [x] Explainer: Why Medical Imaging Models Fail on Underrepresented Groups
 - [x] Fairness audit web dashboard - [Open Dataset Profiler](#open-dataset-profiler)
 - [x] Bias detection utility library (`faircode/` module)
+
+</details>
 
 Want to contribute an audit or explainer? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -989,12 +1052,13 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Metric | Count |
 |--------|------:|
 | GitHub Stars | 42 |
-| External Contributors | 13 |
-| Forks | 19 |
+| External Contributors | 14 |
+| Forks | 22 |
 | Watching | 8 |
-| Combined Social Reach (Instagram + LinkedIn) | ~25K |
+| Combined Social Reach (Instagram + LinkedIn) | 27K+ |
+| Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
-| Explainers Published | 36 |
+| Explainers Published | 39 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 
@@ -1005,6 +1069,12 @@ Tracked weekly in [METRICS.md](METRICS.md).
 Thanks to everyone who has contributed audits, explainers, or documentation to Fair Code.
 
 [![Contributors](https://contrib.rocks/image?repo=yakew7/Fair-Code&excludeBots=true)](https://github.com/yakew7/Fair-Code/graphs/contributors)
+
+*The grid above is auto-generated from GitHub's contributors graph, which can lag a merged PR by
+up to a few days. Most recently merged, not yet reflected above:
+[@Swastik-Yadav](https://github.com/Swastik-Yadav) (#191),
+[@ImMortaL0P](https://github.com/ImMortaL0P) (#175),
+[@anujkamdar](https://github.com/anujkamdar) (#143).*
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 

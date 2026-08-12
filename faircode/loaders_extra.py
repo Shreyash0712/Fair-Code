@@ -49,3 +49,24 @@ def read_table(path: str) -> pd.DataFrame:
             ) from exc
 
     return _read_table_frozen(path)
+
+
+def get_xlsx_sheet_info(path: str) -> tuple[str, list[str]] | None:
+    """For an .xlsx file, return (sheet_name_read, other_sheet_names_ignored).
+
+    `read_table()` always reads pandas' default sheet (index 0, via the
+    frozen `loaders.read_table()`) - this only inspects what else is in the
+    workbook so callers can tell a user which sheet was actually profiled,
+    mirroring the web profiler's `parseXLSX()` (#182). Returns None for a
+    non-.xlsx path, or if the workbook can't be opened - `read_table()`'s own
+    error path already surfaces the real problem in that case.
+    """
+    if Path(path).suffix.lower() != ".xlsx":
+        return None
+    try:
+        book = pd.ExcelFile(path)
+    except Exception:
+        return None
+    if not book.sheet_names:
+        return None
+    return book.sheet_names[0], book.sheet_names[1:]

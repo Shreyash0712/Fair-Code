@@ -17,6 +17,11 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="Fair Code - The bias is real. So is the fix.">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og-light/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Fair Code - The bias is real. So is the fix. (light)">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fair Code: Algorithmic Bias Detection">
 <meta name="twitter:description" content="Bias in AI is real, measurable, and fixable. Open-source audits with up to 97% bias reduction.">
@@ -255,11 +260,12 @@
   ]
 }
 </script>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f4f1e8'/><circle cx='50' cy='50' r='14' fill='%23a63a22'/></svg>">
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -2926,15 +2932,15 @@
     <div class="roadmap-item">
       <div class="roadmap-status done"></div>
       <div>
-        <div class="roadmap-name">Explainer: False Positives Vs False Negatives in Medical Risk Models</div>
+        <div class="roadmap-name">Explainer: False Positives vs. False Negatives in Medical Risk Models</div>
         <div class="roadmap-meta">False positive vs false negative cost · Obermeyer 2019 healthcare proof · cost-weighted thresholds · Healthcare Readmission audit · equalized odds link · threshold tuning</div>
       </div>
     </div>
         <div class="roadmap-item">
       <div class="roadmap-status done"></div>
       <div>
-        <div class="roadmap-name">What is Supervised Learning?</div>
-        <div class="roadmap-meta">Input-label mapping · AI Fair Recruitment proof · train/test split · label as proxy · German Credit Lending · generalization · distribution shift</div>
+        <div class="roadmap-name">What Is Supervised Learning?</div>
+        <div class="roadmap-meta">Input-label mapping · AI Fair Recruitment proof · train/test split · label as proxy · German Credit Lending · generalisation · distribution shift</div>
       </div>
     </div>
     <div class="roadmap-item">
@@ -3010,6 +3016,27 @@
     <div class="roadmap-item">
       <div class="roadmap-status done"></div>
       <div>
+        <div class="roadmap-name">Explainer: Miscalibration in Clinical Risk Scores</div>
+        <div class="roadmap-meta">Same risk score, different real-world risk depending on the patient's group · reliability diagrams and calibration slope/intercept per group · Healthcare Readmission audit · Obermeyer et al. 2019</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-status done"></div>
+      <div>
+        <div class="roadmap-name">Explainer: Missing Data as Bias in EHRs</div>
+        <div class="roadmap-meta">How unequal access to care turns into unequal missingness models misread · MCAR/MAR/MNAR · Healthcare Readmission audit's 10.7-point payer-code gap by race</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-status done"></div>
+      <div>
+        <div class="roadmap-name">Explainer: Why Medical Imaging Models Fail on Underrepresented Groups</div>
+        <div class="roadmap-meta">Representation gaps vs. shortcut learning on device/site artifacts · Zech et al. 2018 hospital-site shortcut · Larrazabal et al. 2020 sex-imbalance study</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-status done"></div>
+      <div>
         <div class="roadmap-name">Fairness Dashboard</div>
         <div class="roadmap-meta">Interactive web app for live bias analysis</div>
       </div>
@@ -3047,27 +3074,6 @@
       <div>
         <div class="roadmap-name">Explainer: Underdiagnosis Bias</div>
         <div class="roadmap-meta">When the label itself is sicker for one group · historical care gaps in the training target · healthcare focus · freeze-safe</div>
-      </div>
-    </div>
-    <div class="roadmap-item">
-      <div class="roadmap-status soon"></div>
-      <div>
-        <div class="roadmap-name">Explainer: Miscalibration in Clinical Risk Scores</div>
-        <div class="roadmap-meta">Same risk score, different real-world risk depending on the patient's group · healthcare focus · freeze-safe</div>
-      </div>
-    </div>
-    <div class="roadmap-item">
-      <div class="roadmap-status soon"></div>
-      <div>
-        <div class="roadmap-name">Explainer: Missing Data as Bias in EHRs</div>
-        <div class="roadmap-meta">How unequal access to care turns into unequal missingness models misread · healthcare focus · freeze-safe</div>
-      </div>
-    </div>
-    <div class="roadmap-item">
-      <div class="roadmap-status soon"></div>
-      <div>
-        <div class="roadmap-name">Explainer: Why Medical Imaging Models Fail on Underrepresented Groups</div>
-        <div class="roadmap-meta">Representation gaps in imaging datasets · skin-tone and equipment confounders · healthcare focus · freeze-safe</div>
       </div>
     </div>
   </div>

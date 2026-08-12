@@ -264,23 +264,73 @@
   // union-of-columns table builder as parseJSON. SheetJS isn't bundled into
   // this file since it's a large third-party library with its own license -
   // profiler.html loads it from a pinned CDN URL only when needed.
-  function parseXLSX(arrayBuffer) {
-    if (typeof global.XLSX === 'undefined') {
-      throw new Error('The Excel parsing library failed to load (check your network connection), ' +
-        'or use the CLI instead: faircode profile data.xlsx');
-    }
+  async function parseXLSX(arrayBuffer) {
+    await loadSheetJS();
+
     var workbook;
     try {
-      workbook = global.XLSX.read(arrayBuffer, { type: 'array' });
+      workbook = global.XLSX.read(arrayBuffer, { type: "array" });
     } catch (readErr) {
-      throw new Error('Unsupported .xlsx file (' + readErr.message + ').');
+      throw new Error("Unsupported .xlsx file (" + readErr.message + ").");
     }
+
     var sheetName = workbook.SheetNames[0];
-    if (!sheetName) return { columns: [], rows: [] };
-    var records = global.XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: null, raw: true });
-    return recordsToTable(records);
+    if (!sheetName) return { table: { columns: [], rows: [] }, ignoredSheets: [], sheetName: null };
+
+    var sheet = workbook.Sheets[sheetName];
+    var records = global.XLSX.utils.sheet_to_json(sheet, { defval: null, raw: true });
+
+    if (records.length === 0) {
+      // sheet_to_json() drops the header row entirely when there are no data
+      // rows beneath it, which would silently lose a headers-only sheet's
+      // column names. pandas.read_excel() keeps them (0 rows, N columns) -
+      // read the raw header row instead of erroring, to match.
+      var headerRow = global.XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true })[0] || [];
+      var columns = headerRow.map(function (h) {
+        return h === null || h === undefined ? '' : String(h);
+      });
+      return { table: { columns: columns, rows: [] }, ignoredSheets: workbook.SheetNames.slice(1), sheetName: sheetName };
+    }
+
+    return { table: recordsToTable(records), ignoredSheets: workbook.SheetNames.slice(1), sheetName: sheetName };
   }
 
+  var sheetJsPromise = null;
+
+  async function loadSheetJS() {
+    if (global.XLSX) {
+      return Promise.resolve();
+    }
+
+    if (sheetJsPromise) {
+      return sheetJsPromise;
+    }
+
+    sheetJsPromise = new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+
+      script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+      script.integrity = "sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw";
+      script.crossOrigin = "anonymous";
+
+      script.onload = function () {
+        resolve();
+      };
+
+      script.onerror = function () {
+        script.remove();
+        sheetJsPromise = null;  // let the next .xlsx upload retry instead of reusing this rejection forever
+        reject(new Error(
+          "The Excel parsing library failed to load (check your network connection), " +
+          "or use the CLI instead: faircode profile data.xlsx"
+        ));
+      };
+
+      document.head.appendChild(script);
+    });
+
+    return sheetJsPromise;
+  }
   function isMissing(v) {
     if (v === null || v === undefined) return true;
     return NA_TOKENS.hasOwnProperty(String(v).trim().toLowerCase());

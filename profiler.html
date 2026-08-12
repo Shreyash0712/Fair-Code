@@ -17,6 +17,11 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="Fair Code - Open Dataset Profiler">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og-light/profiler.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Fair Code - Open Dataset Profiler (light)">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fair Code - Open Dataset Profiler">
 <meta name="twitter:description" content="Audit any CSV for demographic imbalance - instantly, privately, in your browser.">
@@ -50,11 +55,12 @@
   ]
 }
 </script>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f4f1e8'/><circle cx='50' cy='50' r='14' fill='%23a63a22'/></svg>">
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -174,6 +180,7 @@
       </div>
     </section>
 
+    <p class="profiler-status" id="fileStatus" aria-live="polite" hidden></p>
     <p class="profiler-error" id="error" role="alert" hidden></p>
     <p class="sr-only" id="resultsAnnouncer" aria-live="polite" aria-atomic="true"></p>
 
@@ -250,17 +257,29 @@
           <input type="file" id="fileA" accept=".csv,.tsv,.json,.xlsx,text/csv,text/tab-separated-values,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
           <span class="mini-drop-tag">A · Baseline</span>
           <span class="mini-drop-name" id="nameA">Drop CSV/TSV/JSON/XLSX, or <span class="link">browse</span></span>
+          <span class="mini-drop-status" id="statusA" aria-live="polite"></span>
         </div>
         <div class="mini-drop" id="dropB" tabindex="0" role="button"
              aria-label="Upload current dataset B (CSV, TSV, JSON, or Excel)">
           <input type="file" id="fileB" accept=".csv,.tsv,.json,.xlsx,text/csv,text/tab-separated-values,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
           <span class="mini-drop-tag">B · Current</span>
           <span class="mini-drop-name" id="nameB">Drop CSV/TSV/JSON/XLSX, or <span class="link">browse</span></span>
+          <span class="mini-drop-status" id="statusB" aria-live="polite"></span>
         </div>
       </div>
       <div class="compare-actions">
         <button class="sample-btn" id="compareSampleBtn" type="button">Try with sample drift data</button>
       </div>
+
+      <details class="mapping-block" id="compareMappingBlock" hidden>
+        <summary class="mapping-summary">
+          <span class="section-title" style="margin:0">Column mapping</span>
+          <span class="mapping-hint">auto-detection missed a column? map it here</span>
+        </summary>
+        <p class="section-note">Applies to both datasets A and B - override any column below and
+        the comparison re-runs instantly on both sides, nothing leaves your browser.</p>
+        <div class="mapping-list" id="compareMappingList"></div>
+      </details>
 
       <p class="profiler-error" id="compareError" role="alert" hidden></p>
       <p class="sr-only" id="compareAnnouncer" aria-live="polite" aria-atomic="true"></p>
@@ -280,11 +299,6 @@
     </footer>
   </main>
 
-  <!-- SheetJS (MIT-compatible Apache-2.0 license), pinned version, for client-side .xlsx
-       parsing only - no data is sent anywhere, it just reads bytes already in the browser. -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
-          integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw"
-          crossorigin="anonymous"></script>
   <script src="assets/profiler-engine.js"></script>
   <script src="assets/profiler-ui.js"></script>
   <script src="assets/profiler-compare.js"></script>

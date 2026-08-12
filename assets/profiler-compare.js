@@ -20,15 +20,28 @@
   var nameBEl = document.getElementById('nameB');
   var sampleBtn = document.getElementById('compareSampleBtn');
   var errorEl = document.getElementById('compareError');
+  var fileStatusA = document.getElementById('statusA');
+  var fileStatusB = document.getElementById('statusB');
   var resultsEl = document.getElementById('compareResults');
   var announcer = document.getElementById('compareAnnouncer');
   var reportActionsEl = document.getElementById('compareReportActions');
   var downloadHtmlBtn = document.getElementById('compareDownloadHtmlBtn');
   var copyJsonBtn = document.getElementById('compareCopyJsonBtn');
+  var mappingBlock = document.getElementById('compareMappingBlock');
+  var mappingList = document.getElementById('compareMappingList');
+
+  // Kinds a column can be manually mapped to, plus Auto / Not-demographic.
+  // Mirrors assets/profiler-ui.js's MAP_OPTIONS (issue #62's panel, ported
+  // here for the compare view).
+  var MAP_OPTIONS = [
+    ['auto', 'Auto'], ['sex', 'Sex'], ['race', 'Race'], ['age', 'Age'],
+    ['geography', 'Geography'], ['categorical', 'Categorical'], ['ignore', 'Not demographic']
+  ];
 
   // Loaded datasets: each { table, name } once a valid file is parsed.
   var slot = { A: null, B: null };
   var currentCmp = null; // last successful compare() result, for export
+  var currentOverrides = {}; // column -> forced kind, applied to both A and B
 
   function pct(x) { return (x * 100).toFixed(1) + '%'; }
   function esc(s) {
@@ -72,6 +85,7 @@
   }
 
   function readFile(key, file, drop, nameEl) {
+    var statusEl = key === 'A' ? fileStatusA : fileStatusB;
     var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
     var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
       file.type === 'application/json' ||
@@ -89,16 +103,29 @@
     }
 
     if (/\.xlsx$/i.test(file.name)) {
-      reader.onload = function () {
+      reader.onload = async function () {
         try {
-          applyTable(E.parseXLSX(reader.result));
+          var result = await E.parseXLSX(reader.result);
+
+          applyTable(result.table);
+
+          if (result.ignoredSheets.length > 0) {
+            statusEl.textContent =
+              'Read sheet "' + result.sheetName + '" - ' +
+              result.ignoredSheets.length + ' other sheet(s) ignored.';
+            statusEl.hidden = false;
+          } else {
+            statusEl.textContent =
+              'Read sheet "' + result.sheetName + '".';
+            statusEl.hidden = false;
+          }
         } catch (err) {
           showError('Could not read dataset ' + key + ': ' + err.message);
         }
       };
       reader.readAsArrayBuffer(file);
     } else {
-      reader.onload = function () {
+      reader.onload = async function () {
         try {
           var text = String(reader.result);
           var table = (/\.json$/i.test(file.name) || file.type === 'application/json')
@@ -117,13 +144,16 @@
     nameEl.textContent = name;
     drop.classList.add('loaded');
     errorEl.hidden = true;
+    currentOverrides = {}; // a changed input may have an entirely different schema
+    renderMapping(); // rebuild the panel for the new column set (once per file load)
     maybeCompare();
   }
 
   function maybeCompare() {
     if (!slot.A || !slot.B) return;
     try {
-      var cmp = E.compare(E.profile(slot.A.table), E.profile(slot.B.table),
+      var cmp = E.compare(E.profile(slot.A.table, currentOverrides),
+                          E.profile(slot.B.table, currentOverrides),
                           slot.A.name, slot.B.name);
       errorEl.hidden = true;
       render(cmp);
@@ -131,6 +161,95 @@
       showError('Could not compare those files: ' + err.message);
     }
   }
+
+  // ── Column mapping (issue #62's panel, ported for the two-dataset view) ──
+  // Applies the same override dict to both A and B - a column renamed or
+  // mistyped the same way on both sides (the common case) only needs mapping
+  // once, and there is no single "auto-detected kind" to show per column
+  // when A and B can each auto-detect it differently, so the hint instead
+  // shows both sides' auto-detected kind (or "not detected").
+  function renderMapping() {
+    var columns = [];
+    var seen = {};
+    [slot.A, slot.B].forEach(function (s) {
+      if (!s) return;
+      s.table.columns.forEach(function (col) {
+        if (!seen[col]) { seen[col] = true; columns.push(col); }
+      });
+    });
+    if (!columns.length) { mappingBlock.hidden = true; return; }
+
+    // Profile each side once (no overrides) and cache the column -> kind
+    // map, rather than re-running profile() per column below.
+    function autoKindsFor(s) {
+      if (!s) return {};
+      try {
+        var kinds = {};
+        E.profile(s.table).dimensions.forEach(function (d) { kinds[d.name] = d.kind; });
+        return kinds;
+      } catch (err) {
+        return {};
+      }
+    }
+    var autoKindsA = autoKindsFor(slot.A);
+    var autoKindsB = autoKindsFor(slot.B);
+
+    mappingList.innerHTML = '';
+    columns.forEach(function (col) {
+      var autoA = autoKindsA[col] || null;
+      var autoB = autoKindsB[col] || null;
+      var hint;
+      if (!autoA && !autoB) {
+        hint = 'auto: not detected';
+      } else if (autoA === autoB) {
+        hint = 'auto: <span class="on">' + esc(autoA) + '</span>';
+      } else {
+        hint = 'auto: <span class="on">A=' + esc(autoA || 'none') +
+          ', B=' + esc(autoB || 'none') + '</span>';
+      }
+
+      var opts = MAP_OPTIONS.map(function (o) {
+        return '<option value="' + o[0] + '">' + o[1] + '</option>';
+      }).join('');
+
+      var row = document.createElement('div');
+      row.className = 'map-row';
+      row.innerHTML =
+        '<span class="map-col" title="' + esc(col) + '">' + esc(col) + '</span>' +
+        '<span class="map-auto">' + hint + '</span>' +
+        '<select class="map-select" data-col="' + esc(col) +
+        '" aria-label="Map column ' + esc(col) + '">' + opts + '</select>';
+      var select = row.querySelector('.map-select');
+      select.value = currentOverrides[col] || 'auto';
+      if (currentOverrides[col]) row.classList.add('overridden');
+
+      mappingList.appendChild(row);
+    });
+    mappingBlock.hidden = false;
+  }
+
+  function readOverrides() {
+    var overrides = {};
+    var selects = mappingList.querySelectorAll('.map-select');
+    for (var i = 0; i < selects.length; i++) {
+      var sel = selects[i];
+      var row = sel.closest('.map-row');
+      if (sel.value !== 'auto') {
+        overrides[sel.getAttribute('data-col')] = sel.value;
+        if (row) row.classList.add('overridden');
+      } else if (row) {
+        row.classList.remove('overridden');
+      }
+    }
+    return overrides;
+  }
+
+  // Delegated so it keeps working across re-renders of the list.
+  mappingList.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('map-select')) return;
+    currentOverrides = readOverrides();
+    maybeCompare();
+  });
 
   function showError(msg) {
     errorEl.textContent = msg;

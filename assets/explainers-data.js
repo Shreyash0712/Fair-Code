@@ -351,5 +351,35 @@ window.FAIR_CODE_EXPLAINERS = [
       "metrics",
       "detection"
     ]
+  },
+  {
+    "slug": "clinical-score-miscalibration",
+    "title": "Miscalibration in Clinical Risk Scores Across Groups",
+    "subtitle": "The same risk score can mean a different real-world risk depending on the patient's group.",
+    "summary": "Learn why a clinical risk score that is well-calibrated on average can still be miscalibrated for a specific patient group, so identical scores carry different real-world stakes. Covers reliability diagrams, calibration slope and intercept per group, why a shared score can be calibrated to the wrong target (as in Obermeyer et al. 2019), and why small subgroups make high-risk calibration hardest to verify. Anchored to the Healthcare Readmission audit with per-group reliability and calibration-slope detection code.",
+    "tags": [
+      "metrics",
+      "detection"
+    ]
+  },
+  {
+    "slug": "missing-data-bias-ehr",
+    "title": "Missing Data as Bias in Electronic Health Records",
+    "subtitle": "A patient with fewer recorded labs and visits is less-observed, not lower-risk.",
+    "summary": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
+    "tags": [
+      "data",
+      "detection"
+    ]
+  },
+  {
+    "slug": "medical-imaging-representation-gaps",
+    "title": "Why Medical Imaging Models Fail on Underrepresented Groups",
+    "subtitle": "A model trained mostly on one group's images has barely seen the others.",
+    "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
+    "tags": [
+      "data",
+      "detection"
+    ]
   }
 ];

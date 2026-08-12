@@ -12,12 +12,12 @@ help:  ## Show the available targets
 		awk 'BEGIN{FS = ":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 
 setup:  ## Install the package plus the dev tools (pytest, pre-commit)
-	$(PY) -m pip install -e . pytest pre-commit
+	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pre-commit
 
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
 
-build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images
+build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images (dark + light)
 	$(PY) scripts/build_explainers.py
 	$(PY) scripts/generate_og_images.py
 

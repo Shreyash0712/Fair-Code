@@ -29,8 +29,11 @@ DATA_JSON = ROOT / "assets" / "explainers-data.json"
 DATA_JS = ROOT / "assets" / "explainers-data.js"
 SITEMAP = ROOT / "sitemap.xml"
 LLMS_FULL = ROOT / "llms-full.txt"
+OG_DIR = ROOT / "assets" / "og"
+OG_LIGHT_DIR = ROOT / "assets" / "og-light"
 SITE_URL = "https://www.thefaircode.xyz"
 REPO_URL = "https://github.com/yakew7/Fair-Code"
+
 
 PROJECT_ANCHORS = {
     "COMPAS": "project-compas",
@@ -287,17 +290,23 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="{title} · Fair Code">
+<meta property="og:image" content="{og_image_light}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="{title} · Fair Code (light)">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title} · Fair Code">
 <meta name="twitter:description" content="{summary}">
 <meta name="twitter:image" content="{og_image}">
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f4f1e8'/><circle cx='50' cy='50' r='14' fill='%23a63a22'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -523,6 +532,7 @@ def build_page(entry, known_slugs):
         content=content_html,
         source_url=f"{REPO_URL}/blob/main/explainers/{slug}.md",
         og_image=f"{SITE_URL}/assets/og/{slug}.png",
+        og_image_light=f"{SITE_URL}/assets/og-light/{slug}.png",
         jsonld=build_jsonld(entry, canonical, markdown_text, dates),
     )
 
@@ -621,10 +631,30 @@ def main():
     entries = json.loads(DATA_JSON.read_text(encoding="utf-8"))
     known_slugs = {entry["slug"] for entry in entries}
 
-    missing = [e["slug"] for e in entries if not (EXPLAINERS_DIR / f"{e['slug']}.md").exists()]
-    if missing:
-        raise SystemExit(f"Missing markdown file(s) for: {', '.join(missing)}")
+    missing = [
+        e["slug"]
+        for e in entries
+        if not (EXPLAINERS_DIR / f"{e['slug']}.md").exists()
+    ]
 
+    if missing:
+        raise SystemExit(
+            f"Missing markdown file(s) for: {', '.join(missing)}"
+        )
+
+    missing_og = [
+        e["slug"]
+        for e in entries
+        if not (OG_DIR / f"{e['slug']}.png").exists()
+        or not (OG_LIGHT_DIR / f"{e['slug']}.png").exists()
+    ]
+
+    if missing_og:
+        raise SystemExit(
+            "Missing Open Graph image(s) for: "
+            + ", ".join(missing_og)
+            + ". Run scripts/generate_og_images.py first."
+        )
     for entry in entries:
         page_html = build_page(entry, known_slugs)
         out_path = EXPLAINERS_DIR / f"{entry['slug']}.html"

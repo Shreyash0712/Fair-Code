@@ -30,7 +30,7 @@ import sys
 from . import __version__
 from .compare import compare
 from .detect import VALID_KINDS
-from .loaders_extra import read_table
+from .loaders_extra import get_xlsx_sheet_info, read_table
 from .profiler import parse_reference, profile
 from .proxy import proxy_hints
 from .report import compare_to_terminal, to_html, compare_to_html, to_json, to_terminal
@@ -114,6 +114,22 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
     c.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
+    c.add_argument("--map", action="append", metavar="COL=KIND",
+                   help="force a column's dimension when auto-detection misses it "
+                        "(applied to both datasets); KIND is one of " +
+                        ", ".join(_MAP_CHOICES) + " (repeatable)")
+    c.add_argument("--min-share", type=float, metavar="F",
+                   help="under-representation threshold (default 0.05)")
+    c.add_argument("--intersection-floor", type=float, metavar="F",
+                   help="near-empty intersection-cell threshold (default 0.01)")
+    c.add_argument("--imbalance-flag", type=float, metavar="F",
+                   help="imbalance-ratio flag threshold (default 3.0)")
+    c.add_argument("--missing-flag", type=float, metavar="F",
+                   help="missing-data flag threshold (default 0.05)")
+    c.add_argument("--min-group-size", type=int, default=100, metavar="N",
+                   help="warn when a subgroup has fewer than N rows (default: 100)")
+    c.add_argument("--fail-on-drift", action="store_true",
+                   help="exit 1 when any dimension shows drift or the overall score drops")
 
     b = sub.add_parser("benchmark",
                        help="run the cross-domain fairness benchmark harness over every audit.yaml")
@@ -136,6 +152,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "profile":
         df = _read_or_exit(args.csv)
+
+        sheet_info = get_xlsx_sheet_info(args.csv)
+        if sheet_info is not None:
+            sheet_name, ignored_sheets = sheet_info
+            if ignored_sheets:
+                print(
+                    f"Read sheet '{sheet_name}' - {len(ignored_sheets)} "
+                    f"other sheet(s) ignored.",
+                    file=sys.stderr,
+                )
 
         opts = {
             "min_share": args.min_share,
@@ -186,9 +212,17 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "compare":
+        overrides = _parse_map(args.map)
+        opts = {
+            "min_share": args.min_share,
+            "intersection_floor": args.intersection_floor,
+            "imbalance_flag": args.imbalance_flag,
+            "missing_flag": args.missing_flag,
+            "min_group_size": args.min_group_size,
+        }
         result = compare(
-            profile(_read_or_exit(args.csv_a)),
-            profile(_read_or_exit(args.csv_b)),
+            profile(_read_or_exit(args.csv_a), overrides, opts),
+            profile(_read_or_exit(args.csv_b), overrides, opts),
             name_a=args.csv_a, name_b=args.csv_b,
         )
         if args.html:
@@ -199,6 +233,13 @@ def main(argv: list[str] | None = None) -> int:
             print(to_json(result))
         else:
             print(compare_to_terminal(result))
+        if args.fail_on_drift and result["flags"]:
+            print(
+                f"error: representation drift detected ({len(result['flags'])} flag(s)) "
+                f"with --fail-on-drift set",
+                file=sys.stderr,
+            )
+            return 1
         return 0
 
     if args.command == "benchmark":
@@ -208,6 +249,21 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: the benchmark command needs scikit-learn and pyyaml "
                   f"(pip install faircode[benchmark]): {exc}", file=sys.stderr)
             return 2
+
+        overridden = []
+        if args.n_resamples != 2000:
+            overridden.append(f"--n-resamples={args.n_resamples}")
+        if args.n_permutations != 2000:
+            overridden.append(f"--n-permutations={args.n_permutations}")
+
+        if overridden:
+            print(
+                "warning: "
+                + ", ".join(overridden)
+                + " differs from the frozen paper-run default (2000); "
+                "output will not match the frozen paper reference.",
+                file=sys.stderr,
+            )
 
         fairness_df, performance_df = run_benchmark(
             root=args.root, audits=args.manifests or None,
