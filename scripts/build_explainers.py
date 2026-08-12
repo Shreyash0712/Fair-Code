@@ -30,6 +30,7 @@ DATA_JS = ROOT / "assets" / "explainers-data.js"
 SITEMAP = ROOT / "sitemap.xml"
 LLMS_FULL = ROOT / "llms-full.txt"
 OG_DIR = ROOT / "assets" / "og"
+OG_LIGHT_DIR = ROOT / "assets" / "og-light"
 SITE_URL = "https://www.thefaircode.xyz"
 REPO_URL = "https://github.com/yakew7/Fair-Code"
 
@@ -289,6 +290,11 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="{title} · Fair Code">
+<meta property="og:image" content="{og_image_light}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="{title} · Fair Code (light)">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title} · Fair Code">
 <meta name="twitter:description" content="{summary}">
@@ -526,6 +532,7 @@ def build_page(entry, known_slugs):
         content=content_html,
         source_url=f"{REPO_URL}/blob/main/explainers/{slug}.md",
         og_image=f"{SITE_URL}/assets/og/{slug}.png",
+        og_image_light=f"{SITE_URL}/assets/og-light/{slug}.png",
         jsonld=build_jsonld(entry, canonical, markdown_text, dates),
     )
 
@@ -639,6 +646,7 @@ def main():
         e["slug"]
         for e in entries
         if not (OG_DIR / f"{e['slug']}.png").exists()
+        or not (OG_LIGHT_DIR / f"{e['slug']}.png").exists()
     ]
 
     if missing_og:
