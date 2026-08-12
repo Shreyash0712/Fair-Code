@@ -24,6 +24,7 @@ Full text of every explainer in one file (for AI answer engines): https://www.th
 
 ## Explainers
 
+- [Why Medical Imaging Models Fail on Underrepresented Groups](https://www.thefaircode.xyz/explainers/medical-imaging-representation-gaps.html)
 - [Missing Data as Bias in Electronic Health Records](https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html)
 - [Miscalibration in Clinical Risk Scores Across Groups](https://www.thefaircode.xyz/explainers/clinical-score-miscalibration.html)
 - [Why Accuracy Is Not Enough in Healthcare AI](https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html)

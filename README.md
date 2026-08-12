@@ -101,13 +101,13 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 - [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups
 - [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) - why a risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group
 - [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) - why unequal access to care turns into unequal missingness, and how naive imputation makes it worse
+- [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) - representation gaps and shortcut learning on device/site artifacts in dermatology, radiology, and retinal imaging models
 
 **On the roadmap (the freeze-safe focus while new audits are on hold):**
 
 - Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR, spirometry, VBAC) bake bias into the math itself
 - The Obermeyer Case: When Cost Becomes a Proxy for Health Need
 - Underdiagnosis Bias: When the Label Itself Is Sicker for One Group
-- Why Medical Imaging Models Fail on Underrepresented Groups
 
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
@@ -701,6 +701,7 @@ features = [
 | [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
 | [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, and why small subgroups make that hardest to verify at the score that matters most |
 | [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) | Why unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as "nothing notable" is really reading "less-observed" |
+| [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) | Why dermatology, radiology, and retinal models underperform on groups thin in the training data, and the more insidious failure mode: shortcut learning on a scanner or hospital site instead of the pathology |
 
  ---
 
@@ -974,6 +975,7 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 - [x] Explainer: Why Accuracy Is Not Enough in Healthcare AI
 - [x] Explainer: Miscalibration in Clinical Risk Scores Across Groups
 - [x] Explainer: Missing Data as Bias in Electronic Health Records
+- [x] Explainer: Why Medical Imaging Models Fail on Underrepresented Groups
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
 - [ ] LLM bias audit
@@ -1001,7 +1003,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Combined Social Reach (Instagram + LinkedIn) | 26K+ |
 | Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
-| Explainers Published | 38 |
+| Explainers Published | 39 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

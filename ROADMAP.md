@@ -27,7 +27,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Watching | Social Reach | Countries | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 42 | 14 | 22 | 8 | 26K+ | 17 | 7 | 38 | ✅ every push/PR |
+| 42 | 14 | 22 | 8 | 26K+ | 17 | 7 | 39 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -40,7 +40,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 ## Phase 1 - Bias Glossary and Beginner Explainers ✅
 
-**Status: Foundational library complete - 38 explainers published, expanding toward a 60+ library**
+**Status: Foundational library complete - 39 explainers published, expanding toward a 60+ library**
 
 Build the foundational vocabulary and explain core fairness concepts clearly enough for a non-technical reader.
 
@@ -96,6 +96,7 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 - [x] Explainer: False Positives and False Negatives in Medical Risk Models
 - [x] Explainer: Miscalibration in Clinical Risk Scores Across Groups - when the same risk score means a different real-world risk depending on the patient's group
 - [x] Explainer: Missing Data as Bias in Electronic Health Records - how unequal access to care turns into unequal missingness, and how models misread it
+- [x] Explainer: Why Medical Imaging Models Fail on Underrepresented Groups - representation gaps in imaging datasets and the skin-tone / equipment confounders they hide
 - [x] Case study write-up: Insurance Denial Bias 
 - [x] Case study write-up: Benefits Denial Bias (standalone 
 - [x] Case study write-up: Healthcare Readmission Bias 
@@ -105,7 +106,6 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 - [ ] Explainer: Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR kidney function, spirometry, VBAC calculators) bake bias directly into the math
 - [ ] Explainer: The Obermeyer Case - When Cost Becomes a Proxy for Health Need - a dedicated case study of the 2019 algorithm that under-referred sicker Black patients
 - [ ] Explainer: Underdiagnosis Bias - When the Label Itself Is Sicker for One Group - why historical care gaps make the training target unequal before modeling starts
-- [ ] Explainer: Why Medical Imaging Models Fail on Underrepresented Groups - representation gaps in imaging datasets and the skin-tone / equipment confounders they hide
 
 ---
 

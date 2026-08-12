@@ -371,5 +371,15 @@ window.FAIR_CODE_EXPLAINERS = [
       "data",
       "detection"
     ]
+  },
+  {
+    "slug": "medical-imaging-representation-gaps",
+    "title": "Why Medical Imaging Models Fail on Underrepresented Groups",
+    "subtitle": "A model trained mostly on one group's images has barely seen the others.",
+    "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
+    "tags": [
+      "data",
+      "detection"
+    ]
   }
 ];
