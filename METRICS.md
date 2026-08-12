@@ -38,6 +38,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W30 | 40 | 17 | 8 | 11 | ~21K total | - | 3 | 7 total |
 | 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | - | 22 | 7 total |
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
+| 2026-W33 | 42 | 22 | 8 | 14 | 27K+ total | 17 | 55 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -50,6 +51,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W32 (later in week) - JS parity, client-side Excel, and a CI/security hardening batch:** JSON edge-case coverage and clearer parse errors (#175), client-side `.xlsx` support for the web profiler with a Subresource Integrity hash on its CDN script (#158), a `results/`-vs-`paper/results-frozen/` drift check (#173), a merge-base fix for the frozen-files check (#163), CodeQL extended to JavaScript (#162), a scripted favicon pipeline (#164), consolidated JS CLI-bridge scripts (#170), an audit-manifest `row_filters` validation test (#168), a GitHub Actions version-bump audit process (#167), removal of ~35K lines of dead vendored CI code, and CodeQL/Dependabot process docs (#161, #165). **Countries tracked for the first time this week** (16, unique countries visiting [thefaircode.xyz](https://www.thefaircode.xyz) per site analytics - distinct from the Instagram/LinkedIn-based social views figure).
 >
 > **2026-W32 (traction refresh) - forks and countries caught up to live data:** forks `19 → 22` (GitHub's API, was stale since the last snapshot), countries reached `16 → 17`. Contributors badge/targets/resume line also corrected to `14` - the weekly table row already had it, the rest of the doc hadn't caught up.
+>
+> **2026-W33 - three healthcare explainers close out the roadmap's "planned" list down to three:** Miscalibration in Clinical Risk Scores Across Groups (#106), Missing Data as Bias in Electronic Health Records (#107, with a real 10.7-point payer-code missingness gap by race computed straight from the Healthcare Readmission CSV), and Why Medical Imaging Models Fail on Underrepresented Groups (#108) - explainer count `36 → 39`. Stars, forks, watching, and contributors are unchanged from last week's live GitHub numbers. **Note on issues-closed (55):** not a triage batch like W31's - 36 PRs merged this week across CI hardening (CodeQL v4, CITATION.cff validation, workflow YAML validation, CODEOWNERS access checks), profiler tooling (XLSX/JSON edge cases, HTML report tests), and the three explainers above, several closing more than one linked issue.
 
 ---
 
@@ -61,11 +64,11 @@ Weekly snapshot of project health. Updated every Friday.
 | Forks | 22 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 14 | 15+ | End of 2026 |
-| Social reach | 26K+ | 40K+ | End of 2026 |
+| Social reach | 27K+ | 40K+ | End of 2026 |
 | Countries reached | 17 | 20+ | End of 2026 |
-| Issues closed | 11 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 55 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 36 | 60+ | End of 2026 |
+| Explainers | 39 | 60+ | End of 2026 |
 
 ---
 
@@ -83,4 +86,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **14 contributors**, **22 forks**, **26K+ social views**, and website visitors from **17 countries**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **14 contributors**, **22 forks**, **27K+ social views**, and website visitors from **17 countries**.

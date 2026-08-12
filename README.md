@@ -1000,7 +1000,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | External Contributors | 14 |
 | Forks | 22 |
 | Watching | 8 |
-| Combined Social Reach (Instagram + LinkedIn) | 26K+ |
+| Combined Social Reach (Instagram + LinkedIn) | 27K+ |
 | Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
 | Explainers Published | 39 |
