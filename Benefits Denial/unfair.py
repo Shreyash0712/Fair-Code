@@ -26,7 +26,7 @@ from faircode.significance import significance_report, intersectional_report
 #                   The model reconstructs sex through marriage.
 #   hours.per.week → Women average 36.4 hrs/wk vs 42.4 for men
 #                   due to caregiving burdens, not productivity.
-#                   Penalising low hours penalises gender roles.
+#                   penalizing low hours penalises gender roles.
 #   occupation    → Racial occupational segregation: Black and
 #                   Native applicants are in high-skill roles
 #                   at ~15% vs 26% for White applicants.
@@ -230,14 +230,14 @@ It also includes four proxy variables:
   marital.status → Male applicants appear as 'Married-civ-spouse'
                   at 61% vs 15% for female applicants. The model
                   learns to reconstruct sex through the marriage
-                  column, penalising unmarried women who don't fit
+                  column, penalizing unmarried women who don't fit
                   the spousal-dependent pattern the data encodes.
 
   hours.per.week → Women in this dataset average 36 hrs/wk vs 42
                   for men - a gap driven by unpaid caregiving
                   responsibilities, not ability or productivity.
                   A model that treats lower hours as an eligibility
-                  signal is penalising the gender pay gap, not
+                  signal is penalizing the gender pay gap, not
                   measuring economic need.
 
   occupation    → Racial occupational segregation means Black and

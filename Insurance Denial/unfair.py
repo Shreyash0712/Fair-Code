@@ -17,9 +17,9 @@ from faircode.significance import significance_report, intersectional_report
 # BMI is a documented proxy for race - Black and Hispanic
 # Americans are flagged as "obese" at higher rates due to
 # population-level differences, not individual health risk.
-# Smoker status correlates with income and education, which
+# smoking status correlates with income and education, which
 # themselves correlate with race and class.
-# Diabetic status correlates with race (Black and Hispanic
+# diabetes status correlates with race (Black and Hispanic
 # Americans are diagnosed at 60–100% higher rates), encoding
 # racial signal through an apparently clinical variable.
 # ============================================================
@@ -39,7 +39,7 @@ df['age_group'] = df['age'].apply(lambda x: 'Young (<35)' if x < 35 else 'Older 
 # ── BIASED FEATURES ─────────────────────────────────────────
 # age and gender are protected attributes.
 # bmi      proxy: population BMI distributions differ by race;
-#                 penalising high BMI penalises race.
+#                 penalizing high BMI penalises race.
 # smoker   proxy: smoking rates correlate with poverty → race/class.
 # diabetic proxy: Black and Hispanic Americans are diagnosed
 #                 diabetic at 60–100% higher rates, encoding
@@ -172,7 +172,7 @@ It also includes three proxy variables:
 
   Diabetic → Black and Hispanic Americans are diagnosed with
               diabetes at 60–100% higher rates than white
-              Americans. A model that treats diabetic status
+              Americans. A model that treats diabetes status
               as a risk factor is partially encoding race
               through a clinical label.
 

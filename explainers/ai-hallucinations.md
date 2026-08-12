@@ -42,7 +42,7 @@ The biased model (`unfair.py`) is trained on a dataset of patient features to pr
 
 In this dataset, smoking is a dominant predictive signal: smokers are highly likely to have high claim costs. The model splits on this feature early. However, when we look at underweight patients who smoke and are diabetic, the training evidence is incredibly thin. 
 
-By grouping the entire dataset into bins of BMI category, smoking status, and diabetic status, we can compare the **Sample Density** (how many patients fit this profile in the training data) against the **Model's Prediction Probability of Denial**:
+By grouping the entire dataset into bins of BMI category, smoking status, and diabetes status, we can compare the **Sample Density** (how many patients fit this profile in the training data) against the **Model's Prediction Probability of Denial**:
 
 | BMI Category | Smoker | Diabetic | Sample Count (Density) | Mean Predicted Probability of Denial | Mean Prediction |
 |---|---|---|:---:|:---:|:---:|

@@ -136,23 +136,23 @@ THE FIX: Drop the protected attributes AND their proxies.
               signal - it is partially a function of race,
               ethnicity, and socioeconomic status. A model
               that penalises high BMI is partially
-              penalising race, regardless of whether
+              penalizing race, regardless of whether
               "race" appears anywhere in the feature list.
 
   smoker   → removed. Smoking rates correlate with income
-              and education. Including smoker status allows
+              and education. Including smoking status allows
               the model to encode class (and by extension
               racial) signal through an apparently neutral
               variable.
 
   diabetic → removed. Black and Hispanic Americans are
               diagnosed diabetic at 60–100% higher rates.
-              Using diabetic status as a feature encodes
+              Using diabetes status as a feature encodes
               racial disparities in healthcare access and
               diagnosis rates - not individual health risk.
 
 Key Insight: Insurance AI models don't need to name race
-to discriminate by race. BMI, smoking, and diabetic status
+to discriminate by race. BMI, smoking, and diabetes status
 are the CustodyStatus of health insurance - clinical-
 sounding features that carry protected-class signal because
 of structural inequalities baked into American healthcare.

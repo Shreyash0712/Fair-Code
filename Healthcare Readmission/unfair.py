@@ -243,8 +243,8 @@ It also includes four proxy variables:
                         which is correlated with race by
                         structural gaps in employment and
                         insurance access. A model that penalises
-                        Medicaid patients is penalising poverty -
-                        and penalising poverty in healthcare
+                        Medicaid patients is penalizing poverty -
+                        and penalizing poverty in healthcare
                         disproportionately penalises minority
                         patients.
 

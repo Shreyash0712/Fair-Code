@@ -2230,7 +2230,7 @@
 
     <div class="key-insight">
       <div class="key-insight-label">Key Insight</div>
-      <p>Employment tenure looks like a legitimate financial signal - and it is. But it's also a near-perfect proxy for age. A 24-year-old cannot have 10 years of employment history. The model penalising short tenure was partially penalising youth. Dropping both <code class="inline-code">age</code> and <code class="inline-code">employment</code> forced it to evaluate what a borrower has - savings, credit history, loan purpose - rather than how long they've been alive. A caveat the new significance testing makes explicit: on a 200-row test set this 7.16% gap is not statistically significant (p = 0.26, CI spans zero) - a reminder that small samples demand a confidence interval before a point estimate is read as proof.</p>
+      <p>Employment tenure looks like a legitimate financial signal - and it is. But it's also a near-perfect proxy for age. A 24-year-old cannot have 10 years of employment history. The model penalizing short tenure was partially penalizing youth. Dropping both <code class="inline-code">age</code> and <code class="inline-code">employment</code> forced it to evaluate what a borrower has - savings, credit history, loan purpose - rather than how long they've been alive. A caveat the new significance testing makes explicit: on a 200-row test set this 7.16% gap is not statistically significant (p = 0.26, CI spans zero) - a reminder that small samples demand a confidence interval before a point estimate is read as proof.</p>
     </div>
 
     <div class="bias-bar-wrap" style="margin-top: 32px;">
@@ -2265,7 +2265,7 @@
       <div>
         <div class="project-num">PROJECT - 04</div>
         <div class="project-name">INSURANCE DENIAL</div>
-        <p class="project-desc">An insurance AI flags older patients for high-cost claims at 7.93 points higher than younger patients. BMI, smoking status, and diabetic status encode race without naming it.</p>
+        <p class="project-desc">An insurance AI flags older patients for high-cost claims at 7.93 points higher than younger patients. BMI, smoking status, and diabetes status encode race without naming it.</p>
       </div>
       <div class="project-stats">
         <div class="stat-label">AGE FAIRNESS GAP BEFORE</div>
@@ -2311,7 +2311,7 @@
 
     <div class="key-insight">
       <div class="key-insight-label">Key Insight</div>
-      <p>BMI, smoker status, and diabetic diagnosis rates all differ significantly by race and class - so a model trained on them learns to discriminate by race without the word ever appearing. These are the <code class="inline-code">CustodyStatus</code> of health insurance: clinical-sounding features that carry protected-class signal because of structural inequalities baked into American healthcare. Dropping them alongside age and gender reduced the age gap by 60% and the gender gap by 72%. Honest caveat, now that every gap carries a p-value: on this small test set neither the age nor the gender gap is statistically significant (both p &gt; 0.2, CIs span zero), so these numbers show the mechanism and direction of the bias rather than a proven effect size - exactly the distinction the confidence intervals exist to enforce.</p>
+      <p>BMI, smoking status, and diabetes diagnosis rates all differ significantly by race and class - so a model trained on them learns to discriminate by race without the word ever appearing. These are the <code class="inline-code">CustodyStatus</code> of health insurance: clinical-sounding features that carry protected-class signal because of structural inequalities baked into American healthcare. Dropping them alongside age and gender reduced the age gap by 60% and the gender gap by 72%. Honest caveat, now that every gap carries a p-value: on this small test set neither the age nor the gender gap is statistically significant (both p &gt; 0.2, CIs span zero), so these numbers show the mechanism and direction of the bias rather than a proven effect size - exactly the distinction the confidence intervals exist to enforce.</p>
     </div>
 
     <div class="bias-bar-wrap" style="margin-top: 32px;">

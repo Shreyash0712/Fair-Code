@@ -126,7 +126,7 @@ print("""
                    higher for AfricanAmerican patients (0.70
                    vs 0.48 for Asian patients). A meaningful
                    fraction of this gap reflects differential
-                   access to preventive care - penalising
+                   access to preventive care - penalizing
                    patients for structural underinvestment in
                    their communities, not individual health
                    behaviour or severity.
