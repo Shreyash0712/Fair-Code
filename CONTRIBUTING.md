@@ -355,6 +355,7 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `bias-variance-tradeoff.md` | The classic underfit/overfit trade-off, and why statistical "bias" here is not the societal bias the rest of these explainers mean |
 | `accuracy-not-enough-healthcare-ai.md` | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare clinical outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
 | `clinical-score-miscalibration.md` | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, with per-group reliability and calibration-slope detection code |
+| `missing-data-bias-ehr.md` | Why unequal access to care turns into unequal missingness in EHR data, and why naive imputation encodes the disparity rather than fixing it |
 
 ### A good explainer should include
 

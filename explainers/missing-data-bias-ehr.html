@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missing Data as Bias in Electronic Health Records · Fair Code</title>
+<meta name="description" content="Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as &#x27;nothing notable happened&#x27; is actually reading &#x27;this group is observed less.&#x27; Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.">
+<link rel="canonical" href="https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Missing Data as Bias in Electronic Health Records · Fair Code">
+<meta property="og:description" content="Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as &#x27;nothing notable happened&#x27; is actually reading &#x27;this group is observed less.&#x27; Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/missing-data-bias-ehr.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Missing Data as Bias in Electronic Health Records · Fair Code">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Missing Data as Bias in Electronic Health Records · Fair Code">
+<meta name="twitter:description" content="Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as &#x27;nothing notable happened&#x27; is actually reading &#x27;this group is observed less.&#x27; Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/missing-data-bias-ehr.png">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = localStorage.getItem('fc-theme') || systemPref;
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Missing Data as Bias in Electronic Health Records",
+      "description": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
+      "url": "https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Missing Data as Bias in Electronic Health Records?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Missing data as bias means that in electronic health records, how much is recorded about a patient is itself shaped by unequal access to care, so a model reading \"no data\" as \"nothing notable happened\" is actually reading \"this group is observed less,\" and it learns that gap as if it were a clinical signal."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every field in an EHR - a lab result, a specialist note, an insurance code - exists because someone ordered a test, made a referral, or processed a claim. Patients who see clinicians less often, whose insurance requires more paperwork before a test is approved, or whose regular care happens outside the hospital system generating the record, end up with sparser charts - not because they are healthier, but because less of their care was captured in this particular dataset."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Missing Data as Bias in Electronic Health Records",
+          "item": "https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/missing-data-bias-ehr.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Missing Data as Bias in Electronic Health Records</h1>
+      <p class="explainer-lede">A patient with fewer recorded labs and visits is less-observed, not lower-risk.</p>
+      <p class="explainer-lede">Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as &#x27;nothing notable happened&#x27; is actually reading &#x27;this group is observed less.&#x27; Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>A blank field in a patient&#x27;s chart is not neutral information. It usually means the patient did not get the lab ordered, the visit that would have recorded it, or the specialist who would have documented it - and who gets fewer of those is rarely random.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Missing data as bias</strong> means that in electronic health records, how <em>much</em> is recorded about a patient is itself shaped by unequal access to care, so a model reading &quot;no data&quot; as &quot;nothing notable happened&quot; is actually reading &quot;this group is observed less,&quot; and it learns that gap as if it were a clinical signal.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>Every field in an EHR - a lab result, a specialist note, an insurance code - exists because someone ordered a test, made a referral, or processed a claim. Patients who see clinicians less often, whose insurance requires more paperwork before a test is approved, or whose regular care happens outside the hospital system generating the record, end up with sparser charts - not because they are healthier, but because less of their care was captured in this particular dataset.</p>
+<p>A model has no way to tell those two situations apart unless it is told to. It sees a missing lab value and a low lab value through the same lens: neither one raised a flag. If missingness is concentrated in a particular group, the model quietly learns that &quot;fewer records&quot; correlates with &quot;lower risk,&quot; when the correct read is &quot;less-observed.&quot; The result is a <strong>missing-not-at-random (MNAR)</strong> problem: the <em>chance</em> a value is missing depends on the patient&#x27;s group and their access to the system that would have recorded it, not just on the value itself.</p>
+<p>This matters more than an ordinary data-quality issue because most default handling makes it worse, not better. Dropping rows with missing values removes exactly the less-observed patients from the training data, teaching the model even less about them. Naive imputation - filling every gap with the column mean or median - overwrites a meaningful absence with a falsely reassuring &quot;typical&quot; value, erasing the very signal that would have flagged unequal access as unequal access.</p>
+<h2 id="core-concept-three-ways-missingness-can-arise">Core Concept: Three Ways Missingness Can Arise</h2>
+<p>Missing data is usually classified by <em>why</em> it&#x27;s missing, and only one of the three is safe to treat casually:</p>
+<ul><li><strong>MCAR (missing completely at random)</strong> - a lab was skipped for a reason with no connection to the patient or the outcome, e.g. a machine was down that day. Dropping or imputing these rows introduces no bias, but this case is rarer in real EHR data than it sounds.</li><li><strong>MAR (missing at random)</strong> - missingness is explainable by <em>other observed variables</em> (e.g. inpatients get more labs than outpatients, and &quot;encounter type&quot; is recorded). Once you condition on what you know, the gap is no longer connected to the unrecorded value itself.</li><li><strong>MNAR (missing not at random)</strong> - missingness depends on the unrecorded value or on something correlated with the protected attribute that the model doesn&#x27;t otherwise see - such as insurance type, distance to a specialist, or historical under-referral of a group. This is where access-driven missingness lives, and no amount of imputation logic can fully correct for it because the reason for the gap isn&#x27;t in the data at all.</li></ul>
+<p>The practical test is not &quot;how much is missing&quot; but &quot;does the missingness rate differ by group, and does that difference track something structural rather than clinical.&quot;</p>
+<h2 id="concrete-example-healthcare-readmission-audit-06">Concrete Example: Healthcare Readmission - Audit 06</h2>
+<p>Audit 06&#x27;s underlying dataset, Diabetes 130-US Hospitals (101,766 encounters), is a well-known case of exactly this pattern - and the numbers below come from reading the CSV already in this repo, not from a benchmark run or a frozen result:</p>
+<pre><code class="language-text">Column               Overall missing   Caucasian   African American   Gap
+weight                     96.9%          96.2%          99.4%        3.2 pts
+payer_code                 39.9%          37.5%          48.2%       10.7 pts
+medical_specialty          49.0%          50.9%          43.0%        7.9 pts</code></pre>
+<p><code>weight</code> is missing for nearly everyone - it was rarely recorded in outpatient workflow regardless of group, which is a genuine (if extreme) case of a field that is close to useless everywhere rather than a fairness problem on its own. <code>payer_code</code> is different: it is far more often missing for African American patients (48.2%) than Caucasian patients (37.5%), a 10.7-point gap on a column this repo&#x27;s own <code>audit.yaml</code> already flags as a proxy for insurance access, not clinical severity - a model reading a missing payer code as &quot;nothing to flag&quot; is simply less informed about that group&#x27;s coverage situation than it is for the majority group. <code>medical_specialty</code> runs the other direction (Caucasian patients are <em>more</em> often missing a specialist referral), which is exactly why this needs to be checked column by column and group by group rather than assumed: unequal missingness does not always point the same way, and assuming a single direction is itself a way to miss it.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>Computes the missingness rate per column, per group, so a column that is quietly less complete for one group cannot hide inside an overall missingness percentage.</p>
+<pre><code class="language-python">import pandas as pd
+
+
+def missingness_by_group(df, group_col, missing_values=(&quot;?&quot;, &quot;&quot;, &quot;Unknown/Invalid&quot;)):
+    &quot;&quot;&quot;
+    For each column, computes the missing-value rate overall and within
+    each group, plus the gap between the group with the most and least
+    missingness. A wide gap on a column that also correlates with a
+    protected attribute (check with a chi-squared test, see
+    CONTRIBUTING.md&#x27;s proxy-variable section) is the access-driven
+    missingness this explainer describes, not routine data noise.
+
+    Parameters:
+        df: DataFrame, e.g. a raw EHR extract before any imputation
+        group_col: protected attribute or group label
+        missing_values: sentinel values that mean &quot;missing&quot; in this dataset
+            (EHR extracts frequently use &quot;?&quot;, blanks, or a placeholder
+            string instead of a true NaN)
+
+    Returns a DataFrame indexed by column, with one rate column per group
+    plus &quot;gap&quot; (max group rate - min group rate), sorted by gap descending.
+    &quot;&quot;&quot;
+    is_missing = df.isna() | df.isin(missing_values)
+    rows = []
+    for col in df.columns:
+        if col == group_col:
+            continue
+        rates = is_missing[col].groupby(df[group_col]).mean()
+        row = {&quot;column&quot;: col, **rates.to_dict()}
+        row[&quot;gap&quot;] = rates.max() - rates.min()
+        rows.append(row)
+
+    return pd.DataFrame(rows).set_index(&quot;column&quot;).sort_values(&quot;gap&quot;, ascending=False)
+
+
+def flag_mnar_candidates(df, group_col, protected_col, missing_values=(&quot;?&quot;, &quot;&quot;, &quot;Unknown/Invalid&quot;), min_gap=0.05):
+    &quot;&quot;&quot;
+    Shortlists columns whose missingness gap by group exceeds min_gap -
+    candidates worth a closer look before deciding how (or whether) to
+    impute them. Does not decide MNAR on its own; a large gap is a prompt
+    to investigate the mechanism, not proof of one.
+    &quot;&quot;&quot;
+    gaps = missingness_by_group(df, group_col, missing_values)
+    return gaps[gaps[&quot;gap&quot;] &gt;= min_gap]
+
+
+# Usage example
+# gaps = missingness_by_group(readmission_df, &quot;race&quot;)
+# candidates = flag_mnar_candidates(readmission_df, &quot;race&quot;, protected_col=&quot;race&quot;, min_gap=0.05)</code></pre>
+<h2 id="limitations">Limitations</h2>
+<h3 id="1-a-missingness-gap-is-a-prompt-to-investigate-not-proof-of-bias">1. A missingness gap is a prompt to investigate, not proof of bias</h3>
+<p>Some legitimate clinical reasons produce group-correlated missingness too - a pediatric-heavy population will rarely have certain adult labs ordered, and that gap is clinical, not structural. Read the missingness gap next to what the column actually measures before concluding access is the cause.</p>
+<h3 id="2-fixing-missingness-does-not-fix-what-caused-it">2. Fixing missingness does not fix what caused it</h3>
+<p>Adding a &quot;was this value missing&quot; indicator column, or using a model that natively handles missing values, keeps the signal from being erased - but it does not correct the underlying access gap the missingness reflects. The model becomes honest about not knowing, which is real progress, but the patients behind that gap are still less observed.</p>
+<h3 id="3-multiple-imputation-and-indicator-flags-can-leak-the-protected-attribute-back-in">3. Multiple imputation and indicator flags can leak the protected attribute back in</h3>
+<p>If missingness is itself correlated with the protected attribute, a &quot;was this value imputed&quot; flag is a new proxy variable for that attribute, even after the attribute itself is dropped. Check any missingness-indicator feature for correlation with the protected attribute the same way you would check any other proxy - see <a href="proxy-variables.html">Proxy Variables</a>.</p>
+<h3 id="4-small-groups-make-missingness-rates-noisy">4. Small groups make missingness rates noisy</h3>
+<p>A missingness rate computed on a few hundred records has a wide margin of error. Report group sizes next to any missingness gap, and treat a gap on a small subgroup as a signal to gather more data, not a confirmed disparity.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="sampling-bias.html">Sampling Bias</a> - the closely related problem of who is captured in a dataset at all; missingness is sampling bias operating field-by-field within patients who are already in the dataset.</li><li><a href="selection-bias.html">Selection Bias</a> - why the process that decides who enters a dataset (or which of their visits get recorded) can bias a model before any protected attribute is considered.</li><li><a href="label-bias.html">Label Bias</a> - what happens when the outcome label itself, not just a feature, is less reliably recorded for one group.</li><li><a href="proxy-variables.html">Proxy Variables</a> - why a missingness indicator can become a new proxy for the protected attribute it was meant to work around.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-readmission"><code>Healthcare Readmission/</code></a> - the dataset behind the missingness gaps above; <code>audit.yaml</code> already lists <code>payer_code</code> as a proxy feature for the reasons this explainer quantifies.</li><li><a href="../index.html#project-insurance"><code>Insurance Denial/</code></a> - a second health-adjacent audit where which claims and conditions get documented at all is shaped by the same access patterns as EHR missingness.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6082530/" target="_blank" rel="noreferrer noopener">Gianfrancesco, M.A., Tamang, S., Yazdany, J., Schmajuk, G. (2018): Potential Biases in Machine Learning Algorithms Using Electronic Health Record Data</a> - a direct survey of how EHR missingness, documentation practices, and access disparities introduce bias before a model ever sees the data.</li><li><a href="https://www.jstor.org/stable/2335739" target="_blank" rel="noreferrer noopener">Rubin, D.B. (1976): Inference and Missing Data</a> - the original MCAR/MAR/MNAR framework this explainer&#x27;s core concept section is built on.</li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10071455/" target="_blank" rel="noreferrer noopener">Getzen, E., Ungar, L., Mowery, D., Xu, X., Long, Q. (2023): Mining for Equitable Health: Assessing the Impact of Missing Data in Electronic Health Records</a> - a review connecting specific EHR missingness mechanisms to the demographic groups they disproportionately affect.</li></ul>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+      const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || systemPref;
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || systemPref;
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

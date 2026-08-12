@@ -361,5 +361,15 @@ window.FAIR_CODE_EXPLAINERS = [
       "metrics",
       "detection"
     ]
+  },
+  {
+    "slug": "missing-data-bias-ehr",
+    "title": "Missing Data as Bias in Electronic Health Records",
+    "subtitle": "A patient with fewer recorded labs and visits is less-observed, not lower-risk.",
+    "summary": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
+    "tags": [
+      "data",
+      "detection"
+    ]
   }
 ];
