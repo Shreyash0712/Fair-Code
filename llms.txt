@@ -24,6 +24,7 @@ Full text of every explainer in one file (for AI answer engines): https://www.th
 
 ## Explainers
 
+- [Miscalibration in Clinical Risk Scores Across Groups](https://www.thefaircode.xyz/explainers/clinical-score-miscalibration.html)
 - [Why Accuracy Is Not Enough in Healthcare AI](https://www.thefaircode.xyz/explainers/accuracy-not-enough-healthcare-ai.html)
 - [What Is a Protected Attribute?](https://www.thefaircode.xyz/explainers/protected-attribute.html)
 - [What Is a Confusion Matrix?](https://www.thefaircode.xyz/explainers/confusion-matrix.html)

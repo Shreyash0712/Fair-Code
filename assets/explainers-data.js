@@ -351,5 +351,15 @@ window.FAIR_CODE_EXPLAINERS = [
       "metrics",
       "detection"
     ]
+  },
+  {
+    "slug": "clinical-score-miscalibration",
+    "title": "Miscalibration in Clinical Risk Scores Across Groups",
+    "subtitle": "The same risk score can mean a different real-world risk depending on the patient's group.",
+    "summary": "Learn why a clinical risk score that is well-calibrated on average can still be miscalibrated for a specific patient group, so identical scores carry different real-world stakes. Covers reliability diagrams, calibration slope and intercept per group, why a shared score can be calibrated to the wrong target (as in Obermeyer et al. 2019), and why small subgroups make high-risk calibration hardest to verify. Anchored to the Healthcare Readmission audit with per-group reliability and calibration-slope detection code.",
+    "tags": [
+      "metrics",
+      "detection"
+    ]
   }
 ];

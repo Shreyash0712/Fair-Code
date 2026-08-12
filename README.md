@@ -99,13 +99,13 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 
 - [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) - why a 95% accurate model can still systematically miss high-risk patients from specific demographic groups
 - [False Positives vs. False Negatives in Medical Risk Models](explainers/false-positives-vs-false-negatives.md) - how the direction of error matters, and why false negatives cluster in historically undertreated groups
+- [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) - why a risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group
 
 **On the roadmap (the freeze-safe focus while new audits are on hold):**
 
 - Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR, spirometry, VBAC) bake bias into the math itself
 - The Obermeyer Case: When Cost Becomes a Proxy for Health Need
 - Underdiagnosis Bias: When the Label Itself Is Sicker for One Group
-- Miscalibration in Clinical Risk Scores Across Groups
 - Missing Data as Bias in Electronic Health Records
 - Why Medical Imaging Models Fail on Underrepresented Groups
 
@@ -699,6 +699,7 @@ features = [
 | [What Is a Confusion Matrix?](explainers/confusion-matrix.md) | The foundational building block behind most fairness metrics |
 | [What Is a ROC Curve and AUC?](explainers/roc-curve-auc.md) | Why a single threshold-free AUC can look strong while hiding where the decision threshold sits and whether ranking quality is equal across groups |
 | [Why Accuracy Is Not Enough in Healthcare AI](explainers/accuracy-not-enough-healthcare-ai.md) | Why a 95%-accurate model can still miss the sickest patients in one group - the accuracy paradox on rare outcomes, per-group recall gaps, and why a missed case and a false alarm are never equally costly |
+| [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, and why small subgroups make that hardest to verify at the score that matters most |
 
  ---
 
@@ -969,7 +970,8 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 - [x] Explainer: What Is Model Drift?
 - [x] Explainer: What Is Selection Bias?
 - [x] Explainer: What Is Automation Bias?
-- [ ] Explainer: Why Accuracy Is Not Enough in Healthcare AI
+- [x] Explainer: Why Accuracy Is Not Enough in Healthcare AI
+- [x] Explainer: Miscalibration in Clinical Risk Scores Across Groups
 - [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
 - [ ] HMDA mortgage lending bias
 - [ ] LLM bias audit
@@ -997,7 +999,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Combined Social Reach (Instagram + LinkedIn) | 26K+ |
 | Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
-| Explainers Published | 36 |
+| Explainers Published | 37 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 
