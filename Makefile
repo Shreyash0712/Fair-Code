@@ -17,7 +17,7 @@ setup:  ## Install the package plus the dev tools (pytest, pre-commit)
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
 
-build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images
+build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images (dark + light)
 	$(PY) scripts/build_explainers.py
 	$(PY) scripts/generate_og_images.py
 
