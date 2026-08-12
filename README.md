@@ -115,6 +115,9 @@ This directly connects Fair Code to the broader responsible AI in healthcare con
 
 ## Repository Structure
 
+<details>
+<summary><strong>Show the full directory tree →</strong></summary>
+
 ```
 Fair-Code/
 │
@@ -242,6 +245,8 @@ Fair-Code/
 └── requirements-lock.txt                # exact `pip freeze` - for reproducing results/
 ```
 
+</details>
+
 ---
 
 ## Projects
@@ -249,6 +254,9 @@ Fair-Code/
 ### 01 · COMPAS - Criminal Justice Bias
 
 > *"A real algorithm used in US courtrooms flags Black defendants as high-risk at 87%. White defendants? 0.4%. Same system. Different outcomes."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `compas-scores-raw.csv` - ProPublica's public COMPAS dataset (70,000+ records)
 
@@ -290,11 +298,16 @@ X = pd.get_dummies(df[[
 
 📓 **[Full notebook walkthrough →](notebooks/01_compas_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 02 · AI Fair Recruitment - Hiring Bias
 
 > *"Women were hired 20.9% less than equally qualified men. The algorithm wasn't told to discriminate. It learned to."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `AI_Fair_Recruitment_Dataset.csv` - Recruitment dataset with gender, age, experience, and technical test scores
 
@@ -333,11 +346,16 @@ X = df[['experience_years', 'test_score']]
 
 📓 **[Full notebook walkthrough →](notebooks/02_hiring_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 03 · German Credit Lending - Lending Bias
 
 > *"A credit scoring model rates young applicants as bad credit risks at 6.39 percentage points higher than older applicants with identical financial profiles. It learned age from job tenure."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `credit_customers.csv` - UCI Statlog German Credit dataset (1,000 records) · [Kaggle source](https://www.kaggle.com/datasets/ppb00x/credit-risk-customers)
 
@@ -383,11 +401,16 @@ Dropped `age` and `employment`. Retained only objective financial signals.
 
 📓 **[Full notebook walkthrough →](notebooks/03_german_credit_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 04 · Insurance Denial - Healthcare Bias
 
 > *"An insurance AI flags older patients for high-cost claims at 7.93 percentage points higher than younger patients - using BMI, smoking status, and diabetic status as proxies for race and class."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `insurance.csv` - [Kaggle: Insurance Claim Analysis](https://www.kaggle.com/datasets/thedevastator/insurance-claim-analysis-demographic-and-health) (1,340 records)
 
@@ -427,11 +450,16 @@ Dropped `age`, `gender`, `bmi`, `smoker`, and `diabetic`. Retained only objectiv
 
 📓 **[Full notebook walkthrough →](notebooks/04_insurance_denial_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 05 · Benefits Denial - Welfare Eligibility Bias
 
 > *"An automated means-test flags male applicants as ineligible at 18 percentage points higher than female applicants - not because of what they earn, but because of who they're married to."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `adult.csv` - UCI Adult Census Income dataset (48,842 records) · [Kaggle source](https://www.kaggle.com/datasets/wenruliu/adult-income-dataset)
 
@@ -494,11 +522,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/05_benefits_denial_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 06 · Healthcare Readmission - Clinical Bias
 
 > *"A hospital readmission model flags patients for high clinical risk using payer code and discharge destination - variables that measure insurance access, not medical severity."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `diabetic_data.csv` - Diabetes 130-US Hospitals 1999–2008 (101,766 records) · [Kaggle source](https://www.kaggle.com/datasets/brandao/diabetes)
 
@@ -586,11 +619,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ### 07 · Tenant Screening - Rental Application Bias
 
 > *"A tenant-screening company buys a criminal-history risk score and hands the landlord a high-risk flag on the applicant - a flag that fires 7 points more often for Black applicants than white ones, before the landlord reads a single word of the application."*
+
+<details>
+<summary><strong>Show the dataset, before/after code, and results →</strong></summary>
 
 **Dataset:** `tenant-screening-data.csv` - NIJ's Recidivism Challenge Full Dataset, Georgia Dept. of Community Supervision (25,835 records) · [DOJ/NIJ source](https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk)
 
@@ -657,9 +695,16 @@ features = [
 
 📓 **[Full notebook walkthrough →](notebooks/07_tenant_screening_bias_audit.ipynb)**
 
+</details>
+
 ---
 
 ## Explainers
+
+39 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
+
+<details>
+<summary><strong>Show all 39 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -703,7 +748,9 @@ features = [
 | [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) | Why unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as "nothing notable" is really reading "less-observed" |
 | [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) | Why dermatology, radiology, and retinal models underperform on groups thin in the training data, and the more insidious failure mode: shortcut learning on a scanner or hospital site instead of the pathology |
 
- ---
+</details>
+
+---
 
 ## Methodology
 
@@ -934,6 +981,15 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 
 ## What's Next
 
+**Not yet done:**
+
+- [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
+- [ ] HMDA mortgage lending bias
+- [ ] LLM bias audit
+
+<details>
+<summary><strong>Show 44 completed items →</strong></summary>
+
 - [x] COMPAS Criminal Justice Bias
 - [x] AI Fair Recruitment Bias
 - [x] German Credit Lending Bias
@@ -976,11 +1032,10 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 - [x] Explainer: Miscalibration in Clinical Risk Scores Across Groups
 - [x] Explainer: Missing Data as Bias in Electronic Health Records
 - [x] Explainer: Why Medical Imaging Models Fail on Underrepresented Groups
-- [ ] Facial recognition accuracy gaps (MIT Gender Shades methodology)
-- [ ] HMDA mortgage lending bias
-- [ ] LLM bias audit
 - [x] Fairness audit web dashboard - [Open Dataset Profiler](#open-dataset-profiler)
 - [x] Bias detection utility library (`faircode/` module)
+
+</details>
 
 Want to contribute an audit or explainer? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
