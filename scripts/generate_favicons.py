@@ -31,7 +31,8 @@ import xml.etree.ElementTree as ET
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-LOGO_SVG = ROOT / "logo.svg"
+ICONS_DIR = ROOT / "assets" / "icons"
+LOGO_SVG = ICONS_DIR / "logo.svg"
 SVG_NS = "{http://www.w3.org/2000/svg}"
 
 DARK_TILE_BG = "#0D0F0E"
@@ -86,15 +87,15 @@ def main():
     spec = _parse_mark(LOGO_SVG)
 
     # Favicons: transparent, ink mark - logo.svg's own colors.
-    render(spec, 16, transparent=True).save(ROOT / "favicon-16x16.png")
+    render(spec, 16, transparent=True).save(ICONS_DIR / "favicon-16x16.png")
     favicon_32 = render(spec, 32, transparent=True)
-    favicon_32.save(ROOT / "favicon-32x32.png")
-    favicon_32.save(ROOT / "favicon.ico", sizes=[(16, 16), (32, 32)])
+    favicon_32.save(ICONS_DIR / "favicon-32x32.png")
+    favicon_32.save(ICONS_DIR / "favicon.ico", sizes=[(16, 16), (32, 32)])
 
     # App/social icons: opaque dark tile, light mark.
-    render(spec, 180, transparent=False, mark_fill=LIGHT_MARK).save(ROOT / "apple-touch-icon.png")
-    render(spec, 192, transparent=False, mark_fill=LIGHT_MARK).save(ROOT / "icon-192.png")
-    render(spec, 512, transparent=False, mark_fill=LIGHT_MARK).save(ROOT / "icon-512.png")
+    render(spec, 180, transparent=False, mark_fill=LIGHT_MARK).save(ICONS_DIR / "apple-touch-icon.png")
+    render(spec, 192, transparent=False, mark_fill=LIGHT_MARK).save(ICONS_DIR / "icon-192.png")
+    render(spec, 512, transparent=False, mark_fill=LIGHT_MARK).save(ICONS_DIR / "icon-512.png")
 
     print("Regenerated favicon-16x16.png, favicon-32x32.png, favicon.ico, "
           "apple-touch-icon.png, icon-192.png, and icon-512.png from logo.svg")
