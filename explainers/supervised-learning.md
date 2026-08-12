@@ -36,7 +36,7 @@ model.fit(X_train, y_train)
 predictions = model.predict(X_test)
 ```
 
-`train_test_split` sets aside 20% of the historical examples so the model's generalisation can be checked on rows it never trained on. `model.fit(X_train, y_train)` is the entire learning step - the Random Forest searches for splits across `gender`, `age`, `experience_years`, and `test_score` that best separate hired from not-hired in the training labels. `model.predict(X_test)` applies that learned mapping to the held-out rows. Nothing in this code path checks whether the mapping it found leans on `gender` for a legitimate reason or an illegitimate one - the fit step optimises for one thing only: matching the labels it was shown.
+`train_test_split` sets aside 20% of the historical examples so the model's generalization can be checked on rows it never trained on. `model.fit(X_train, y_train)` is the entire learning step - the Random Forest searches for splits across `gender`, `age`, `experience_years`, and `test_score` that best separate hired from not-hired in the training labels. `model.predict(X_test)` applies that learned mapping to the held-out rows. Nothing in this code path checks whether the mapping it found leans on `gender` for a legitimate reason or an illegitimate one - the fit step optimises for one thing only: matching the labels it was shown.
 
 ### Two Different Kinds of Labels
 
@@ -164,7 +164,7 @@ A model that reproduces its training labels with high accuracy has done its job 
 
 A model learns the relationship between features and labels *as it existed in the training data at the time it was collected*. If the applicant pool changes, if hiring practices shift, or if the model is deployed on a different population than it was trained on, the learned mapping stops describing reality. Supervised learning has no built-in signal that this has happened - it will keep applying the old mapping with the same confidence. See [What Is Distribution Shift?](distribution-shift.md).
 
-### 4. Generalisation Assumes the Future Looks Like the Past
+### 4. generalization Assumes the Future Looks Like the Past
 
 The entire premise of a train/test split is that held-out rows are a fair preview of new, unseen cases. That assumption holds when the test set is drawn from the same process as future real-world inputs, and breaks down when it isn't - for instance, if the training data under-represents a group, the model's confidence on that group can be misleadingly high even at evaluation time, not just after deployment.
 

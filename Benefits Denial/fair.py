@@ -77,8 +77,8 @@ print("""
 
   occupation     → proxy: racial occupational segregation
                    means job titles carry race signal.
-                   Penalising low-skill occupations
-                   penalises race through labour history.
+                   penalizing low-skill occupations
+                   penalizes race through labour history.
 
   fnlwgt         → census sampling weight. No causal link
                    to individual eligibility. May carry

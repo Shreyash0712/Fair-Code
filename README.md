@@ -91,7 +91,7 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 
 **Key healthcare audits:**
 
-- **[Insurance Denial](Insurance%20Denial/)** - An insurance model uses BMI, smoking status, and diabetic status as proxies for race and class, flagging older and female patients for high-cost claims at elevated rates unrelated to actual medical risk.
+- **[Insurance Denial](Insurance%20Denial/)** - An insurance model uses BMI, smoking status, and diabetes status as proxies for race and class, flagging older and female patients for high-cost claims at elevated rates unrelated to actual medical risk.
 - **[Benefits Denial](Benefits%20Denial/)** - An automated welfare means-test flags men for ineligibility at 18 percentage points higher than women - not because of income, but because of who they are married to.
 - **[Healthcare Readmission](Healthcare%20Readmission/)** - A hospital readmission model flags patients for high clinical risk using payer code and discharge destination - variables that measure insurance access, not medical severity.
 
@@ -387,7 +387,7 @@ Dropped `age` and `employment`. Retained only objective financial signals.
 
 ### 04 · Insurance Denial - Healthcare Bias
 
-> *"An insurance AI flags older patients for high-cost claims at 7.93 percentage points higher than younger patients - using BMI, smoking status, and diabetic status as proxies for race and class."*
+> *"An insurance AI flags older patients for high-cost claims at 7.93 percentage points higher than younger patients - using BMI, smoking status, and diabetes status as proxies for race and class."*
 
 **Dataset:** `insurance.csv` - [Kaggle: Insurance Claim Analysis](https://www.kaggle.com/datasets/thedevastator/insurance-claim-analysis-demographic-and-health) (1,340 records)
 
@@ -423,7 +423,7 @@ Dropped `age`, `gender`, `bmi`, `smoker`, and `diabetic`. Retained only objectiv
 
 **Result: 60% reduction in age gap. 72% reduction in gender gap.**
 
-> **Key insight:** Insurance AI models don't need to name race to discriminate by race. BMI, smoking, and diabetic status are the `CustodyStatus` of health insurance - clinical-sounding features that carry protected-class signal because of structural inequalities baked into American healthcare.
+> **Key insight:** Insurance AI models don't need to name race to discriminate by race. BMI, smoking, and diabetes status are the `CustodyStatus` of health insurance - clinical-sounding features that carry protected-class signal because of structural inequalities baked into American healthcare.
 
 📓 **[Full notebook walkthrough →](notebooks/04_insurance_denial_bias_audit.ipynb)**
 
