@@ -29,11 +29,11 @@
 
 Everyone below has at least one merged pull request on
 [`yakew7/Fair-Code`](https://github.com/yakew7/Fair-Code). Entries are grouped by volume of merged
-work, then ordered by the date of the first merged PR — earliest first. Within each entry, the PR
+work, then ordered by the date of the first merged PR - earliest first. Within each entry, the PR
 numbers link the claim to the actual diff, so nothing here is an unverifiable "thanks to".
 
 **Snapshot:** 2026-08-13, covering everything merged through **PR #232**.
-Anything merged after that date is real and welcome, but is not yet reflected here — the
+Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
 
@@ -53,7 +53,7 @@ the [Git identity map](#git-identity-map) so `git shortlog -sne` can be reconcil
 
 | | Who | Role |
 |:--|-----|------|
-| <a href="https://github.com/yakew7"><img src="https://github.com/yakew7.png" width="48" height="48" alt="yakew7"></a> | **Yash Kewlani** — [@yakew7](https://github.com/yakew7) | Creator and maintainer. Author of the seven audits, the `faircode` library and benchmark harness, the Open Dataset Profiler, the website, and the bulk of the 39 explainers. Code owner for `faircode/`, `paper/`, every `audit.yaml`, `explainers/`, and project policy (`CLAUDE.md`, `CONTRIBUTING.md`). |
+| <a href="https://github.com/yakew7"><img src="https://github.com/yakew7.png" width="48" height="48" alt="yakew7"></a> | **Yash Kewlani** - [@yakew7](https://github.com/yakew7) | Creator and maintainer. Author of the seven audits, the `faircode` library and benchmark harness, the Open Dataset Profiler, the website, and the bulk of the 39 explainers. Code owner for `faircode/`, `paper/`, every `audit.yaml`, `explainers/`, and project policy (`CLAUDE.md`, `CONTRIBUTING.md`). |
 
 Contact: [yashkewlani2020@gmail.com](mailto:yashkewlani2020@gmail.com) · [@thefaircodeproject](https://instagram.com/thefaircodeproject)
 
@@ -63,7 +63,7 @@ Contact: [yashkewlani2020@gmail.com](mailto:yashkewlani2020@gmail.com) · [@thef
 
 People carrying sustained ownership of an area, reflected in [`.github/CODEOWNERS`](.github/CODEOWNERS).
 
-### Ahmed Mohamed Abdelhady Kamel — [@ahmdkaml](https://github.com/ahmdkaml)
+### Ahmed Mohamed Abdelhady Kamel - [@ahmdkaml](https://github.com/ahmdkaml)
 
 **29 merged PRs · 40 commits · first merged 2026-07-31**
 
@@ -78,7 +78,7 @@ project by volume, concentrated in two areas:
 - JS/Python profiler parity tests ([#126](https://github.com/yakew7/Fair-Code/pull/126)), HTML report smoke tests ([#172](https://github.com/yakew7/Fair-Code/pull/172)), `--fail-under` equality test ([#123](https://github.com/yakew7/Fair-Code/pull/123)), XLSX tests in CI ([#200](https://github.com/yakew7/Fair-Code/pull/200))
 
 **CI, supply chain & freeze safety**
-- CI enforcement of the frozen files ([#157](https://github.com/yakew7/Fair-Code/pull/157)) — the guardrail that makes the paper freeze in [CLAUDE.md](CLAUDE.md) mechanical rather than a matter of trust
+- CI enforcement of the frozen files ([#157](https://github.com/yakew7/Fair-Code/pull/157)) - the guardrail that makes the paper freeze in [CLAUDE.md](CLAUDE.md) mechanical rather than a matter of trust
 - Benchmark resample/permutation counts warn when they drift from the paper defaults ([#226](https://github.com/yakew7/Fair-Code/pull/226)); results-workflow figure-filename drift check ([#195](https://github.com/yakew7/Fair-Code/pull/195)); audit-manifest dataset column validation ([#156](https://github.com/yakew7/Fair-Code/pull/156))
 - CodeQL code scanning ([#153](https://github.com/yakew7/Fair-Code/pull/153), upgraded to v4 in [#229](https://github.com/yakew7/Fair-Code/pull/229)), Dependabot extended to GitHub Actions ([#146](https://github.com/yakew7/Fair-Code/pull/146))
 - `CODEOWNERS` itself ([#142](https://github.com/yakew7/Fair-Code/pull/142)) and the CI-automation ownership entry ([#174](https://github.com/yakew7/Fair-Code/pull/174)), workflow YAML validation ([#225](https://github.com/yakew7/Fair-Code/pull/225)), `CITATION.cff` validation ([#223](https://github.com/yakew7/Fair-Code/pull/223)), optional extras in `make setup` ([#222](https://github.com/yakew7/Fair-Code/pull/222)), Actions maintenance docs ([#196](https://github.com/yakew7/Fair-Code/pull/196)), static favicon assets ([#154](https://github.com/yakew7/Fair-Code/pull/154))
@@ -89,7 +89,7 @@ project by volume, concentrated in two areas:
 
 Ordered by first merged PR.
 
-### Evan Jain — [@evanjain-dot](https://github.com/evanjain-dot)
+### Evan Jain - [@evanjain-dot](https://github.com/evanjain-dot)
 
 **4 merged PRs · 7 commits · first merged 2026-05-18**
 
@@ -97,46 +97,46 @@ Author of the second PR ever merged into the repo. Three explainers plus a CI ch
 [Sampling Bias](explainers/sampling-bias.md) ([#2](https://github.com/yakew7/Fair-Code/pull/2)),
 [Counterfactual Fairness](explainers/counterfactual-fairness.md) ([#31](https://github.com/yakew7/Fair-Code/pull/31)),
 [Reinforcement Learning](explainers/reinforcement-learning.md) ([#48](https://github.com/yakew7/Fair-Code/pull/48)),
-and `codeowners-access.yml` ([#224](https://github.com/yakew7/Fair-Code/pull/224)) — which verifies that every user
+and `codeowners-access.yml` ([#224](https://github.com/yakew7/Fair-Code/pull/224)), which verifies that every user
 listed in `CODEOWNERS` actually holds repo write access, closing issue #219.
 
 ### [@shwetagupta1234](https://github.com/shwetagupta1234)
 
 **1 merged PR · 2 commits · first merged 2026-05-18**
 
-The [SHAP Values](explainers/shap-values.md) explainer ([#12](https://github.com/yakew7/Fair-Code/pull/12)) — how to see what actually drove a model's decision, and how to use that to catch bias.
+The [SHAP Values](explainers/shap-values.md) explainer ([#12](https://github.com/yakew7/Fair-Code/pull/12)) - how to see what actually drove a model's decision, and how to use that to catch bias.
 
 ### [@YashKewlani1](https://github.com/YashKewlani1)
 
 **1 merged PR · 10 commits · first merged 2026-05-18**
 
-PR [#1](https://github.com/yakew7/Fair-Code/pull/1) — the [German Credit Lending](German%20Credit%20Lending/) audit: dataset, `unfair.py`, `fair.py`, terminal screenshots, and the README section. The first merged pull request in the project's history, and the third audit to land.
+PR [#1](https://github.com/yakew7/Fair-Code/pull/1) - the [German Credit Lending](German%20Credit%20Lending/) audit: dataset, `unfair.py`, `fair.py`, terminal screenshots, and the README section. The first merged pull request in the project's history, and the third audit to land.
 
-### Tanish Goyal — [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev)
+### Tanish Goyal - [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev)
 
 **1 merged PR · 2 commits · first merged 2026-05-19**
 
-The [Equalized Odds](explainers/equalized-odds.md) explainer ([#13](https://github.com/yakew7/Fair-Code/pull/13)) — the metric that catches a model treating two groups differently even when overall accuracy looks fine.
+The [Equalized Odds](explainers/equalized-odds.md) explainer ([#13](https://github.com/yakew7/Fair-Code/pull/13)) - the metric that catches a model treating two groups differently even when overall accuracy looks fine.
 
-### Rajveer Vadnal — [@Rajveerx11](https://github.com/Rajveerx11)
+### Rajveer Vadnal - [@Rajveerx11](https://github.com/Rajveerx11)
 
 **1 merged PR · 3 commits · first merged 2026-05-19**
 
-The [Disparate Impact](explainers/disparate-impact.md) explainer ([#14](https://github.com/yakew7/Fair-Code/pull/14)) — the four-fifths rule, the legal threshold under US employment law — landed alongside work on the AI Fair Recruitment audit files.
+The [Disparate Impact](explainers/disparate-impact.md) explainer ([#14](https://github.com/yakew7/Fair-Code/pull/14)), covering the four-fifths rule and the legal threshold it sets under US employment law, landed alongside work on the AI Fair Recruitment audit files.
 
-### Aarav Saroliya — [@Aarav1611](https://github.com/Aarav1611)
+### Aarav Saroliya - [@Aarav1611](https://github.com/Aarav1611)
 
 **1 merged PR · 1 commit · first merged 2026-05-23**
 
-The first draft of the [Calibration](explainers/calibration.md) explainer ([#26](https://github.com/yakew7/Fair-Code/pull/26)) — why a model can be equally accurate for everyone and still treat them unequally.
+The first draft of the [Calibration](explainers/calibration.md) explainer ([#26](https://github.com/yakew7/Fair-Code/pull/26)) - why a model can be equally accurate for everyone and still treat them unequally.
 
-### Anjali Tiwari — [@cannotdoit13](https://github.com/cannotdoit13)
+### Anjali Tiwari - [@cannotdoit13](https://github.com/cannotdoit13)
 
 **2 merged PRs · 2 commits · first merged 2026-06-01**
 
 Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.com/yakew7/Fair-Code/pull/27)), then standardised path resolution across *every* audit and added the workflow that runs all of them on each push and PR ([#29](https://github.com/yakew7/Fair-Code/pull/29)). That PR is the origin of [`audits.yml`](.github/workflows/audits.yml) and of the "each script resolves its dataset relative to its own location" guarantee in the README.
 
-### Shreyash Swami — [@Shreyash0712](https://github.com/Shreyash0712)
+### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
 
 **3 merged PRs · 6 commits · first merged 2026-06-05**
 
@@ -148,41 +148,41 @@ Five explainers and two rounds of workflow maintenance:
 [Protected Attribute](explainers/protected-attribute.md) in a single PR ([#102](https://github.com/yakew7/Fair-Code/pull/102)).
 Also fixed the first-interaction greeting trigger and upgraded the audits workflow's action versions ([#46](https://github.com/yakew7/Fair-Code/pull/46)).
 
-### Anay Dhawan — [@AnayDhawan](https://github.com/AnayDhawan)
+### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
 
 **2 merged PRs · 2 commits · first merged 2026-07-14**
 
-[Unsupervised Learning](explainers/unsupervised-learning.md) ([#74](https://github.com/yakew7/Fair-Code/pull/74)) — k-means on the Benefits Denial dataset recovering a sex split without sex ever being a feature — and [Model Drift](explainers/model-drift.md) ([#75](https://github.com/yakew7/Fair-Code/pull/75)), on why a fairness gap measured once at launch is not guaranteed to hold months later.
+[Unsupervised Learning](explainers/unsupervised-learning.md) ([#74](https://github.com/yakew7/Fair-Code/pull/74)), on k-means over the Benefits Denial dataset recovering a sex split without sex ever being a feature, and [Model Drift](explainers/model-drift.md) ([#75](https://github.com/yakew7/Fair-Code/pull/75)), on why a fairness gap measured once at launch is not guaranteed to hold months later.
 
 ### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
 **3 merged PRs · 11 commits · first merged 2026-07-06**
 
-The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) — the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)).
+The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)).
 
-### Ahmad Alguydi — [@tomatotomata](https://github.com/tomatotomata)
+### Ahmad Alguydi - [@tomatotomata](https://github.com/tomatotomata)
 
 **1 merged PR · 1 commit · first merged 2026-07-31**
 
-The `faircode profile --fail-under N` CI gate ([#116](https://github.com/yakew7/Fair-Code/pull/116)) — exit code `1` with the failing score on stderr when a dataset's representation score falls below the threshold, with report output kept on stdout. This is what makes the Profiler usable as a pipeline check rather than only a human-read report.
+The `faircode profile --fail-under N` CI gate ([#116](https://github.com/yakew7/Fair-Code/pull/116)) - exit code `1` with the failing score on stderr when a dataset's representation score falls below the threshold, with report output kept on stdout. This is what makes the Profiler usable as a pipeline check rather than only a human-read report.
 
-### Anuj Kamdar — [@anujkamdar](https://github.com/anujkamdar)
+### Anuj Kamdar - [@anujkamdar](https://github.com/anujkamdar)
 
 **1 merged PR · 1 commit · first merged 2026-08-05**
 
-Fixed the site's theme toggle to respect the OS `prefers-color-scheme` setting ([#143](https://github.com/yakew7/Fair-Code/pull/143)) — applied across every generated explainer page.
+Fixed the site's theme toggle to respect the OS `prefers-color-scheme` setting ([#143](https://github.com/yakew7/Fair-Code/pull/143)) - applied across every generated explainer page.
 
-### Kumar Mangalam — [@ImMortaL0P](https://github.com/ImMortaL0P)
+### Kumar Mangalam - [@ImMortaL0P](https://github.com/ImMortaL0P)
 
 **1 merged PR · 1 commit · first merged 2026-08-06**
 
-JSON edge-case coverage and clear parse-error messages on *both* engines ([#175](https://github.com/yakew7/Fair-Code/pull/175)) — `faircode/loaders_extra.py`, `assets/profiler-engine.js`, and a shared parity script, so the CLI and the browser fail the same way on the same bad file.
+JSON edge-case coverage and clear parse-error messages on *both* engines ([#175](https://github.com/yakew7/Fair-Code/pull/175)) - `faircode/loaders_extra.py`, `assets/profiler-engine.js`, and a shared parity script, so the CLI and the browser fail the same way on the same bad file.
 
-### Swastik Yadav — [@Swastik-Yadav](https://github.com/Swastik-Yadav)
+### Swastik Yadav - [@Swastik-Yadav](https://github.com/Swastik-Yadav)
 
 **2 merged PRs · 2 commits · first merged 2026-08-07**
 
-A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) — prose only, leaving every reported number untouched, as the freeze requires.
+A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) - prose only, leaving every reported number untouched, as the freeze requires.
 
 ---
 
@@ -194,8 +194,8 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 |------|--------------|
 | **Audits** (`*/unfair.py`, `*/fair.py`, `audit.yaml`) | [@yakew7](https://github.com/yakew7), [@YashKewlani1](https://github.com/YashKewlani1), [@Rajveerx11](https://github.com/Rajveerx11), [@cannotdoit13](https://github.com/cannotdoit13) |
 | **Explainers** (`explainers/`) | [@yakew7](https://github.com/yakew7), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Rajveerx11](https://github.com/Rajveerx11), [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), [@shwetagupta1234](https://github.com/shwetagupta1234), [@Aarav1611](https://github.com/Aarav1611) |
-| **Profiler — CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P) |
-| **Profiler — web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P) |
+| **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P) |
+| **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P) |
 | **Benchmark harness & paper freeze** | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml) |
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
@@ -211,7 +211,7 @@ and excluded from the avatar grid above.
 
 | Bot | Merged PRs | What it does |
 |-----|:---------:|--------------|
-| [dependabot](https://github.com/apps/dependabot) | 24 | Dependency and GitHub Actions version bumps, configured in [`.github/dependabot.yml`](.github/dependabot.yml). **Note:** its `pip` scan also targets [`requirements-lock.txt`](requirements-lock.txt), which is frozen — those bumps get reverted, not merged. See [CLAUDE.md §1](CLAUDE.md). |
+| [dependabot](https://github.com/apps/dependabot) | 24 | Dependency and GitHub Actions version bumps, configured in [`.github/dependabot.yml`](.github/dependabot.yml). **Note:** its `pip` scan also targets [`requirements-lock.txt`](requirements-lock.txt), which is frozen - those bumps get reverted, not merged. See [CLAUDE.md §1](CLAUDE.md). |
 | [vercel](https://github.com/apps/vercel) | 2 | Web Analytics and Speed Insights wiring for the deployed site. |
 
 ---
@@ -239,8 +239,8 @@ makes `git shortlog -sne` reconcilable with the list above.
 | [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev) | `TanishGoyal-Dev` |
 | [@shwetagupta1234](https://github.com/shwetagupta1234) | `shwetagupta1234` |
 
-If your name is wrong, missing, or you would rather be listed under a different handle — or not
-listed at all — open an issue or a one-line PR against this file. It gets merged, no questions asked.
+If your name is wrong, missing, or you would rather be listed under a different handle, or not
+listed at all, open an issue or a one-line PR against this file. It gets merged, no questions asked.
 
 ---
 
@@ -251,7 +251,7 @@ listed at all — open an issue or a one-line PR against this file. It gets merg
    rules, and what will *not* be merged.
 2. Open an issue (or comment on an existing one) before starting anything substantial, so two people
    don't write the same explainer.
-3. Open the PR. Add yourself to this file in the same PR — a new entry under
+3. Open the PR. Add yourself to this file in the same PR - a new entry under
    [Contributors](#contributors) in first-merged order, with links to the files you touched.
 4. When it merges, you're in.
 
@@ -259,10 +259,10 @@ listed at all — open an issue or a one-line PR against this file. It gets merg
 
 | Contribution | Status during the freeze |
 |--------------|--------------------------|
-| Explainers, docs, prose, website content, contributor tooling | ✅ Open — this is where the work is |
+| Explainers, docs, prose, website content, contributor tooling | ✅ Open - this is where the work is |
 | Profiler features, tests, CI, loaders | ✅ Open, provided `results/` and the frozen files don't move |
-| **New audits** | ⏸️ **Not merged to `main`** — the paper states exactly seven domains. Your PR gets parked on a branch or labeled `post-paper` and merged after publication. This is a timing hold, not a rejection, and you are credited either way. |
-| Anything under `paper/results-frozen/`, `results/`, the core `faircode/` analysis modules, any `audit.yaml`, any dataset CSV, or `requirements-lock.txt` | ❌ Frozen. Found a genuine bug in the analysis code? [Open an issue](https://github.com/yakew7/Fair-Code/issues) — do not silently fix it. |
+| **New audits** | ⏸️ **Not merged to `main`** - the paper states exactly seven domains. Your PR gets parked on a branch or labeled `post-paper` and merged after publication. This is a timing hold, not a rejection, and you are credited either way. |
+| Anything under `paper/results-frozen/`, `results/`, the core `faircode/` analysis modules, any `audit.yaml`, any dataset CSV, or `requirements-lock.txt` | ❌ Frozen. Found a genuine bug in the analysis code? [Open an issue](https://github.com/yakew7/Fair-Code/issues) - do not silently fix it. |
 
 ---
 
