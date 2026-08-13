@@ -1071,10 +1071,7 @@ Thanks to everyone who has contributed audits, explainers, or documentation to F
 [![Contributors](https://contrib.rocks/image?repo=yakew7/Fair-Code&excludeBots=true)](https://github.com/yakew7/Fair-Code/graphs/contributors)
 
 *The grid above is auto-generated from GitHub's contributors graph, which can lag a merged PR by
-up to a few days. Most recently merged, not yet reflected above:
-[@Swastik-Yadav](https://github.com/Swastik-Yadav) (#191),
-[@ImMortaL0P](https://github.com/ImMortaL0P) (#175),
-[@anujkamdar](https://github.com/anujkamdar) (#143).*
+up to a few days.
 
 To add yourself here, open a PR alongside your contribution. See the full commit-level history on [GitHub](https://github.com/yakew7/Fair-Code/graphs/contributors).
 
