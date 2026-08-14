@@ -11,7 +11,6 @@ import pytest
 yaml = pytest.importorskip("yaml", reason="manifest loading needs the optional pyyaml extra")
 
 from faircode.manifest import (
-    Manifest,
     ProtectedAttribute,
     RowFilter,
     TargetSpec,
