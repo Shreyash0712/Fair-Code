@@ -14,5 +14,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Enforce em-dash-free rule + check for broken internal doc links
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Enforce em-dash-free rule + check for broken doc links + ruff
         run: make lint
