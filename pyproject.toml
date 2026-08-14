@@ -13,6 +13,7 @@ authors = [{ name = "Yash Kewlani" }]
 keywords = ["fairness", "bias", "dataset", "profiling", "demographics", "audit"]
 dependencies = [
     "pandas>=2.0",
+    "Pillow>=11.1",
 ]
 
 [project.optional-dependencies]
