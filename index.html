@@ -1763,7 +1763,7 @@
     <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noopener noreferrer" class="nav-social-link">↗ Insta</a>
     <a href="https://www.linkedin.com/in/yash-kewlani-7ab090357" target="_blank" rel="noopener noreferrer" class="nav-social-link">↗ LinkedIn</a>
   </div>
-  <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">☀</button>
+  <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode" aria-pressed="false">☀</button>
   <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
     <span></span><span></span><span></span>
   </button>
@@ -3190,12 +3190,14 @@
   html.setAttribute('data-theme', saved);
   toggle.textContent = saved === 'light' ? '☾' : '☀';
   toggle.setAttribute('aria-label', saved === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+  toggle.setAttribute('aria-pressed', saved === 'dark' ? 'true' : 'false');
 
   function applyTheme(next) {
     html.setAttribute('data-theme', next);
     localStorage.setItem('fc-theme', next);
     toggle.textContent = next === 'light' ? '☾' : '☀';
     toggle.setAttribute('aria-label', next === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+    toggle.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
   }
 
   toggle.addEventListener('click', () => {

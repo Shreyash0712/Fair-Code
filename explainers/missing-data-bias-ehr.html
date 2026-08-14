@@ -178,7 +178,7 @@
       <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
       <div class="explainer-topbar-actions">
         <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/missing-data-bias-ehr.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
       </div>
     </div>
 
@@ -286,6 +286,7 @@ def flag_mnar_candidates(df, group_col, protected_col, missing_values=(&quot;?&q
         const current = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = current === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
       }
 
       syncTheme();

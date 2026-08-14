@@ -178,7 +178,7 @@
       <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
       <div class="explainer-topbar-actions">
         <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/false-positives-vs-false-negatives.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
       </div>
     </div>
 
@@ -307,6 +307,7 @@ def cost_weighted_threshold(y_true, y_prob, fn_cost=5, fp_cost=1, thresholds=Non
         const current = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = current === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
       }
 
       syncTheme();

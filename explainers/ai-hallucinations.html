@@ -112,7 +112,7 @@
         "url": "https://www.thefaircode.xyz/index.html#explainers"
       },
       "datePublished": "2026-06-05",
-      "dateModified": "2026-06-30"
+      "dateModified": "2026-08-12"
     },
     {
       "@type": "FAQPage",
@@ -178,7 +178,7 @@
       <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
       <div class="explainer-topbar-actions">
         <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/ai-hallucinations.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
       </div>
     </div>
 
@@ -330,6 +330,7 @@ audit_hallucination_risk(df_expanded, [&#x27;bmi_cat&#x27;, &#x27;smoker&#x27;, 
         const current = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = current === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
       }
 
       syncTheme();

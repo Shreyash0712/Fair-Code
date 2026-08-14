@@ -382,7 +382,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
       <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
       <div class="explainer-topbar-actions">
         <a class="explainer-source" href="{source_url}" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme">☀</button>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
       </div>
     </div>
 
@@ -406,6 +406,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
         const current = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = current === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
       }}
 
       syncTheme();
