@@ -13,6 +13,13 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: ruff
+        name: ruff (unused imports, undefined names, redefinitions)
+        entry: ruff check faircode scripts tests
+        language: system
+        pass_filenames: false
+        always_run: true
+
       - id: build-explainers
         name: regenerate explainer pages
         entry: python3 scripts/build_explainers.py
