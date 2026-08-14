@@ -147,7 +147,7 @@
       <a class="profiler-back" href="index.html">← Back to Fair Code</a>
       <div class="profiler-topbar-actions">
         <a class="profiler-source" href="https://github.com/yakew7/Fair-Code" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
-        <button class="profiler-theme-toggle" id="themeToggle" aria-label="Toggle theme">☀</button>
+        <button class="profiler-theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
       </div>
     </div>
 
@@ -312,6 +312,7 @@
         var cur = html.getAttribute('data-theme') || systemPref;
         toggle.textContent = cur === 'light' ? '☾' : '☀';
         toggle.setAttribute('aria-label', cur === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', cur === 'dark' ? 'true' : 'false');
       }
       sync();
       toggle.addEventListener('click', function () {
