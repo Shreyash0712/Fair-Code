@@ -14,13 +14,14 @@ keywords = ["fairness", "bias", "dataset", "profiling", "demographics", "audit"]
 dependencies = [
     "pandas>=2.0",
     "Pillow>=11.1",
+    "numpy>=1.24",
 ]
 
 [project.optional-dependencies]
 excel = ["openpyxl>=3.0"]
 parquet = ["pyarrow>=10.0"]
 proxy = ["scipy>=1.10"]
-benchmark = ["scikit-learn>=1.9.0", "pyyaml>=6.0", "fairlearn>=0.14.0"]
+benchmark = ["scikit-learn>=1.9.0", "pyyaml>=6.0", "fairlearn>=0.14.0", "matplotlib>=3.11"]
 
 [project.urls]
 Homepage = "https://github.com/yakew7/Fair-Code"
