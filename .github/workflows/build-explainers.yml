@@ -13,6 +13,8 @@ name: Build Explainers
 # erroring out trying to push.
 
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - "explainers/**.md"
