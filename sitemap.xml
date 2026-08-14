@@ -164,4 +164,19 @@
     <loc>https://www.thefaircode.xyz/explainers/medical-imaging-representation-gaps.html</loc>
     <lastmod>2026-08-12</lastmod>
   </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/obermeyer-cost-proxy.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/underdiagnosis-bias.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/race-correction-clinical-algorithms.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/reject-inference.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/base-rate-fallacy.html</loc>
+  </url>
 </urlset>
