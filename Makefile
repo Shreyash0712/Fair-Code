@@ -11,8 +11,8 @@ help:  ## Show the available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN{FS = ":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 
-setup:  ## Install the package plus the dev tools (pytest, pre-commit)
-	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pre-commit
+setup:  ## Install the package plus the dev tools (pytest, pre-commit, ruff)
+	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pre-commit ruff
 
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
@@ -24,9 +24,10 @@ build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG image
 favicons:  ## Regenerate favicon.ico/PNGs and apple-touch-icon.png from logo.svg
 	$(PY) scripts/generate_favicons.py
 
-lint:  ## Enforce the em-dash-free rule + check for broken internal doc links (mirrors the lint workflow)
+lint:  ## Enforce the em-dash-free rule + check for broken doc links + ruff (mirrors the lint workflow)
 	$(PY) scripts/check_em_dash.py
 	$(PY) scripts/check_broken_links.py
+	ruff check faircode scripts tests
 
 check: lint test  ## Run everything CI runs (lint + full test suite)
 	@echo "All checks passed."
