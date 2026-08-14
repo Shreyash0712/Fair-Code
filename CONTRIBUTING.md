@@ -70,12 +70,12 @@ If you are unsure whether an idea fits, open an issue first and ask.
 A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can catch failures before you open a PR:
 
 ```bash
-make setup             # install faircode + pytest + pre-commit
+make setup             # install faircode + pytest + pre-commit + ruff
 make check             # everything CI runs: lint + full test suite
 make test              # just the test suite
 make build-explainers  # regenerate explainer pages, sitemap, and OG images (dark + light) after editing explainers/*.md
 make favicons          # regenerate favicon.ico, apple-touch-icon.png, icon-{192,512}.png after editing logo.svg
-make lint              # em-dash-free check + broken internal doc link check
+make lint              # em-dash-free check + broken internal doc link check + ruff (unused imports, undefined names)
 ```
 
 Optionally install the git hooks so the checks run automatically:
