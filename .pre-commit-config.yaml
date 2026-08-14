@@ -32,5 +32,5 @@ repos:
         entry: python3 -m pytest tests/ -q
         language: system
         pass_filenames: false
-        always_run: true
         stages: [pre-push]
+        files: '^(faircode/.*|scripts/.*|tests/.*|assets/(profiler-engine\.js|profiler-compare\.js)|pyproject\.toml|requirements(-lock)?\.txt|\.github/CODEOWNERS|.*\.csv|.*/(fair|unfair)\.py|.*/audit\.yaml)$'

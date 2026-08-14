@@ -83,7 +83,7 @@ Optionally install the git hooks so the checks run automatically:
 ```bash
 pre-commit install
 ```
-The full test suite runs on `git push` and may take several seconds to tens of seconds because it includes the benchmark tests; this delay is expected. With the hooks installed, the em-dash lint runs on every commit (and explainer pages rebuild when you touch `explainers/*.md`), while the full test suite runs on `git push`. Run `make check` any time to reproduce CI on demand.
+With the hooks installed, the em-dash lint runs on every commit (and explainer pages rebuild when you touch `explainers/*.md`), while the full test suite runs on `git push` - but only when the push actually touches something the suite covers (`faircode/`, `scripts/`, `tests/`, a dataset CSV, an audit's `fair.py`/`unfair.py`, `pyproject.toml`, `requirements*.txt`, or `.github/CODEOWNERS`). A prose-only push (docs, `README.md`, `explainers/*.md`, website copy) skips it entirely. When it does run, expect several seconds to tens of seconds because it includes the benchmark tests. Run `make check` any time to reproduce CI on demand regardless of what changed.
 
 ---
 
