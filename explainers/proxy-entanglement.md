@@ -109,7 +109,7 @@ Removing the entire entangled cluster - rather than any single variable - is wha
 
 > **Key insight:** `payer_code`, `discharge_disposition_id`, and `number_inpatient` are not three independent proxies. They are three administrative measurements of the same underlying structural gap in US healthcare access. The causal direction matters: lower insurance coverage creates both restricted discharge destinations and fragmented inpatient histories. The patient does not bring the disparity - the system creates it, and then measures it three times. Removing only one measurement while leaving the other two is not mitigation; it is relabelling.
 
-📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
+📓 **[Full notebook walkthrough →](../notebooks/06_healthcare_readmission_bias_audit.ipynb)**
 
 ---
 

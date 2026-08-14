@@ -24,8 +24,9 @@ build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG image
 favicons:  ## Regenerate favicon.ico/PNGs and apple-touch-icon.png from logo.svg
 	$(PY) scripts/generate_favicons.py
 
-lint:  ## Enforce the em-dash-free rule (mirrors the lint workflow)
+lint:  ## Enforce the em-dash-free rule + check for broken internal doc links (mirrors the lint workflow)
 	$(PY) scripts/check_em_dash.py
+	$(PY) scripts/check_broken_links.py
 
-check: lint test  ## Run everything CI runs (em-dash lint + full test suite)
+check: lint test  ## Run everything CI runs (lint + full test suite)
 	@echo "All checks passed."
