@@ -83,8 +83,7 @@ Optionally install the git hooks so the checks run automatically:
 ```bash
 pre-commit install
 ```
-
-With the hooks installed, the em-dash lint runs on every commit (and explainer pages rebuild when you touch `explainers/*.md`), while the full test suite runs on `git push`. Run `make check` any time to reproduce CI on demand.
+The full test suite runs on `git push` and may take several seconds to tens of seconds because it includes the benchmark tests; this delay is expected. With the hooks installed, the em-dash lint runs on every commit (and explainer pages rebuild when you touch `explainers/*.md`), while the full test suite runs on `git push`. Run `make check` any time to reproduce CI on demand.
 
 ---
 
