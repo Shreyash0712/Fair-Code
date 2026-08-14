@@ -381,5 +381,60 @@ window.FAIR_CODE_EXPLAINERS = [
       "data",
       "detection"
     ]
+  },
+  {
+    "slug": "obermeyer-cost-proxy",
+    "title": "The Obermeyer Case: When Cost Becomes a Proxy for Health Need",
+    "subtitle": "How predicting healthcare spending instead of illness systematically under-refers sicker Black patients.",
+    "summary": "Explore the canonical case study of Obermeyer et al. (2019): why using healthcare cost as a target variable creates racial bias, how historical spending disparities corrupt algorithm predictions, and how to audit models for proxy label bias using the Healthcare Readmission audit.",
+    "tags": [
+      "data",
+      "detection",
+      "metrics"
+    ]
+  },
+  {
+    "slug": "underdiagnosis-bias",
+    "title": "Underdiagnosis Bias in Healthcare AI",
+    "subtitle": "When the label itself is sicker for one group.",
+    "summary": "Learn how historical gaps in diagnostic testing and healthcare access cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients. Covers the gap between true disease state and recorded EHR labels, why standard audits fail to catch unobserved false negatives, and biomarker-to-label consistency detection code.",
+    "tags": [
+      "data",
+      "detection",
+      "metrics"
+    ]
+  },
+  {
+    "slug": "race-correction-clinical-algorithms",
+    "title": "Race Correction in Clinical Algorithms",
+    "subtitle": "Why race-adjusted clinical formulas bake bias directly into the math.",
+    "summary": "Learn how race coefficients in formulas like eGFR kidney function, spirometry lung reference values, and the VBAC calculator delay care for Black and minority patients, why removing them is complex, and how to detect explicit race multipliers in clinical code.",
+    "tags": [
+      "data",
+      "detection",
+      "metrics"
+    ]
+  },
+  {
+    "slug": "reject-inference",
+    "title": "What Is Reject Inference?",
+    "subtitle": "Why models trained only on approved applicants miss the risk of everyone else.",
+    "summary": "Learn how missing ground-truth outcomes for rejected applicants create sample selection bias in lending, hiring, and insurance models, and how correction techniques like IPW, parceling, and Heckman models attempt to fix it. Anchored to German Credit Lending with Python simulation and correction code.",
+    "tags": [
+      "data",
+      "detection",
+      "metrics"
+    ]
+  },
+  {
+    "slug": "base-rate-fallacy",
+    "title": "What Is the Base Rate Fallacy?",
+    "subtitle": "Why ignoring background prevalence makes screening tools mostly wrong - and drives fairness metric conflicts.",
+    "summary": "Learn how ignoring base rates leads to high false-alarm rates in screening algorithms, and why differing base rates across demographic groups make predictive parity and equalized odds mathematically incompatible. Covers Bayes' Theorem, PPV under low prevalence, the Chouldechova trade-off identity, and COMPAS audit detection code.",
+    "tags": [
+      "metrics",
+      "detection",
+      "explainability"
+    ]
   }
 ];

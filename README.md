@@ -102,12 +102,9 @@ Three of the seven audits are healthcare or welfare-system models. Each demonstr
 - [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) - why a risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group
 - [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) - why unequal access to care turns into unequal missingness, and how naive imputation makes it worse
 - [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) - representation gaps and shortcut learning on device/site artifacts in dermatology, radiology, and retinal imaging models
-
-**On the roadmap (the freeze-safe focus while new audits are on hold):**
-
-- Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR, spirometry, VBAC) bake bias into the math itself
-- The Obermeyer Case: When Cost Becomes a Proxy for Health Need
-- Underdiagnosis Bias: When the Label Itself Is Sicker for One Group
+- [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md) - why historical gaps in diagnostic testing cause ground-truth labels to under-count active disease in underserved groups
+- [Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md) - why race-adjusted clinical formulas (eGFR, spirometry, VBAC) bake bias into the math and delay care for minority patients
+- [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md) - why predicting healthcare spending instead of illness systematically under-refers sicker Black patients
 
 This directly connects Fair Code to the broader responsible AI in healthcare conversation - where CardioAI, clinical risk scores, and insurance triage tools are increasingly making consequential decisions without demographic audits.
 
@@ -226,10 +223,20 @@ Fair-Code/
 │   ├── model-drift.md
 │   ├── selection-bias.md
 │   ├── automation-bias.md
+│   ├── roc-curve-auc.md
 │   ├── class-imbalance.md
 │   ├── bias-variance-tradeoff.md
 │   ├── confusion-matrix.md
-│   └── protected-attribute.md
+│   ├── protected-attribute.md
+│   ├── accuracy-not-enough-healthcare-ai.md
+│   ├── clinical-score-miscalibration.md
+│   ├── missing-data-bias-ehr.md
+│   ├── medical-imaging-representation-gaps.md
+│   ├── obermeyer-cost-proxy.md
+│   ├── underdiagnosis-bias.md
+│   ├── race-correction-clinical-algorithms.md
+│   ├── reject-inference.md
+│   └── base-rate-fallacy.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -701,10 +708,10 @@ features = [
 
 ## Explainers
 
-39 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
+44 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
 
 <details>
-<summary><strong>Show all 39 explainers →</strong></summary>
+<summary><strong>Show all 44 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -737,6 +744,7 @@ features = [
 | [What Is Unsupervised Learning?](explainers/unsupervised-learning.md) | How k-means clustering on the Benefits Denial dataset recovers a strong sex split and a real race split without sex, race, or national origin ever being part of the feature set |
 | [What Is Model Drift?](explainers/model-drift.md) | Why a fairness gap measured once at launch isn't guaranteed to hold months later, and how rolling-window monitoring (PSI, Page-Hinkley) catches the drift a single audit snapshot can miss |
 | [What Is Selection Bias?](explainers/selection-bias.md) | Why the process that decides who enters a dataset at all can bias a model before any protected attribute or proxy is even considered - and why the German Credit Lending dataset's 700/300 split contains zero rejected applicants |
+| [What Is Reject Inference?](explainers/reject-inference.md) | Why models trained only on approved applicants miss the risk of everyone else - sample selection bias, missing ground-truth outcomes, and IPW/parceling corrections |
 | [What Is Automation Bias?](explainers/automation-bias.md) | Why judges, recruiters, and clinicians follow AI scores even when they know the scores are biased - and how automation bias amplifies disparities beyond what the model alone produces |
 | [What Is the Bias-Variance Trade-off?](explainers/bias-variance-tradeoff.md) | Why an overfit model can memorize the majority and fail the minority |
 | [What Is Class Imbalance?](explainers/class-imbalance.md) | Why skewed positive/negative ratios wreck naive accuracy and disproportionately hurt minority subgroups |
@@ -747,6 +755,10 @@ features = [
 | [Miscalibration in Clinical Risk Scores Across Groups](explainers/clinical-score-miscalibration.md) | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, and why small subgroups make that hardest to verify at the score that matters most |
 | [Missing Data as Bias in Electronic Health Records](explainers/missing-data-bias-ehr.md) | Why unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as "nothing notable" is really reading "less-observed" |
 | [Why Medical Imaging Models Fail on Underrepresented Groups](explainers/medical-imaging-representation-gaps.md) | Why dermatology, radiology, and retinal models underperform on groups thin in the training data, and the more insidious failure mode: shortcut learning on a scanner or hospital site instead of the pathology |
+| [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md) | Why historical gaps in diagnostic testing cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients |
+| [Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md) | Why race-adjusted clinical formulas (eGFR, spirometry, VBAC) bake bias into the math and delay care for minority patients |
+| [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md) | Why predicting healthcare spending instead of illness systematically under-refers sicker Black patients - target proxy bias, spending disparities, and care re-allocation |
+| [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md) | Why ignoring background prevalence makes screening tools mostly wrong, and why differing base rates across demographic groups drive fairness metric conflicts |
 
 </details>
 
