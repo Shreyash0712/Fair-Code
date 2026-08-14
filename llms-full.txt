@@ -153,7 +153,7 @@ Data doesn't exist in a vacuum. It reflects the society that generated it. A mod
 ## Related Projects in This Repo
 
 - [`COMPAS/`](../COMPAS/) - Full COMPAS analysis: biased model → fair model → 71% gap reduction
-- [`Ai Fair recrutment Dataset/`](../Ai%20Fair%20recrutment%20Dataset/) - AI recruitment bias: 97.3% gap reduction after feature audit
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - AI recruitment bias: 97.3% gap reduction after feature audit
 - Coming soon: Facial recognition bias, HMDA loan bias, healthcare AI
 
 ---
@@ -858,7 +858,7 @@ The pipeline is not complete until you can explain every decision the model make
 ## Related Projects in This Repo
 
 - [`COMPAS/`](../COMPAS/) - The biased and fair models where SHAP reveals race as the top driver
-- [`Ai Fair recrutment Dataset/`](../Ai%20Fair%20recrutment%20Dataset/) - Gender + age influence exposed via feature attribution
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Gender + age influence exposed via feature attribution
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Age and tenure SHAP contributions before and after mitigation
 - [`explainers/proxy-variables.md`](proxy-variables.md) - What proxy variables are and how to detect them
 - [`explainers/sampling-bias.md`](sampling-bias.md) - Why your training data may not represent the people your model affects
@@ -3708,7 +3708,7 @@ Repeat this across thousands of training examples and the weights converge - the
 
 ## Real-World Proof: Hiring Bias
 
-We tested this directly using the [AI Fair Recruitment dataset](../Ai%20Fair%20Recrutment%20Dataset/).
+We tested this directly using the [AI Fair Recruitment dataset](../AI%20Fair%20Recruitment/).
 
 ### What We Did
 
@@ -3853,7 +3853,7 @@ This is why the work in this repository matters: not to fix the math, but to fix
 
 ## Related Projects in This Repo
 
-- [`Ai Fair Recrutment Dataset/`](../Ai%20Fair%20Recrutment%20Dataset/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Lending bias: 73.6% gap reduction after removing age + employment tenure proxy
 - [`Insurance Denial/`](../Insurance%20Denial/) - Healthcare bias: 60–72% reduction after removing BMI, smoking status, and diabetes status as proxies
 - [`Benefits Denial/`](../Benefits%20Denial/) - Welfare eligibility: 46–88% gap reduction across race, sex, and national origin
@@ -4604,7 +4604,7 @@ Removing the entire entangled cluster - rather than any single variable - is wha
 
 > **Key insight:** `payer_code`, `discharge_disposition_id`, and `number_inpatient` are not three independent proxies. They are three administrative measurements of the same underlying structural gap in US healthcare access. The causal direction matters: lower insurance coverage creates both restricted discharge destinations and fragmented inpatient histories. The patient does not bring the disparity - the system creates it, and then measures it three times. Removing only one measurement while leaving the other two is not mitigation; it is relabelling.
 
-📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
+📓 **[Full notebook walkthrough →](../notebooks/06_healthcare_readmission_bias_audit.ipynb)**
 
 ---
 

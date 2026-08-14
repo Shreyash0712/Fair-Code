@@ -205,12 +205,12 @@
 <hr>
 <h2 id="real-world-proof-ai-fair-recruitment-audit">Real-World Proof: AI Fair Recruitment Audit</h2>
 <p>The <a href="../index.html#project-hiring"><code>AI Fair Recruitment</code></a> audit in this repo trains a Random Forest classifier on a recruitment dataset with gender, age, experience, and technical test scores. Apply the 80% rule directly to its outputs:</p>
-<h3 id="biased-model-unfair-py-ai-20fair-20recruitment-unfair-py">Biased Model - <a href="AI Fair Recruitment/unfair.py"><code>unfair.py</code></a></h3>
+<h3 id="biased-model-unfair-py-ai-20fair-20recruitment-unfair-py">Biased Model - <a href="../AI%20Fair%20Recruitment/unfair.py"><code>unfair.py</code></a></h3>
 <div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Group</th><th>Hire Rate</th></tr></thead><tbody><tr><td>Men</td><td>21.62%</td></tr><tr><td>Women</td><td>17.10%</td></tr></tbody></table></div>
 <p><strong>Disparate Impact Ratio = 17.10 / 21.62 = 0.791</strong></p>
 <p><strong>0.791 &lt; 0.80 → FAILS the Four-Fifths Rule.</strong></p>
 <p>A real EEOC complaint filed against this model would survive the <em>prima facie</em> stage. The employer would then bear the burden of proving the selection process is &quot;job-related and consistent with business necessity&quot; - the legal standard set in <em>Griggs</em> and codified in 42 U.S.C. §2000e-2(k).</p>
-<h3 id="mitigated-model-fair-py-ai-20fair-20recruitment-fair-py">Mitigated Model - <a href="AI Fair Recruitment/fair.py"><code>fair.py</code></a></h3>
+<h3 id="mitigated-model-fair-py-ai-20fair-20recruitment-fair-py">Mitigated Model - <a href="../AI%20Fair%20Recruitment/fair.py"><code>fair.py</code></a></h3>
 <p>After dropping <code>Gender</code> and <code>Age</code> and retraining on <code>Experience_Years</code> and <code>Technical_Test_Score</code> only:</p>
 <div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Group</th><th>Hire Rate</th></tr></thead><tbody><tr><td>Men</td><td>11.48%</td></tr><tr><td>Women</td><td>11.35%</td></tr></tbody></table></div>
 <p><strong>Disparate Impact Ratio = 11.35 / 11.48 = 0.989</strong></p>

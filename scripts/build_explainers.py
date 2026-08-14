@@ -38,7 +38,6 @@ REPO_URL = "https://github.com/yakew7/Fair-Code"
 PROJECT_ANCHORS = {
     "COMPAS": "project-compas",
     "AI Fair Recruitment": "project-hiring",
-    "Ai Fair Recrutment Dataset": "project-hiring",
     "German Credit Lending": "project-credit",
     "Insurance Denial": "project-insurance",
     "Benefits Denial": "project-benefits",
@@ -88,7 +87,12 @@ def resolve_link_target(url, known_slugs):
     if re.search(r"\.md$", basename, flags=re.IGNORECASE):
         return f"{base_without_ext}.html{suffix}"
 
-    return clean_path if url.startswith("../") else url
+    # Not a known explainer or project folder - explainers/*.md and the
+    # explainers/*.html generated from it live in the same directory, so a
+    # plain relative link (e.g. "../notebooks/x.ipynb") is already correct
+    # as-is and must not be rewritten (previously this stripped a leading
+    # "../", which quietly broke every such link - see #253).
+    return url
 
 
 def inline_markdown(text, known_slugs):

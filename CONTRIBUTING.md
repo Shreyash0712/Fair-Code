@@ -71,11 +71,11 @@ A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can 
 
 ```bash
 make setup             # install faircode + pytest + pre-commit
-make check             # everything CI runs: em-dash lint + full test suite
+make check             # everything CI runs: lint + full test suite
 make test              # just the test suite
 make build-explainers  # regenerate explainer pages, sitemap, and OG images (dark + light) after editing explainers/*.md
 make favicons          # regenerate favicon.ico, apple-touch-icon.png, icon-{192,512}.png after editing logo.svg
-make lint              # em-dash-free check only
+make lint              # em-dash-free check + broken internal doc link check
 ```
 
 Optionally install the git hooks so the checks run automatically:

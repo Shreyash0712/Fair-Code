@@ -132,7 +132,7 @@ Repeat this across thousands of training examples and the weights converge - the
 
 ## Real-World Proof: Hiring Bias
 
-We tested this directly using the [AI Fair Recruitment dataset](../Ai%20Fair%20Recrutment%20Dataset/).
+We tested this directly using the [AI Fair Recruitment dataset](../AI%20Fair%20Recruitment/).
 
 ### What We Did
 
@@ -277,7 +277,7 @@ This is why the work in this repository matters: not to fix the math, but to fix
 
 ## Related Projects in This Repo
 
-- [`Ai Fair Recrutment Dataset/`](../Ai%20Fair%20Recrutment%20Dataset/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Lending bias: 73.6% gap reduction after removing age + employment tenure proxy
 - [`Insurance Denial/`](../Insurance%20Denial/) - Healthcare bias: 60–72% reduction after removing BMI, smoking status, and diabetes status as proxies
 - [`Benefits Denial/`](../Benefits%20Denial/) - Welfare eligibility: 46–88% gap reduction across race, sex, and national origin

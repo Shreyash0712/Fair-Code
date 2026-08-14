@@ -232,7 +232,7 @@ The pipeline is not complete until you can explain every decision the model make
 ## Related Projects in This Repo
 
 - [`COMPAS/`](../COMPAS/) - The biased and fair models where SHAP reveals race as the top driver
-- [`Ai Fair recrutment Dataset/`](../Ai%20Fair%20recrutment%20Dataset/) - Gender + age influence exposed via feature attribution
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Gender + age influence exposed via feature attribution
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Age and tenure SHAP contributions before and after mitigation
 - [`explainers/proxy-variables.md`](proxy-variables.md) - What proxy variables are and how to detect them
 - [`explainers/sampling-bias.md`](sampling-bias.md) - Why your training data may not represent the people your model affects
