@@ -14,11 +14,16 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` / `2.0.11` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.11] - 14 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **`tests/test_generate_images.py`** (closes #212, by [@ahmdkaml](https://github.com/ahmdkaml)) - basic coverage for `scripts/generate_favicons.py` and `scripts/generate_og_images.py`: verifies the expected output files are actually produced, non-empty, and have the dimensions each function claims to render at.
+- **`profiler.html`: documents `--proxy-hints`** (closes #217, by [@ahmdkaml](https://github.com/ahmdkaml)) - a short note on the web profiler's landing copy pointing at the CLI-only `--proxy-hints` flag, so it's discoverable from the page that otherwise only shows the browser-side feature set.
 
 ## [2.0.10] - 12 Aug 2026 *(pending - will be tagged after the paper is published)*
 ### Added
