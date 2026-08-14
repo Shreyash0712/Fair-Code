@@ -2,7 +2,7 @@
 
 # Fair Code - Metrics Tracker
 
-![Stars](https://img.shields.io/badge/Stars-42-brightgreen?style=flat-square&logo=github)
+![Stars](https://img.shields.io/badge/Stars-43-brightgreen?style=flat-square&logo=github)
 ![Contributors](https://img.shields.io/badge/Contributors-14-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-22-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
@@ -38,7 +38,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W30 | 40 | 17 | 8 | 11 | ~21K total | - | 3 | 7 total |
 | 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | - | 22 | 7 total |
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
-| 2026-W33 | 42 | 22 | 8 | 14 | 27K+ total | 17 | 55 | 7 total |
+| 2026-W33 | 43 | 22 | 8 | 14 | 27K+ total | 17 | 55 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -53,6 +53,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W32 (traction refresh) - forks and countries caught up to live data:** forks `19 → 22` (GitHub's API, was stale since the last snapshot), countries reached `16 → 17`. Contributors badge/targets/resume line also corrected to `14` - the weekly table row already had it, the rest of the doc hadn't caught up.
 >
 > **2026-W33 - three healthcare explainers close out the roadmap's "planned" list down to three:** Miscalibration in Clinical Risk Scores Across Groups (#106), Missing Data as Bias in Electronic Health Records (#107, with a real 10.7-point payer-code missingness gap by race computed straight from the Healthcare Readmission CSV), and Why Medical Imaging Models Fail on Underrepresented Groups (#108) - explainer count `36 → 39`. Stars, forks, watching, and contributors are unchanged from last week's live GitHub numbers. **Note on issues-closed (55):** not a triage batch like W31's - 36 PRs merged this week across CI hardening (CodeQL v4, CITATION.cff validation, workflow YAML validation, CODEOWNERS access checks), profiler tooling (XLSX/JSON edge cases, HTML report tests), and the three explainers above, several closing more than one linked issue.
+>
+> **2026-W33 (later in week) - a supply-chain/CI hardening + accessibility batch:** two real, previously-unnoticed drifts caught and fixed - `matplotlib`/`numpy` missing from `pyproject.toml` despite being imported unconditionally (#235, closes the same class of gap Pillow once had), and `scikit-learn` locked at `1.8.0` while `pyproject.toml` required `>=1.9.0` after the test that caught it was deleted rather than fixed (#255, restored by `@ahmdkaml`). `check-frozen-files`/`Build Explainers` now also run on direct pushes to `main`, not just PRs (#246, `@ahmdkaml`). `audits.yml`'s `profiler`/`benchmark-harness` jobs are now change-aware, skipping on docs-only pushes the same way the pre-push hook already did (#237); `run-audits` itself is left unconditional since it's the one required status check (#160). A new `scripts/check_broken_links.py` (#253) caught five real broken links in explainer markdown (a misspelled dataset-folder name, a missing `../`) plus a second bug in `build_explainers.py`'s own link resolver that had silently broken every such link in the generated `.html` too. The theme-toggle button now exposes its state via `aria-pressed` (#250), `faircode/report.py`'s HTML report tables get proper `<th scope="col">`/`<caption>` markup (#254, `@propcgamer20-png`), and `ruff check` lands as the repo's first general-purpose Python linter (#248, `@evanjain-dot`). Stars `42 → 43`; forks, watching, and contributors unchanged. Issues-closed for the week isn't re-tallied here since several of these closed same-day as this note.
 
 ---
 
@@ -60,7 +62,7 @@ Weekly snapshot of project health. Updated every Friday.
 
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
-| Stars | 42 | 50+ | End of 2026 |
+| Stars | 43 | 50+ | End of 2026 |
 | Forks | 22 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 14 | 15+ | End of 2026 |
@@ -86,4 +88,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **42 stars**, **14 contributors**, **22 forks**, **27K+ social views**, and website visitors from **17 countries**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **43 stars**, **14 contributors**, **22 forks**, **27K+ social views**, and website visitors from **17 countries**.
