@@ -24,13 +24,18 @@ jobs:
           # Diff against the merge-base, not the base branch tip directly -
           # a two-dot diff (base_sha..head_sha) can include files main picked
           # up after this PR branched, which aren't actually part of the PR.
-          merge_base="$(git merge-base \
-            "${{ github.event.pull_request.base.sha }}" \
-            "${{ github.event.pull_request.head.sha }}")"
-          changed_files="$(git diff --name-only \
-            "$merge_base" \
-            "${{ github.event.pull_request.head.sha }}")"
-
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            merge_base="$(git merge-base \
+              "${{ github.event.pull_request.base.sha }}" \
+              "${{ github.event.pull_request.head.sha }}")"
+            changed_files="$(git diff --name-only \
+              "$merge_base" \
+              "${{ github.event.pull_request.head.sha }}")"
+          else
+            changed_files="$(git diff --name-only \
+              "${{ github.event.before }}" \
+              "${{ github.sha }}")"
+          fi
           blocked=""
 
           while IFS= read -r file; do
@@ -75,7 +80,7 @@ jobs:
           done <<< "$changed_files"
 
           if [ -n "$blocked" ]; then
-            echo "::error::This PR modifies files protected by CLAUDE.md §1."
+            echo "::error::Protected files were modified."
             echo
             echo "Protected files:"
             printf "%s" "$blocked"
