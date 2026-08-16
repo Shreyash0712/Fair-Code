@@ -120,6 +120,10 @@ jobs:
 
       - name: Run profiler tests
         run: make test
+        
+      - name: Report test coverage
+        run: make coverage
+        continue-on-error: true
 
       - name: Smoke-test the CLI
         run: |
