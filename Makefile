@@ -11,8 +11,8 @@ help:  ## Show the available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN{FS = ":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 
-setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commit)
-	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pytest-cov pre-commit
+setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commit, ruff)
+	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pytest-cov pre-commit ruff
 
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
