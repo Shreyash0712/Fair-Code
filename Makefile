@@ -5,17 +5,20 @@
 .DEFAULT_GOAL := help
 PY := python3
 
-.PHONY: help setup test build-explainers favicons lint check
+.PHONY: help setup test coverage build-explainers favicons lint check
 
 help:  ## Show the available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN{FS = ":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 
-setup:  ## Install the package plus the dev tools (pytest, pre-commit, ruff)
-	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pre-commit ruff
+setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commit)
+	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pytest-cov pre-commit
 
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
+
+coverage:  ## Run the test suite with coverage reporting
+	$(PY) -m pytest tests/ --cov=faircode --cov-report=term-missing
 
 build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images (dark + light)
 	$(PY) scripts/build_explainers.py
