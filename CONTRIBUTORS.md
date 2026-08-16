@@ -28,9 +28,11 @@
 ## How this file works
 
 Everyone below has at least one merged pull request on
-[`yakew7/Fair-Code`](https://github.com/yakew7/Fair-Code). Entries are grouped by volume of merged
-work, then ordered by the date of the first merged PR - earliest first. Within each entry, the PR
-numbers link the claim to the actual diff, so nothing here is an unverifiable "thanks to".
+[`yakew7/Fair-Code`](https://github.com/yakew7/Fair-Code). Core contributors are listed separately
+(sustained ownership, reflected in [`.github/CODEOWNERS`](.github/CODEOWNERS)); everyone else is
+ordered by merged PR count, most first - ties broken by commit count, then by earliest first-merged
+date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
+unverifiable "thanks to".
 
 **Snapshot:** 2026-08-16, covering everything merged through **PR #266**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
@@ -87,7 +89,7 @@ project by volume, concentrated in two areas:
 
 ## Contributors
 
-Ordered by first merged PR.
+Ordered by merged PR count, most first (ties broken by commit count, then by earliest first-merged date).
 
 ### Evan Jain - [@evanjain-dot](https://github.com/evanjain-dot)
 
@@ -103,41 +105,11 @@ as the repo's first general-purpose Python linter ([#261](https://github.com/yak
 closing issue #248), scoped to Pyflakes-only rules to avoid false-positiving on an intentional
 `pytest.importorskip` import pattern used throughout `tests/`.
 
-### [@shwetagupta1234](https://github.com/shwetagupta1234)
+### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
-**1 merged PR · 2 commits · first merged 2026-05-18**
+**4 merged PRs · 13 commits · first merged 2026-07-06**
 
-The [SHAP Values](explainers/shap-values.md) explainer ([#12](https://github.com/yakew7/Fair-Code/pull/12)) - how to see what actually drove a model's decision, and how to use that to catch bias.
-
-### [@YashKewlani1](https://github.com/YashKewlani1)
-
-**1 merged PR · 10 commits · first merged 2026-05-18**
-
-PR [#1](https://github.com/yakew7/Fair-Code/pull/1) - the [German Credit Lending](German%20Credit%20Lending/) audit: dataset, `unfair.py`, `fair.py`, terminal screenshots, and the README section. The first merged pull request in the project's history, and the third audit to land.
-
-### Tanish Goyal - [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev)
-
-**1 merged PR · 2 commits · first merged 2026-05-19**
-
-The [Equalized Odds](explainers/equalized-odds.md) explainer ([#13](https://github.com/yakew7/Fair-Code/pull/13)) - the metric that catches a model treating two groups differently even when overall accuracy looks fine.
-
-### Rajveer Vadnal - [@Rajveerx11](https://github.com/Rajveerx11)
-
-**1 merged PR · 3 commits · first merged 2026-05-19**
-
-The [Disparate Impact](explainers/disparate-impact.md) explainer ([#14](https://github.com/yakew7/Fair-Code/pull/14)), covering the four-fifths rule and the legal threshold it sets under US employment law, landed alongside work on the AI Fair Recruitment audit files.
-
-### Aarav Saroliya - [@Aarav1611](https://github.com/Aarav1611)
-
-**1 merged PR · 1 commit · first merged 2026-05-23**
-
-The first draft of the [Calibration](explainers/calibration.md) explainer ([#26](https://github.com/yakew7/Fair-Code/pull/26)) - why a model can be equally accurate for everyone and still treat them unequally.
-
-### Anjali Tiwari - [@cannotdoit13](https://github.com/cannotdoit13)
-
-**2 merged PRs · 2 commits · first merged 2026-06-01**
-
-Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.com/yakew7/Fair-Code/pull/27)), then standardised path resolution across *every* audit and added the workflow that runs all of them on each push and PR ([#29](https://github.com/yakew7/Fair-Code/pull/29)). That PR is the origin of [`audits.yml`](.github/workflows/audits.yml) and of the "each script resolves its dataset relative to its own location" guarantee in the README.
+The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254).
 
 ### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
 
@@ -157,17 +129,59 @@ Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)
 [What Is Reject Inference?](explainers/reject-inference.md), and
 [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
 
+### Anjali Tiwari - [@cannotdoit13](https://github.com/cannotdoit13)
+
+**2 merged PRs · 2 commits · first merged 2026-06-01**
+
+Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.com/yakew7/Fair-Code/pull/27)), then standardised path resolution across *every* audit and added the workflow that runs all of them on each push and PR ([#29](https://github.com/yakew7/Fair-Code/pull/29)). That PR is the origin of [`audits.yml`](.github/workflows/audits.yml) and of the "each script resolves its dataset relative to its own location" guarantee in the README.
+
 ### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
 
 **2 merged PRs · 2 commits · first merged 2026-07-14**
 
 [Unsupervised Learning](explainers/unsupervised-learning.md) ([#74](https://github.com/yakew7/Fair-Code/pull/74)), on k-means over the Benefits Denial dataset recovering a sex split without sex ever being a feature, and [Model Drift](explainers/model-drift.md) ([#75](https://github.com/yakew7/Fair-Code/pull/75)), on why a fairness gap measured once at launch is not guaranteed to hold months later.
 
-### [@propcgamer20-png](https://github.com/propcgamer20-png)
+### Swastik Yadav - [@Swastik-Yadav](https://github.com/Swastik-Yadav)
 
-**4 merged PRs · 13 commits · first merged 2026-07-06**
+**2 merged PRs · 2 commits · first merged 2026-08-07**
 
-The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254).
+A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) - prose only, leaving every reported number untouched, as the freeze requires.
+
+### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
+
+**2 merged PRs · 2 commits · first merged 2026-08-16**
+
+Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249.
+
+### [@YashKewlani1](https://github.com/YashKewlani1)
+
+**1 merged PR · 10 commits · first merged 2026-05-18**
+
+PR [#1](https://github.com/yakew7/Fair-Code/pull/1) - the [German Credit Lending](German%20Credit%20Lending/) audit: dataset, `unfair.py`, `fair.py`, terminal screenshots, and the README section. The first merged pull request in the project's history, and the third audit to land.
+
+### Rajveer Vadnal - [@Rajveerx11](https://github.com/Rajveerx11)
+
+**1 merged PR · 3 commits · first merged 2026-05-19**
+
+The [Disparate Impact](explainers/disparate-impact.md) explainer ([#14](https://github.com/yakew7/Fair-Code/pull/14)), covering the four-fifths rule and the legal threshold it sets under US employment law, landed alongside work on the AI Fair Recruitment audit files.
+
+### [@shwetagupta1234](https://github.com/shwetagupta1234)
+
+**1 merged PR · 2 commits · first merged 2026-05-18**
+
+The [SHAP Values](explainers/shap-values.md) explainer ([#12](https://github.com/yakew7/Fair-Code/pull/12)) - how to see what actually drove a model's decision, and how to use that to catch bias.
+
+### Tanish Goyal - [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev)
+
+**1 merged PR · 2 commits · first merged 2026-05-19**
+
+The [Equalized Odds](explainers/equalized-odds.md) explainer ([#13](https://github.com/yakew7/Fair-Code/pull/13)) - the metric that catches a model treating two groups differently even when overall accuracy looks fine.
+
+### Aarav Saroliya - [@Aarav1611](https://github.com/Aarav1611)
+
+**1 merged PR · 1 commit · first merged 2026-05-23**
+
+The first draft of the [Calibration](explainers/calibration.md) explainer ([#26](https://github.com/yakew7/Fair-Code/pull/26)) - why a model can be equally accurate for everyone and still treat them unequally.
 
 ### Ahmad Alguydi - [@tomatotomata](https://github.com/tomatotomata)
 
@@ -186,17 +200,6 @@ Fixed the site's theme toggle to respect the OS `prefers-color-scheme` setting (
 **1 merged PR · 1 commit · first merged 2026-08-06**
 
 JSON edge-case coverage and clear parse-error messages on *both* engines ([#175](https://github.com/yakew7/Fair-Code/pull/175)) - `faircode/loaders_extra.py`, `assets/profiler-engine.js`, and a shared parity script, so the CLI and the browser fail the same way on the same bad file.
-
-### Swastik Yadav - [@Swastik-Yadav](https://github.com/Swastik-Yadav)
-
-**2 merged PRs · 2 commits · first merged 2026-08-07**
-
-A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) - prose only, leaving every reported number untouched, as the freeze requires.
-
-### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
-
-**2 merged PRs · 2 commits · first merged 2026-08-16**
-
 Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249.
 
 ---
