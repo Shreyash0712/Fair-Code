@@ -32,7 +32,7 @@ Everyone below has at least one merged pull request on
 work, then ordered by the date of the first merged PR - earliest first. Within each entry, the PR
 numbers link the claim to the actual diff, so nothing here is an unverifiable "thanks to".
 
-**Snapshot:** 2026-08-14, covering everything merged through **PR #261**.
+**Snapshot:** 2026-08-16, covering everything merged through **PR #266**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -65,7 +65,7 @@ People carrying sustained ownership of an area, reflected in [`.github/CODEOWNER
 
 ### Ahmed Mohamed Abdelhady Kamel - [@ahmdkaml](https://github.com/ahmdkaml)
 
-**36 merged PRs · 50 commits · first merged 2026-07-31**
+**38 merged PRs · 54 commits · first merged 2026-07-31**
 
 Co-code-owner of `.github/workflows/`, `.github/CODEOWNERS`, `scripts/`, `tests/`, `profiler.html`,
 and the three `assets/profiler-*.js` engines. The single largest external contribution to the
@@ -81,7 +81,7 @@ project by volume, concentrated in two areas:
 - CI enforcement of the frozen files ([#157](https://github.com/yakew7/Fair-Code/pull/157)) - the guardrail that makes the paper freeze in [CLAUDE.md](CLAUDE.md) mechanical rather than a matter of trust
 - Benchmark resample/permutation counts warn when they drift from the paper defaults ([#226](https://github.com/yakew7/Fair-Code/pull/226)); results-workflow figure-filename drift check ([#195](https://github.com/yakew7/Fair-Code/pull/195)); audit-manifest dataset column validation ([#156](https://github.com/yakew7/Fair-Code/pull/156))
 - CodeQL code scanning ([#153](https://github.com/yakew7/Fair-Code/pull/153), upgraded to v4 in [#229](https://github.com/yakew7/Fair-Code/pull/229)), Dependabot extended to GitHub Actions ([#146](https://github.com/yakew7/Fair-Code/pull/146))
-- `CODEOWNERS` itself ([#142](https://github.com/yakew7/Fair-Code/pull/142)) and the CI-automation ownership entry ([#174](https://github.com/yakew7/Fair-Code/pull/174)), workflow YAML validation ([#225](https://github.com/yakew7/Fair-Code/pull/225)), `CITATION.cff` validation ([#223](https://github.com/yakew7/Fair-Code/pull/223)), optional extras in `make setup` ([#222](https://github.com/yakew7/Fair-Code/pull/222)), Actions maintenance docs ([#196](https://github.com/yakew7/Fair-Code/pull/196)), static favicon assets ([#154](https://github.com/yakew7/Fair-Code/pull/154)), documented the pre-push test suite's runtime ([#238](https://github.com/yakew7/Fair-Code/pull/238)), `frozen-files`/`Build Explainers` running on direct pushes to `main`, not just PRs ([#258](https://github.com/yakew7/Fair-Code/pull/258), [#259](https://github.com/yakew7/Fair-Code/pull/259))
+- `CODEOWNERS` itself ([#142](https://github.com/yakew7/Fair-Code/pull/142)) and the CI-automation ownership entry ([#174](https://github.com/yakew7/Fair-Code/pull/174)), workflow YAML validation ([#225](https://github.com/yakew7/Fair-Code/pull/225)), `CITATION.cff` validation ([#223](https://github.com/yakew7/Fair-Code/pull/223)), optional extras in `make setup` ([#222](https://github.com/yakew7/Fair-Code/pull/222)), Actions maintenance docs ([#196](https://github.com/yakew7/Fair-Code/pull/196)), static favicon assets ([#154](https://github.com/yakew7/Fair-Code/pull/154)), documented the pre-push test suite's runtime ([#238](https://github.com/yakew7/Fair-Code/pull/238)), `frozen-files`/`Build Explainers` running on direct pushes to `main`, not just PRs ([#258](https://github.com/yakew7/Fair-Code/pull/258), [#259](https://github.com/yakew7/Fair-Code/pull/259)), `make coverage` plus a non-gating coverage-report step in the profiler CI job ([#263](https://github.com/yakew7/Fair-Code/pull/263), [#264](https://github.com/yakew7/Fair-Code/pull/264))
 
 ---
 
@@ -141,15 +141,21 @@ Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.
 
 ### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
 
-**3 merged PRs · 6 commits · first merged 2026-06-05**
+**4 merged PRs · 7 commits · first merged 2026-06-05**
 
-Five explainers and two rounds of workflow maintenance:
+Ten explainers and two rounds of workflow maintenance:
 [Why AI Hallucinates](explainers/ai-hallucinations.md) ([#43](https://github.com/yakew7/Fair-Code/pull/43)); then
 [Bias-Variance Trade-off](explainers/bias-variance-tradeoff.md),
 [Class Imbalance](explainers/class-imbalance.md),
 [Confusion Matrix](explainers/confusion-matrix.md), and
 [Protected Attribute](explainers/protected-attribute.md) in a single PR ([#102](https://github.com/yakew7/Fair-Code/pull/102)).
 Also fixed the first-interaction greeting trigger and upgraded the audits workflow's action versions ([#46](https://github.com/yakew7/Fair-Code/pull/46)).
+Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)):
+[What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md),
+[The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md),
+[Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md),
+[What Is Reject Inference?](explainers/reject-inference.md), and
+[Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
 
 ### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
 
@@ -187,6 +193,12 @@ JSON edge-case coverage and clear parse-error messages on *both* engines ([#175]
 
 A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) - prose only, leaving every reported number untouched, as the freeze requires.
 
+### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
+
+**2 merged PRs · 2 commits · first merged 2026-08-16**
+
+Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249.
+
 ---
 
 ## Contributions by area
@@ -203,7 +215,7 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P) |
-| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
+| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo) |
 
 ---
 
@@ -241,6 +253,7 @@ makes `git shortlog -sne` reconcilable with the list above.
 | [@YashKewlani1](https://github.com/YashKewlani1) | `Aarav Sharma` |
 | [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev) | `TanishGoyal-Dev` |
 | [@shwetagupta1234](https://github.com/shwetagupta1234) | `shwetagupta1234` |
+| [@Circout-sudo](https://github.com/Circout-sudo) | `Yojeet` |
 
 If your name is wrong, missing, or you would rather be listed under a different handle, or not
 listed at all, open an issue or a one-line PR against this file. It gets merged, no questions asked.
