@@ -120,6 +120,11 @@ jobs:
 
       - name: Run profiler tests
         run: make test
+        
+      - name: Coverage report (informational)
+        # No --cov-fail-under, so this can't fail the build - just visibility
+        # into which faircode/ branches the 187 tests actually reach.
+        run: make coverage
 
       - name: Smoke-test the CLI
         run: |
