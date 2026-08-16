@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.thefaircode.xyz/</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-14</lastmod>
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/profiler.html</loc>
@@ -10,7 +10,7 @@
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/proxy-variables.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-08-14</lastmod>
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/equalized-odds.html</loc>
@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/shap-values.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-08-14</lastmod>
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/disparate-impact.html</loc>
@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/neural-networks.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-14</lastmod>
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/ai-hallucinations.html</loc>
@@ -74,7 +74,7 @@
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/proxy-entanglement.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-08-14</lastmod>
   </url>
   <url>
     <loc>https://www.thefaircode.xyz/explainers/ml-bias.html</loc>
@@ -163,5 +163,25 @@
   <url>
     <loc>https://www.thefaircode.xyz/explainers/medical-imaging-representation-gaps.html</loc>
     <lastmod>2026-08-12</lastmod>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/obermeyer-cost-proxy.html</loc>
+    <lastmod>2026-08-14</lastmod>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/underdiagnosis-bias.html</loc>
+    <lastmod>2026-08-14</lastmod>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/race-correction-clinical-algorithms.html</loc>
+    <lastmod>2026-08-14</lastmod>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/reject-inference.html</loc>
+    <lastmod>2026-08-14</lastmod>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/base-rate-fallacy.html</loc>
+    <lastmod>2026-08-14</lastmod>
   </url>
 </urlset>

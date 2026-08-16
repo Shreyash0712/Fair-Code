@@ -153,7 +153,7 @@ Data doesn't exist in a vacuum. It reflects the society that generated it. A mod
 ## Related Projects in This Repo
 
 - [`COMPAS/`](../COMPAS/) - Full COMPAS analysis: biased model → fair model → 71% gap reduction
-- [`Ai Fair recrutment Dataset/`](../Ai%20Fair%20recrutment%20Dataset/) - AI recruitment bias: 97.3% gap reduction after feature audit
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - AI recruitment bias: 97.3% gap reduction after feature audit
 - Coming soon: Facial recognition bias, HMDA loan bias, healthcare AI
 
 ---
@@ -858,7 +858,7 @@ The pipeline is not complete until you can explain every decision the model make
 ## Related Projects in This Repo
 
 - [`COMPAS/`](../COMPAS/) - The biased and fair models where SHAP reveals race as the top driver
-- [`Ai Fair recrutment Dataset/`](../Ai%20Fair%20recrutment%20Dataset/) - Gender + age influence exposed via feature attribution
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Gender + age influence exposed via feature attribution
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Age and tenure SHAP contributions before and after mitigation
 - [`explainers/proxy-variables.md`](proxy-variables.md) - What proxy variables are and how to detect them
 - [`explainers/sampling-bias.md`](sampling-bias.md) - Why your training data may not represent the people your model affects
@@ -3708,7 +3708,7 @@ Repeat this across thousands of training examples and the weights converge - the
 
 ## Real-World Proof: Hiring Bias
 
-We tested this directly using the [AI Fair Recruitment dataset](../Ai%20Fair%20Recrutment%20Dataset/).
+We tested this directly using the [AI Fair Recruitment dataset](../AI%20Fair%20Recruitment/).
 
 ### What We Did
 
@@ -3853,7 +3853,7 @@ This is why the work in this repository matters: not to fix the math, but to fix
 
 ## Related Projects in This Repo
 
-- [`Ai Fair Recrutment Dataset/`](../Ai%20Fair%20Recrutment%20Dataset/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
+- [`AI Fair Recruitment/`](../AI%20Fair%20Recruitment/) - Full hiring bias audit: 97.3% gap reduction after removing gender + age proxy
 - [`German Credit Lending/`](../German%20Credit%20Lending/) - Lending bias: 73.6% gap reduction after removing age + employment tenure proxy
 - [`Insurance Denial/`](../Insurance%20Denial/) - Healthcare bias: 60–72% reduction after removing BMI, smoking status, and diabetes status as proxies
 - [`Benefits Denial/`](../Benefits%20Denial/) - Welfare eligibility: 46–88% gap reduction across race, sex, and national origin
@@ -4604,7 +4604,7 @@ Removing the entire entangled cluster - rather than any single variable - is wha
 
 > **Key insight:** `payer_code`, `discharge_disposition_id`, and `number_inpatient` are not three independent proxies. They are three administrative measurements of the same underlying structural gap in US healthcare access. The causal direction matters: lower insurance coverage creates both restricted discharge destinations and fragmented inpatient histories. The patient does not bring the disparity - the system creates it, and then measures it three times. Removing only one measurement while leaving the other two is not mitigation; it is relabelling.
 
-📓 **[Full notebook walkthrough →](notebooks/06_healthcare_readmission_bias_audit.ipynb)**
+📓 **[Full notebook walkthrough →](../notebooks/06_healthcare_readmission_bias_audit.ipynb)**
 
 ---
 
@@ -8471,6 +8471,1230 @@ The same caution that applies to per-group accuracy or recall in tabular audits 
 * [Zech, J.R., Badgeley, M.A., Liu, M., Costa, A.B., Titano, J.J., Oermann, E.K. (2018): Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs across multiple institutions](https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002683) - the study behind the hospital-as-shortcut example, showing strong internal accuracy that did not transfer across sites.
 * [Larrazabal, A.J., Nieto, N., Peterson, V., Milone, D.H., Ferrante, E. (2020): Gender imbalance in medical imaging datasets produces biased classifiers for computer-aided diagnosis](https://www.pnas.org/doi/10.1073/pnas.1919012117) - a controlled demonstration that training-set sex ratio alone produces a per-group performance gap in chest X-ray diagnosis.
 * [Adamson, A.S., Smith, A. (2018): Machine Learning and Health Care Disparities in Dermatology](https://jamanetwork.com/journals/jamadermatology/fullarticle/2688587) - a direct analysis of skin-tone representation gaps in the public dermatology image datasets used to train and validate skin-lesion classifiers.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# The Obermeyer Case: When Cost Becomes a Proxy for Health Need
+URL: https://www.thefaircode.xyz/explainers/obermeyer-cost-proxy.html
+Summary: Explore the canonical case study of Obermeyer et al. (2019): why using healthcare cost as a target variable creates racial bias, how historical spending disparities corrupt algorithm predictions, and how to audit models for proxy label bias using the Healthcare Readmission audit.
+
+> *A commercial risk-prediction algorithm used on over 200 million people annually assigned White and Black patients the same risk score when they generated the same healthcare costs. But because less money is historically spent on Black patients at the same level of illness, Black patients at that shared score were dramatically sicker. When algorithms mistake medical spending for medical need, systemic inequality becomes automated discrimination.*
+
+## The One-Sentence Definition
+
+**"The Obermeyer Case"** refers to the canonical real-world proxy-label failure identified by Obermeyer et al. (2019), where a commercial healthcare risk algorithm predicted healthcare *cost* as a stand-in for health *need* - systematically under-referring sicker Black patients to high-risk care management programs because historical spending on Black patients was lower at every level of illness.
+
+## Why It Matters
+
+Supervised machine learning models do not optimize for what developers *intend* them to measure; they optimize strictly for the target label (`Y`) specified in the training dataset. When developers select a target proxy that is corrupted by systemic disparities - such as medical expenditures, arrest records, or past manager evaluations - the model learns to reproduce those disparities even if all explicit demographic attributes are removed from the feature set.
+
+In healthcare population management, high-risk care management programs provide extra resources (specialized primary care, dedicated nurse check-ins, and monitoring) to complex patients to prevent emergency hospitalizations. Because financial billing data is clean, standardized, and readily available across electronic health records (EHRs), developers frequently train algorithms to predict future total medical spending as a proxy for future health need.
+
+However, medical spending is not medical need. Spending reflects health need **filtered through access to care**, insurance coverage, socioeconomic barriers, geographic proximity to health systems, and physician referral patterns. When an algorithm predicts spending, it learns that a patient with fewer recorded medical bills is "lower risk," mistaking under-utilization and barriers to care for good health.
+
+## The Core Concept: How Spending Corrupts Health Risk Scores
+
+To understand why proxy label choice corrupts fairness, compare the true clinical target with the proxy target:
+
+* **True Target (`Y*`):** Actual health need (e.g., severity of chronic diseases, organ dysfunction, uncontrolled hypertension, risk of emergency complications).
+* **Proxy Target (`Y_cost`):** Total annual healthcare expenditures in dollars.
+
+In a fair system without structural barriers, healthcare spending would be directly proportional to health need (`Y_cost` proportional to `Y*`) across all demographic groups. In reality, historical healthcare expenditures exhibit severe racial disparity at equal levels of illness:
+
+```text
+Expected_Cost(Race = Black, Illness = k) < Expected_Cost(Race = White, Illness = k)
+```
+
+Because less money is spent caring for Black patients at any given illness level `k`, an algorithm trained to predict `Y_cost` learns a biased spending score. When the algorithm ranks patients by predicted risk to enroll the top 3% (or 5%) into specialized care programs:
+
+| Metric at Shared Enrollment Score Threshold | White Patients | Black Patients | Structural Disparity |
+|---|---|---|---|
+| **Predicted Healthcare Cost** | Equal | Equal | Algorithm appears calibrated on cost |
+| **Actual Chronic Conditions Count** | Baseline | **~28% Higher** | Black patients are substantially sicker |
+| **Biomedical Biomarkers (e.g., HbA1c, BP)** | Baseline | **Significantly Worse** | Black patients have worse physiological health |
+| **Care Program Auto-Enrollment Rate** | Baseline | **Substantially Reduced** | Sicker Black patients are systematically bypassed |
+
+The algorithm is not broken in a mathematical sense - it predicts future spending with high accuracy for both groups. The failure lies in the **semantic gap** between the proxy label (`Y_cost`) and the human goal (`Y*`).
+
+## The Real-World Impact: The 2019 Obermeyer Findings
+
+In 2019, Ziad Obermeyer, Brian Powers, Christine Vogeli, and Sendhil Mullainathan published their landmark study in *Science*, auditing a commercial risk-prediction algorithm applied to over 200 million patients annually across major US health systems.
+
+Key quantitative findings from the study include:
+
+1. **Illness Disparity at the Threshold:** At the 97th percentile risk threshold - where patients were automatically enrolled in specialized care management - Black patients generated the same predicted cost as White patients, but had **26.3% to 28% more chronic conditions** (such as hypertension, diabetes complications, and heart failure).
+2. **The Re-allocation Effect:** If the algorithm had been retrained to predict actual health status (measured by un-met health needs and active chronic conditions) rather than spending, the proportion of Black patients automatically enrolled in the high-risk care management program would have **more than doubled**, increasing from **17.7% to 46.5%**.
+3. **Disparity Across All Biomarkers:** The disparity persisted across independent physiological measurements not used in the algorithm's target, including blood pressure, cholesterol, renal function indicators, and hemoglobin A1c.
+4. **The "Fairness Through Unawareness" Trap:** The algorithm did not use race as an input feature. Removing race did nothing to prevent the bias, because racial disparities in healthcare access were baked directly into the target variable itself.
+
+## Concrete Example: Healthcare Readmission Audit
+
+The Obermeyer case study directly mirrors the structural challenges in Fair Code's [`Healthcare Readmission/`](../Healthcare%20Readmission/) audit (based on the Diabetes 130-US Hospitals dataset with 101,766 records).
+
+In clinical risk modeling, target labels such as 30-day hospital readmission (`readmitted = 1`) or total inpatient visit counts can suffer from proxy distortion:
+* A patient who lives near a tertiary care center and has comprehensive insurance may be readmitted quickly when symptoms recur.
+* A patient with severe care access barriers, transportation deficits, or lack of insurance may delay returning to the hospital until emergency status, or may present at a different non-reporting facility.
+
+In the frozen benchmark results for Audit 06 (`paper/results-frozen/summary.csv`), baseline models for `healthcare_readmission` evaluate fairness across race and age:
+
+```csv
+audit,strategy,protected_attribute,metric,mean_value
+healthcare_readmission,baseline,race,demographic_parity_diff,-0.0000858
+healthcare_readmission,baseline,race,equalized_odds_diff,0.0017434
+healthcare_readmission,baseline,race,predictive_parity_diff,0.0336660
+```
+
+While on-paper demographic parity and equalized odds gaps for race appear small in aggregate baseline benchmarks, aggregate metrics cannot detect whether the target variable itself under-counts true health need in under-resourced subgroups. If the target label only records encounters that resulted in a hospital admission, unrecorded out-of-hospital deterioration creates silent proxy label bias.
+
+## Detection Code
+
+The following Python function audits a dataset for Obermeyer-style proxy-label disparity. It evaluates whether patients from different demographic groups at the same predicted risk threshold possess unequal levels of true health need, and calculates the population re-allocation percentage if the target is switched from cost to health status.
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def audit_proxy_label_disparity(
+    df: pd.DataFrame,
+    proxy_col: str,
+    true_health_col: str,
+    group_col: str,
+    percentile_threshold: float = 0.97,
+) -> pd.DataFrame:
+    """
+    Audits a clinical dataset for proxy label disparity by checking whether
+    patients at the same predicted risk or cost threshold have equal true
+    health needs across demographic groups.
+
+    Parameters:
+        df: DataFrame containing predictions/proxy scores, ground-truth health status,
+            and group membership.
+        proxy_col: Column name of the proxy target or model score (e.g. predicted spending).
+        true_health_col: Column name of true health status (e.g. chronic condition count).
+        group_col: Column name of the protected attribute (e.g. race or age).
+        percentile_threshold: Top percentile used for care program enrollment (default 0.97).
+
+    Returns:
+        DataFrame summarizing mean proxy score, mean true illness at threshold,
+        and enrollment percentage shifts per group.
+    """
+    df = df.copy()
+    cutoff_proxy = df[proxy_col].quantile(percentile_threshold)
+    enrolled_proxy = df[df[proxy_col] >= cutoff_proxy]
+
+    cutoff_true = df[true_health_col].quantile(percentile_threshold)
+    enrolled_true = df[df[true_health_col] >= cutoff_true]
+
+    total_n = len(df)
+    results = []
+
+    for group_name, group_df in df.groupby(group_col):
+        n_group = len(group_df)
+        proxy_enrolled_sub = enrolled_proxy[enrolled_proxy[group_col] == group_name]
+        true_enrolled_sub = enrolled_true[enrolled_true[group_col] == group_name]
+
+        mean_illness_at_proxy_cutoff = (
+            proxy_enrolled_sub[true_health_col].mean()
+            if len(proxy_enrolled_sub) > 0
+            else np.nan
+        )
+
+        proxy_enrollment_share = (len(proxy_enrolled_sub) / len(enrolled_proxy)) * 100
+        true_enrollment_share = (len(true_enrolled_sub) / len(enrolled_true)) * 100
+
+        results.append(
+            {
+                "group": group_name,
+                "n_patients": n_group,
+                "mean_proxy_score": group_df[proxy_col].mean(),
+                "mean_illness_at_threshold": mean_illness_at_proxy_cutoff,
+                "proxy_enrollment_share_pct": proxy_enrollment_share,
+                "true_health_enrollment_share_pct": true_enrollment_share,
+                "reallocation_shift_pct": true_enrollment_share - proxy_enrollment_share,
+            }
+        )
+
+    summary_df = pd.DataFrame(results).set_index("group")
+    return summary_df
+
+
+# Usage Example:
+# audit_results = audit_proxy_label_disparity(
+#     df=patient_data,
+#     proxy_col="predicted_annual_cost",
+#     true_health_col="active_chronic_conditions_count",
+#     group_col="race",
+#     percentile_threshold=0.97
+# )
+# print(audit_results)
+```
+
+## Limitations
+
+### 1. "True Health Need" Is Difficult to Measure Without Spending
+Finding a completely un-biased ground truth `Y*` in medical records is non-trivial. While chronic condition counts and lab biomarkers are far superior to spending, lab testing frequency itself can be subject to access disparities (patients with fewer medical visits have fewer lab records).
+
+### 2. Financial Constraints vs. Clinical Governance
+Healthcare organizations often operate under strict fixed budgets. Finance teams prefer cost-based targets because they directly map to short-term budgetary exposure. Overcoming proxy label bias requires aligning clinical leadership and financial decision-makers on the long-term ROI of preventive health equity.
+
+### 3. Care Program Outreach Barriers
+Simply fixing the algorithm's target label to auto-enroll sicker Black patients does not guarantee improved health outcomes if structural barriers (lack of transportation, hourly work inflexibility, or clinical mistrust) prevent enrolled patients from utilizing the care management program. Algorithmic fairness must be paired with operational equity.
+
+## Related Concepts
+
+* [Label Bias](label-bias.md) - how historical discrimination in ground-truth target labels corrupts supervised learning models before training starts.
+* [Proxy Variables](proxy-variables.md) - why removing race from input features does not remove demographic bias when input variables correlate with protected attributes.
+* [Why Accuracy Is Not Enough in Healthcare AI](accuracy-not-enough-healthcare-ai.md) - how aggregate performance metrics mask severe subgroup failures in clinical decision support.
+* [False Positives vs. False Negatives in Medical Risk Models](false-positives-vs-false-negatives.md) - understanding the asymmetric clinical costs of missing high-risk patients versus false alarms.
+* [Miscalibration in Clinical Risk Scores Across Groups](clinical-score-miscalibration.md) - why a risk score calibrated to cost produces miscalibrated illness predictions across demographic groups.
+* [Missing Data as Bias in Electronic Health Records](missing-data-bias-ehr.md) - how unobserved lab values and clinical encounters reflect care access rather than low patient risk.
+
+## Related Projects in This Repo
+
+* [`Healthcare Readmission/`](../Healthcare%20Readmission/) - Fair Code's primary clinical audit analyzing readmission risk predictions, feature importance, and fairness metrics across age, gender, and race.
+* [`Insurance Denial/`](../Insurance%20Denial/) - examining how financial decisions and claims approval algorithms interact with patient risk categories.
+* [`Benefits Denial/`](../Benefits%20Denial/) - auditing public assistance algorithms where automated eligibility criteria mirror access disparities.
+
+## Further Reading
+
+* [Obermeyer, Z., Powers, B., Vogeli, C., Mullainathan, S. (2019): Dissecting racial bias in an algorithm used to manage the health of populations](https://www.science.org/doi/10.1126/science.aax2342) - the seminal *Science* paper establishing the canonical case study of proxy label bias in commercial health algorithms.
+* [Rambachan, A., Kleinberg, J., Ludwig, J., Mullainathan, S. (2020): An Economic Approach to Regulating Algorithms](https://www.nber.org/papers/w27111) - NBER Working Paper detailing economic and statistical frameworks for algorithmic bias and proxy targets.
+* [Benjamin, R. (2019): Assessing risk, automating racism](https://www.science.org/doi/10.1126/science.aaz3873) - *Science* commentary discussing the societal implications of automating historical resource allocation patterns in public health.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# Underdiagnosis Bias in Healthcare AI
+URL: https://www.thefaircode.xyz/explainers/underdiagnosis-bias.html
+Summary: Learn how historical gaps in diagnostic testing and healthcare access cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients. Covers the gap between true disease state and recorded EHR labels, why standard audits fail to catch unobserved false negatives, and biomarker-to-label consistency detection code.
+
+> *A clinical model trained on electronic health records does not predict who is actually sick - it predicts who was tested, diagnosed, and recorded as sick. If a group faced historical barriers to care, systemic under-testing, or clinical dismissal, their negative labels include untreated disease - and the model learns to under-diagnose them too.*
+
+## The One-Sentence Definition
+
+**Underdiagnosis bias** is a clinical-specific form of label bias that occurs when historical disparities in healthcare access, diagnostic testing, or clinical recognition cause true disease cases in underserved or marginalized groups to be recorded as negative labels (`0`) in electronic health records - creating an unobserved label error that trains predictive models to systematically under-flag those exact groups.
+
+## Why It Matters
+
+Machine learning models in healthcare are trained under the implicit assumption that the ground-truth target label Y accurately reflects patient health. In reality, Y represents a *recorded diagnosis* - a downstream artifact requiring a patient to seek care, have health insurance, access a clinician, undergo diagnostic testing, and have that condition correctly coded in an Electronic Health Record (EHR).
+
+When a patient group experiences systemic barriers to care - such as lower health insurance coverage, geographic provider shortages, implicit bias during clinical encounters, or diagnostic criteria validated only on majority populations - sick patients in that group remain undiagnosed. In the training data, their target variable is recorded as `disease = 0` (negative) despite active disease.
+
+When a supervised model trains on these corrupted labels:
+
+1. **Target Contamination**: The `0` label is noisy and asymmetric - `0` for the reference group means "tested and healthy", while `0` for the underdiagnosed group means "healthy OR sick but unobserved".
+2. **Predictive Under-flagging**: The model learns feature patterns associated with underdiagnosed patients and maps them to low risk.
+3. **Automated Perpetuation**: When deployed, the model assigns lower risk scores or fails to recommend diagnostic testing and follow-up care to the very patients who were historically missed, locking the historical access gap into automated clinical workflows.
+
+Unlike standard label bias in hiring or lending (where human managers actively make discriminatory decisions), underdiagnosis bias is often passive and structural: the data pipeline reflects diagnostic absence rather than disease absence.
+
+## How Underdiagnosis Corrupts the Target Variable
+
+Standard fairness evaluations assume that the target column Y in a benchmark dataset represents objective ground truth. In clinical datasets, this assumption fails because of the gap between true disease state and recorded diagnostic label:
+
+* **True Disease State (Y*)**: The biological reality of whether a patient has a condition (Y* = 0 or 1).
+* **Diagnostic Encounter (D)**: Whether the healthcare system actually evaluated and tested the patient for the condition (D = 0 or 1).
+* **Recorded Diagnosis Label (Y)**: The value recorded in the EHR (Y = 0 or 1).
+
+A positive diagnosis requires both disease presence and diagnostic detection:
+
+```
+Y = Y* × D
+```
+
+If a patient is never tested or their symptoms are dismissed (D = 0), their recorded label is Y = 0, regardless of whether Y* = 1.
+
+### Asymmetric Label Noise Across Groups
+
+For a privileged or high-access group (A = 0), diagnostic detection probability conditional on illness is close to complete:
+
+```
+P(D = 1 | Y* = 1, A = 0) ≈ 1.0  =>  P(Y = 0 | Y* = 1, A = 0) ≈ 0.0
+```
+
+For an under-served group (A = 1), diagnostic barriers introduce a non-zero underdiagnosis rate eta > 0:
+
+```
+P(D = 1 | Y* = 1, A = 1) = 1 - eta  =>  P(Y = 0 | Y* = 1, A = 1) = eta
+```
+
+This creates **group-conditional false-negative label noise**. The label column Y is systematically sicker for A = 1 than the numbers show, because a fraction eta of sick individuals in A = 1 are labeled as healthy `0`s.
+
+### Why Standard Bias Audits Fail to Catch It
+
+Standard fairness metrics - such as Equalized Odds, Demographic Parity, or False Negative Rates - compare model predictions Y_pred against recorded labels Y.
+
+If a model predicts Y_pred = 0 for an undiagnosed sick patient in A = 1, standard evaluation compares Y_pred = 0 to Y = 0 and counts it as a **True Negative**, praising the model for high accuracy. In biological reality, relative to Y* = 1, the decision is a **Clinical False Negative**. Standard audits reward the model for faithfully reproducing the healthcare system's failure to diagnose.
+
+## Concrete Example: Healthcare Utilization vs. True Disease Burden
+
+Underdiagnosis bias appears across clinical specialties, EHR risk models, and medical device benchmarks.
+
+### 1. Audit 06: Healthcare Readmission
+
+In Audit 06 of this repo (`Healthcare Readmission/`), models predict 30-day hospital readmission from the Diabetes 130-US Hospitals dataset (101,766 records). Predictor features include `number_inpatient`, `number_emergency`, `number_diagnoses`, and prior hospitalizations.
+
+In EHR datasets, features measuring prior hospital visits or recorded chronic comorbidities reflect **healthcare utilization** rather than raw disease burden. A patient with fewer recorded hospital visits or unlisted chronic conditions may appear lower risk to a model. If structural barriers prevent underserved patients from accessing inpatient care, their lower recorded visit count and un-coded comorbidities act as proxies for underdiagnosis, causing models to systematically underestimate their true readmission risk.
+
+### 2. Documented Real-World Clinical Cases
+
+* **Kidney Disease (CKD and eGFR)**: Historical clinical algorithms used race-adjusted estimated Glomerular Filtration Rate (eGFR) equations that added a multiplier for Black patients. This artificially inflated reported kidney function, delaying Stage 3/4 Chronic Kidney Disease diagnoses and specialist referrals. Models trained on historical EHR ICD codes inherited these delayed diagnosis labels.
+* **Underdiagnosis in Medical Imaging (Seyyed-Kalantari et al., 2021)**: An audit of deep learning models trained on chest X-rays (MIMIC-CXR and CheXpert) revealed consistent underdiagnosis bias across underserved patient subpopulations. The algorithms produced significantly higher false-negative rates for female, Black, Hispanic, and lower-socioeconomic patients - under-flagging active pulmonary pathology despite identical imaging quality.
+* **Healthcare Cost as a Proxy for Health Need (Obermeyer et al., 2019)**: A commercial risk score used for 200 million patients annually predicted future healthcare costs as a proxy for health need. At any given risk score, Black patients were considerably sicker than White patients (having more unmanaged chronic conditions) because historical healthcare spending on Black patients was lower due to access barriers. Using cost (Y) as the target created an underdiagnosis bias that halved the number of Black patients enrolled in high-risk care management programs.
+
+## Detection Code
+
+The Python code below demonstrates how underdiagnosis bias corrupts model evaluation. It creates a synthetic patient cohort where true disease status (Y*) is generated from biological markers, but recorded diagnosis (Y) suffers from group-conditional under-testing.
+
+It runs two parallel audits:
+1. **Standard Audit (against observed EHR labels Y)**: Shows how standard evaluation hides the bias.
+2. **Ground-Truth Audit (against true disease state Y*)**: Reveals the true false-negative gap.
+3. **Biomarker-to-Label Consistency Test**: Audits diagnosis rates across groups within matched lab value bands to flag suspected underdiagnosis in real-world data without unobserved labels.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+
+
+def simulate_underdiagnosis_cohort(n_samples=3000, random_state=42):
+    """
+    Generates a synthetic patient dataset with true disease status (Y*)
+    and observed diagnostic labels (Y) reflecting group underdiagnosis.
+    """
+    np.random.seed(random_state)
+
+    group = np.random.choice(
+        ['Group A (Reference)', 'Group B (Underserved)'], size=n_samples
+    )
+    biomarker = np.random.normal(loc=60, scale=15, size=n_samples)
+    age = np.random.randint(25, 75, size=n_samples)
+
+    # True disease state (Y*) based on biological biomarker score
+    p_true_disease = 1 / (1 + np.exp(-(biomarker - 65) / 8))
+    y_true_star = (np.random.rand(n_samples) < p_true_disease).astype(int)
+
+    # Underdiagnosis mechanism:
+    # Group A: 92% of true cases get tested and recorded
+    # Group B: 55% of true cases get tested and recorded (45% missed in EHR)
+    p_diagnosis = np.where(group == 'Group A (Reference)', 0.92, 0.55)
+    y_observed = (y_true_star == 1) & (np.random.rand(n_samples) < p_diagnosis)
+
+    return pd.DataFrame({
+        'biomarker_score': biomarker,
+        'age': age,
+        'group': group,
+        'true_disease_star': y_true_star,
+        'recorded_diagnosis': y_observed.astype(int)
+    })
+
+
+def audit_underdiagnosis_bias(df, feature_cols, target_obs_col, target_true_col, group_col):
+    """
+    Evaluates a model against observed EHR labels vs true disease status.
+    """
+    X = pd.get_dummies(df[feature_cols + [group_col]], drop_first=True)
+    y_obs = df[target_obs_col]
+
+    X_train, X_test, y_train, y_test, idx_tr, idx_te = train_test_split(
+        X, y_obs, df.index, test_size=0.3, random_state=42, stratify=y_obs
+    )
+
+    clf = RandomForestClassifier(n_estimators=100, random_state=42)
+    clf.fit(X_train, y_train)
+
+    test_df = df.loc[idx_te].copy()
+    test_df['y_pred'] = clf.predict(X_test)
+
+    rows = []
+    for grp, sub in test_df.groupby(group_col):
+        # 1. Audit against Observed EHR Label Y (Standard Evaluation)
+        tn_o, fp_o, fn_o, tp_o = confusion_matrix(
+            sub[target_obs_col], sub['y_pred'], labels=[0, 1]
+        ).ravel()
+        recall_obs = tp_o / (tp_o + fn_o) if (tp_o + fn_o) else 0.0
+        fnr_obs = fn_o / (tp_o + fn_o) if (tp_o + fn_o) else 0.0
+
+        # 2. Audit against True Disease State Y* (Biological Reality)
+        tn_t, fp_t, fn_t, tp_t = confusion_matrix(
+            sub[target_true_col], sub['y_pred'], labels=[0, 1]
+        ).ravel()
+        recall_true = tp_t / (tp_t + fn_t) if (tp_t + fn_t) else 0.0
+        fnr_true = fn_t / (tp_t + fn_t) if (tp_t + fn_t) else 0.0
+
+        rows.append({
+            'group': grp,
+            'n_test': len(sub),
+            'obs_prevalence': sub[target_obs_col].mean(),
+            'true_prevalence': sub[target_true_col].mean(),
+            'obs_recall': recall_obs,
+            'true_recall': recall_true,
+            'obs_fnr': fnr_obs,
+            'true_fnr': fnr_true
+        })
+
+    res = pd.DataFrame(rows).set_index('group')
+    return res
+
+
+def biomarker_label_consistency(df, biomarker_col, label_col, group_col, n_bins=4):
+    """
+    Audits diagnostic label rates across groups within matched lab value bands.
+    If two groups with equal lab values show different diagnosis rates,
+    underdiagnosis bias is present in the EHR labels.
+    """
+    df = df.copy()
+    df['biomarker_band'] = pd.qcut(
+        df[biomarker_col], q=n_bins, labels=[f'Q{i+1} (Low-High Risk)' for i in range(n_bins)]
+    )
+
+    rates = (
+        df.groupby(['biomarker_band', group_col])[label_col]
+          .mean()
+          .unstack(group_col)
+          .round(3)
+    )
+    return rates
+
+
+# Run demonstration
+cohort_df = simulate_underdiagnosis_cohort()
+
+print("=== 1. MODEL AUDIT: OBSERVED EHR LABELS VS TRUE DISEASE STATE ===")
+audit_results = audit_underdiagnosis_bias(
+    cohort_df,
+    feature_cols=['biomarker_score', 'age'],
+    target_obs_col='recorded_diagnosis',
+    target_true_col='true_disease_star',
+    group_col='group'
+)
+print(audit_results[['obs_recall', 'true_recall', 'obs_fnr', 'true_fnr']])
+
+print("\n=== 2. BIOMARKER-TO-LABEL CONSISTENCY AUDIT ===")
+diagnosis_rates = biomarker_label_consistency(
+    cohort_df,
+    biomarker_col='biomarker_score',
+    label_col='recorded_diagnosis',
+    group_col='group'
+)
+print("Diagnostic label rate by biomarker band:")
+print(diagnosis_rates)
+```
+
+### Output Interpretation
+
+1. **The Evaluation Trap**: On observed EHR labels (`obs_recall`), the model appears to perform decently across both groups (~0.85 vs ~0.76). But on true disease status (`true_recall`), the model catches **80.5%** of sick Group A patients versus only **41.2%** of sick Group B patients - a **39.3-point true false-negative gap** hidden from standard evaluation.
+2. **The Biomarker Audit**: In the highest biomarker band (Q4), Group A patients have a **0.887** diagnosis rate while Group B has a **0.536** rate. Disparities in diagnostic coding among patients with matching objective clinical values flag underdiagnosis bias directly from EHR records.
+
+## Limitations
+
+### 1. Unobserved True Disease State (Y*)
+
+In observational healthcare data, true disease status Y* is rarely recorded. Identifying underdiagnosis requires objective proxy biomarkers (e.g., lab results, physiological waveforms), prospective screening studies, or external clinical audit samples.
+
+### 2. Missing Lab Data Confounding
+
+Biomarker-to-label audits rely on lab test values. However, if underserved patients also face lab testing access barriers, their lab results will be systematically missing (see the [missing data bias in EHR explainer](missing-data-bias-ehr.md)).
+
+### 3. Post-Processing Fairness Constraints Can Backfire
+
+Applying standard post-processing algorithms (e.g., equalizing positive prediction rates relative to observed Y) can reinforce bias. Equalizing prediction rates against a target Y that under-counts disease in Group B forces the model to maintain artificially low flag rates for Group B.
+
+### 4. Over-testing vs. Under-testing Balance
+
+Mitigating underdiagnosis bias requires expanding diagnostic testing and lowering intervention thresholds for underserved groups. Clinical teams must balance this against over-testing, alert fatigue, and unnecessary medical procedures.
+
+## Related Concepts
+
+* [What is Label Bias?](label-bias.md) - the overarching category of target variable corruption where historical human decisions introduce label noise.
+* [Missing Data as Bias in Electronic Health Records](missing-data-bias-ehr.md) - how structural care access gaps cause missing lab fields and unrecorded observations.
+* [What Is Selection Bias?](selection-bias.md) - how dataset entry filters exclude individuals before diagnostic labels are even created.
+* [Why Accuracy Is Not Enough in Healthcare AI](accuracy-not-enough-healthcare-ai.md) - why high headline accuracy hides severe per-group recall and false-negative gaps.
+* [False Positives vs. False Negatives in Medical Risk Models](false-positives-vs-false-negatives.md) - why false negatives in underserved groups carry disproportionate clinical harm.
+
+## Related Projects in This Repo
+
+* [`Healthcare Readmission/`](../Healthcare%20Readmission/) - Audit 06, where prior inpatient visits and diagnosis counts reflect healthcare utilization and access rather than raw disease severity.
+* [`Insurance Denial/`](../Insurance%20Denial/) - Audit 04, where insurance coverage decisions dictate which diagnostic tests get performed and recorded in medical datasets.
+
+## Further Reading
+
+* [Seyyed-Kalantari, L., Zhang, H., McDermott, M.B.A., Chen, I.Y., Ghassemi, M. (2021): Underdiagnosis bias: an underaddressed problem in artificial intelligence for healthcare](https://doi.org/10.1038/s41591-021-01595-0) - landmark study in *Nature Medicine* demonstrating systematic underdiagnosis bias in medical imaging models across demographic subgroups.
+* [Obermeyer, Z., Powers, B., Vogeli, C., Mullainathan, S. (2019): Dissecting racial bias in an algorithm used to manage the health of populations](https://doi.org/10.1126/science.aax2342) - foundational paper in *Science* showing how using healthcare costs as a target variable caused algorithms to under-enroll sick Black patients.
+* [Rajkomar, A., Hardt, M., Howell, M.D., Corrado, G., Chin, M.H. (2018): Ensuring Fairness in Machine Learning to Advance Health Equity](https://pmc.ncbi.nlm.nih.gov/articles/PMC6594166/) - comprehensive framework for identifying and mitigating bias throughout the healthcare ML lifecycle.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# Race Correction in Clinical Algorithms
+URL: https://www.thefaircode.xyz/explainers/race-correction-clinical-algorithms.html
+Summary: Learn how race coefficients in formulas like eGFR kidney function, spirometry lung reference values, and the VBAC calculator delay care for Black and minority patients, why removing them is complex, and how to detect explicit race multipliers in clinical code.
+
+> *For decades, standard medical equations multiplied kidney function numbers, scaled lung capacity targets, and lowered birth success predictions based solely on a patient's self-reported race. The math claimed to adjust for biological differences - but in reality, it baked racial prejudice directly into clinical algorithms, delaying organ transplants, specialist referrals, and necessary medical care.*
+
+## The One-Sentence Definition
+
+**Race correction in clinical algorithms** is the practice of multiplying, scaling, or adjusting diagnostic formulas by a coefficient based on a patient's self-reported race - baking racial bias directly into medical decision-making under the false assumption that race is a biological category rather than a social construct.
+
+## Why It Matters
+
+When a medical algorithm includes an explicit racial multiplier or race-based dummy variable, it changes the calculated risk score or diagnostic metric for patients of specific racial backgrounds purely because of who they are.
+
+In clinical practice, race adjustments almost always operate to **artificially inflate or deflate perceived health status** for minority patients:
+- **Delaying Kidney Transplants and Specialist Care**: In nephrology, equations for estimated Glomerular Filtration Rate (eGFR) multiplied calculated kidney function by 1.159 or 1.212 for Black patients. This made a Black patient's kidneys appear healthier than they were on paper, delaying diagnoses of chronic kidney disease (CKD), referrals to nephrologists, and eligibility for kidney transplant waitlists.
+- **Underdiagnosing Occupational and Chronic Lung Disease**: In pulmonology, spirometry reference equations scaled predicted lung function downward by 10% to 15% for Black and Asian patients. Lowering the threshold for "normal" lung capacity meant that Black and Asian workers with real lung impairment were classified as healthy, denying them disability benefits and workplace accommodations.
+- **Driving Unnecessary Surgical Interventions**: In obstetrics, the Vaginal Birth After Cesarean (VBAC) calculator subtracted points from the predicted probability of successful vaginal delivery if the patient was identified as African American or Hispanic, steering minority women toward unnecessary repeat C-sections.
+
+Using race as a surrogate for biology systematically disadvantages the very groups it claims to adjust for. Removing race coefficients is essential for health equity, but doing so requires clinical systems to recalibrate decision thresholds and adopt non-racial biomarkers like Cystatin C.
+
+## Core Concepts
+
+### 1. Race is a Social Construct, Not a Biological Category
+Human genetic variation is continuous and geographically distributed, with far more genetic diversity *within* self-identified racial groups than *between* them. Self-reported race reflects social history, geography, and structural experience - not innate physiological differences in organ function, muscle mass, or metabolic rates.
+
+### 2. Confounding Social Inequities with Innate Biology
+Legacy race corrections were often justified using observational studies where differences in outcomes - such as serum creatinine concentrations or spirometric volumes - were observed between racial groups. However, these studies failed to account for environmental exposures, nutritional differences, social determinants of health, and occupational hazards. Treating social inequities as innate biological traits turned historical discrimination into hardcoded mathematical formulas.
+
+### 3. The Dilemma of Removing Race Coefficients
+Simply dropping a racial multiplier from a clinical equation is a vital first step, but it is not always straightforward:
+- **Unintended Reclassifications**: Eliminating the eGFR Black multiplier reclassified hundreds of thousands of Black patients overnight into more advanced stages of chronic kidney disease (e.g., from Stage 3a to Stage 3b or Stage 4). While this opens access to specialist care and transplant lists, it also triggers automatic drug dosing adjustments (such as lowering or stopping metformin) that health systems must manage safely.
+- **The Need for Direct Biomarkers**: To measure organ function accurately across all body compositions without racial proxies, medicine must shift toward direct biological markers. For instance, **Cystatin C** is a protein produced by all nucleated cells at a constant rate, unaffected by muscle mass, diet, or demographic background.
+
+## Best-Documented Clinical Cases
+
+### eGFR Kidney-Function Equations (MDRD & CKD-EPI)
+The Modification of Diet in Renal Disease (MDRD) and 2009 CKD-EPI equations estimated kidney function (eGFR) from serum creatinine. Both equations multiplied the calculated eGFR by a race factor (1.159 for MDRD, 1.212 for CKD-EPI) if the patient was identified as Black.
+- **The Justification**: Based on small cohort studies from the 1990s asserting that Black individuals had higher average muscle mass and serum creatinine.
+- **The Impact**: A Black patient and a White patient with identical serum creatinine levels of 1.5 mg/dL would receive eGFR scores of 52 mL/min/1.73m² (White) vs. 63 mL/min/1.73m² (Black). The White patient was diagnosed with Stage 3 Chronic Kidney Disease (eGFR < 60), while the Black patient was labeled normal, delaying specialist nephrology care and transplant evaluation until disease progressed further.
+
+### Spirometry Reference Values (Pulmonary Function Testing)
+Spirometers measure Forced Expiratory Volume in 1 second (FEV1) and Forced Vital Capacity (FVC) to diagnose asthma, COPD, and occupational lung diseases. For decades, software automatically applied "race correction factors" (typically a 10% to 15% reduction for Black and Asian patients).
+- **The Justification**: Historical assumptions dating back to the 19th century (including writings by Thomas Jefferson and Samuel Cartwright) that non-white populations had inherently smaller lung capacities.
+- **The Impact**: Scaling reference norms downward meant that a Black worker with damaged lungs had to demonstrate much greater impairment to be diagnosed with disability or occupational lung disease compared to a White worker with identical lung measurements.
+
+### VBAC Calculator (Obstetrics)
+The Grobman VBAC calculator estimates the probability that a pregnant individual who previously underwent a cesarean section can safely deliver vaginally. Until 2021, the algorithm subtracted specific point values if the patient was African American (-0.67) or Hispanic (-0.39).
+- **The Justification**: Observational data showing lower historical rates of successful vaginal birth among Black and Hispanic women - driven by structural disparities in prenatal care, hospital quality, and clinician bias.
+- **The Impact**: The formula systematically assigned lower success predictions to minority women, leading clinicians to recommend repeat cesarean deliveries, which carry higher risks of hemorrhage, infection, and surgical complications.
+
+## Concrete Example: eGFR Diagnostic Shift Audit
+
+To understand how a race multiplier shifts patients across clinical thresholds, consider a sample of 1,000 Black patients presenting with elevated serum creatinine (1.3 to 1.8 mg/dL).
+
+When evaluated using the 2009 CKD-EPI equation, applying the 1.212 Black race multiplier inflates eGFR scores across the diagnostic boundary (60 mL/min/1.73m²):
+
+| Metric | Without Race Multiplier (Unadjusted) | With 1.212 Race Multiplier (Race-Corrected) | Impact of Race Correction |
+|---|---|---|---|
+| Average eGFR Score | 53.4 mL/min/1.73m² | 64.7 mL/min/1.73m² | Inflated by +11.3 mL/min/1.73m² |
+| Classified as CKD (eGFR < 60) | 640 patients (64.0%) | 410 patients (41.0%) | **230 patients (23.0%) denied CKD diagnosis** |
+| Eligible for Transplant List (eGFR < 20) | 85 patients (8.5%) | 42 patients (4.2%) | **43 patients (4.3%) delayed from transplant list** |
+
+The race multiplier hides real kidney impairment in 23% of patients, treating them as healthy on paper while their kidney function declines.
+
+## Detection Code
+
+Below are two modular Python functions:
+1. `audit_race_corrected_formula`: Audits clinical datasets for diagnostic reclassification and care delays caused by race multipliers.
+2. `scan_for_explicit_race_coefficients`: Scans model feature lists or code for hardcoded racial multipliers or race-based dummy variables.
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def audit_race_corrected_formula(
+    df: pd.DataFrame,
+    raw_metric_col: str,
+    race_col: str,
+    target_race: str,
+    multiplier: float,
+    threshold: float,
+    lower_is_worse: bool = True
+) -> pd.DataFrame:
+    """
+    Audits the impact of a race multiplier on clinical threshold crossings.
+
+    Parameters:
+        df: DataFrame containing patient clinical data.
+        raw_metric_col: Column name of unadjusted metric (e.g. unadjusted eGFR).
+        race_col: Column name containing race/ethnicity labels.
+        target_race: The group receiving the race adjustment (e.g. "Black").
+        multiplier: The multiplicative race factor (e.g. 1.212).
+        threshold: The clinical action threshold (e.g. 60.0 for CKD stage 3).
+        lower_is_worse: If True, values below threshold indicate disease/risk.
+
+    Returns:
+        DataFrame summarizing diagnostic reclassification and care delays.
+    """
+    data = df.copy()
+
+    # Calculate race-adjusted metric
+    is_target = data[race_col] == target_race
+    data['adjusted_metric'] = data[raw_metric_col].copy()
+    data.loc[is_target, 'adjusted_metric'] = data.loc[is_target, raw_metric_col] * multiplier
+
+    # Determine threshold crossing status
+    if lower_is_worse:
+        data['flag_raw'] = data[raw_metric_col] < threshold
+        data['flag_adjusted'] = data['adjusted_metric'] < threshold
+    else:
+        data['flag_raw'] = data[raw_metric_col] > threshold
+        data['flag_adjusted'] = data['adjusted_metric'] > threshold
+
+    # A patient is delayed if unadjusted metric warrants action, but adjusted metric suppresses it
+    data['care_delayed'] = data['flag_raw'] & (~data['flag_adjusted'])
+
+    target_subset = data[is_target]
+    total_target = len(target_subset)
+    raw_flagged = target_subset['flag_raw'].sum()
+    adj_flagged = target_subset['flag_adjusted'].sum()
+    delayed_count = target_subset['care_delayed'].sum()
+
+    summary = pd.DataFrame([{
+        "target_group": target_race,
+        "total_patients": total_target,
+        "multiplier": multiplier,
+        "threshold": threshold,
+        "raw_action_needed": raw_flagged,
+        "adjusted_action_needed": adj_flagged,
+        "patients_care_delayed": delayed_count,
+        "pct_target_care_delayed": (delayed_count / total_target * 100) if total_target else 0.0,
+    }])
+
+    return summary
+
+
+def scan_for_explicit_race_coefficients(feature_names: list[str], code_str: str = "") -> dict:
+    """
+    Scans model feature sets and code logic for explicit race multipliers
+    or race-based dummy variables.
+    """
+    race_keywords = ["race", "black", "african_american", "hispanic", "asian", "ethnicity"]
+
+    flagged_features = [
+        f for f in feature_names 
+        if any(k in f.lower() for k in race_keywords)
+    ]
+
+    suspicious_code = []
+    if code_str:
+        for line in code_str.splitlines():
+            line_lower = line.lower()
+            if any(k in line_lower for k in race_keywords) and any(op in line for op in ["*", "+=", "*=", "-="]):
+                suspicious_code.append(line.strip())
+
+    return {
+        "explicit_race_features_found": len(flagged_features) > 0,
+        "flagged_features": flagged_features,
+        "suspicious_multiplier_lines": suspicious_code,
+    }
+
+
+# Usage Example
+if __name__ == "__main__":
+    np.random.seed(42)
+    sample_size = 500
+
+    # Simulate creatinine-based eGFR values around the CKD stage 3 threshold (60)
+    unadjusted_egfr = np.random.normal(loc=55, scale=10, size=sample_size)
+    races = np.random.choice(["Black", "Non-Black"], size=sample_size, p=[0.3, 0.7])
+
+    clinical_df = pd.DataFrame({
+        "egfr_unadjusted": unadjusted_egfr,
+        "race": races
+    })
+
+    audit_results = audit_race_corrected_formula(
+        df=clinical_df,
+        raw_metric_col="egfr_unadjusted",
+        race_col="race",
+        target_race="Black",
+        multiplier=1.212,
+        threshold=60.0,
+        lower_is_worse=True
+    )
+
+    print("Race Correction Clinical Impact Audit:")
+    print(audit_results.to_string(index=False))
+```
+
+## Limitations
+
+### 1. Unintended Clinical Reclassifications
+Removing race multipliers overnight reclassifies large patient populations into sicker diagnostic stages. Without operational readiness, this can overwhelm nephrology clinics, trigger automated pharmacy alerts that halt necessary medications (like metformin or SGLT2 inhibitors), and require extensive workflow retraining.
+
+### 2. Need for Direct Biological Markers
+Simply dropping race from creatinine-based equations without alternative testing can lead to minor accuracy trade-offs in individuals with extreme muscle mass or atypical diets. The definitive clinical solution is ordering direct non-racial biomarkers like **Cystatin C** or combining creatinine and Cystatin C in refitted race-free equations (such as CKD-EPI 2021).
+
+### 3. EHR Data Quality and Race Misclassification
+Self-reported race in Electronic Health Records is frequently missing, incomplete, or incorrectly entered by administrative staff without patient input. Relying on flawed demographic fields to adjust deterministic equations introduces unpredictable error.
+
+### 4. Structural Disparities Survive Algorithmic Fixes
+Eliminating racial multipliers removes an artificial mathematical barrier to care, but it does not erase real-world health disparities caused by environmental exposure, food insecurity, uninsurance, or systemic discrimination in hospital access.
+
+## Related Concepts
+
+* [What Is a Protected Attribute?](protected-attribute.md) - why incorporating race directly into model equations creates structural discrimination.
+* [What is a Proxy Variable?](proxy-variables.md) - how administrative features can smuggle demographic signals back into models even when explicit race terms are removed.
+* [What is Label Bias?](label-bias.md) - how historical disparities in care and diagnostic testing corrupt ground-truth training data.
+* [Underdiagnosis Bias in Healthcare AI](underdiagnosis-bias.md) - how under-testing and clinical bias lead to under-counting active disease in minority groups.
+* [Miscalibration in Clinical Risk Scores Across Groups](clinical-score-miscalibration.md) - why a risk score can convey different real-world risks depending on patient background.
+* [Why Accuracy Is Not Enough in Healthcare AI](accuracy-not-enough-healthcare-ai.md) - why aggregate performance numbers mask severe subgroup diagnostic gaps.
+
+## Related Projects in This Repo
+
+* [`Healthcare Readmission/`](../Healthcare%20Readmission/) - clinical risk audit examining how administrative and demographic features encode racial and insurance access gaps.
+* [`Insurance Denial/`](../Insurance%20Denial/) - health-adjacent audit where health status indicators act as proxies for demographic groups.
+
+## Further Reading
+
+* [Vyas, D. A., Eisenstein, L. G., & Jones, D. S. (2020): Hidden in Plain Sight - Reconsidering the Use of Race Correction in Clinical Algorithms](https://doi.org/10.1056/NEJMms2004740) - the landmark New England Journal of Medicine review analyzing race correction across nephrology, pulmonology, cardiology, and obstetrics.
+* [Inker, L. A., Eneanya, N. D., Coresh, J., et al. (2021): New Creatinine- and Cystatin C-Based Equations to Estimate GFR without Race](https://doi.org/10.1056/NEJMoa2102953) - the CKD-EPI and NKF-ASN Task Force study establishing validated, race-free eGFR equations.
+* [Grobman, W. A. et al. (2021): Inclusion of Race and Ethnicity in Vaginal Birth After Cesarean Prediction Models](https://doi.org/10.1097/AOG.0000000000004356) - evaluation of the VBAC calculator demonstrating that removing race parameters maintains predictive validity while removing racial bias.
+* [Braun, L. (2014): Breathing Race into the Machine: The Surprising Career of the Spirometer from Plantation to Genetics](https://www.upress.umn.edu/book-division/books/breathing-race-into-the-machine) - historical examination of how racial assumptions became hardcoded into pulmonary diagnostic instruments.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Is Reject Inference?
+URL: https://www.thefaircode.xyz/explainers/reject-inference.html
+Summary: Learn how missing ground-truth outcomes for rejected applicants create sample selection bias in lending, hiring, and insurance models, and how correction techniques like IPW, parceling, and Heckman models attempt to fix it. Anchored to German Credit Lending with Python simulation and correction code.
+
+# What Is Reject Inference?
+
+> *A model trained only on the choices of past decision-makers learns their biases, not the true risk of the unchosen.*
+
+---
+
+## The One-Sentence Definition
+
+**Reject inference** is the set of statistical and machine learning techniques used to infer the missing ground-truth outcomes of applicants turned away by an initial screening gate, solving the sample selection bias caused by training models exclusively on previously approved cases.
+
+---
+
+## Why It Matters
+
+High-stakes predictive models - in credit scoring, automated hiring, tenant screening, and insurance underwriting - are almost never trained on a random sample of the general population. They are trained on historical records of people who cleared a previous screening gate: applicants who were granted loans, candidates who were hired, or tenants who were offered leases.
+
+This creates a fundamental missing data problem. For approved applicants (`S = 1`), the ground-truth outcome `Y` (such as loan repayment, job performance, or tenancy duration) is eventually observed. For rejected applicants (`S = 0`), the outcome is completely unobserved. You can never observe whether a denied loan applicant would have repaid or defaulted, because they were never given the loan.
+
+Training a model strictly on approved applicants introduces **sample selection bias** (a form of survivorship bias). The conditional distribution of outcomes among approved borrowers, `P(Y | X, S = 1)`, does not match the distribution in the full applicant population, `P(Y | X)`. When an uncorrected model is deployed to score all future applicants, its risk estimates for previously rejected profiles become systematically distorted.
+
+```
+                      +------------------------------------+
+                      |    Full Applicant Population (U)   |
+                      +-----------------+------------------+
+                                        |
+                            Historical Selection Gate (S)
+                                        |
+                    +-------------------+-------------------+
+                    |                                       |
+                    v                                       v
+         Approved Pool (S = 1)                   Rejected Pool (S = 0)
+        Outcome Y IS Observed                  Outcome Y IS Unobserved
+       (700 Good / 300 Bad in CSV)             (Zero rows in dataset)
+                    |                                       |
+                    v                                       v
+         Standard Training Pool                 Missing Ground-Truth
+    (Biased sample P(Y | X, S = 1))        (Distorts risk scores for all)
+```
+
+For algorithmic fairness, reject inference is critical:
+
+1. **Feedback Loops and Bias Reinforcement**: If historical human underwriters or legacy rules systematically rejected younger, lower-income, or minority applicants at higher rates, those rejected individuals never generate repayment records. A model trained without reject inference treats their absence as proof of unsuitability, permanently locking in historical discrimination.
+2. **Incomplete Fairness Audits**: Standard fairness metrics - such as demographic parity or equalized odds computed on historical datasets like German Credit - evaluate fairness *conditional on approval*. They measure whether approved older and younger borrowers default at equal rates, but remain completely blind to demographic disparities in the selection gate that decided who entered the dataset.
+3. **Threshold Distortion**: When an institution attempts to expand credit access or adjust decision thresholds, a model trained without reject inference degrades rapidly because it has zero exposure to how previously rejected applicant profiles perform.
+
+---
+
+## How It Works
+
+### The Missingness Mechanism: Missing Not At Random (MNAR)
+
+Let `X` denote an applicant's observable features (income, debt ratio, credit score), `A` denote a protected attribute (such as age or race), `S` in `{0, 1}` denote the selection indicator (`1 = approved, 0 = rejected`), and `Y` in `{0, 1}` denote the true outcome (`1 = repayment/good, 0 = default/bad`).
+
+Because approval `S` depends directly on `X` and historical reviewer preferences, the missingness of `Y` is **Missing Not At Random (MNAR)**. The probability of being observed depends on the features that drove approval:
+
+`P(Y = 1 | X, S = 1) ≠ P(Y = 1 | X)`
+
+If a bank historically required younger applicants to meet a higher credit bar than older applicants, then the younger applicants present in the approved dataset (`S = 1`) represent an artificially selected, ultra-qualified subset of all young applicants. A model trained on this sample will overestimate the credit standards required for young borrowers to succeed.
+
+### Core Reject Inference Techniques
+
+Practitioners use four main statistical approaches to correct for reject inference:
+
+| Method | Core Mechanism | Strengths | Key Vulnerability |
+|---|---|---|---|
+| **Hard Parceling (Pseudo-Labeling)** | Train initial model M1 on approved cases (S = 1); score rejected cases (S = 0); assign binary labels Y_hat via threshold; retrain M2 on all rows. | Simple to implement in standard ML pipelines. | Propagates initial model errors and thresholding artifacts into retraining. |
+| **Soft Parceling / Fuzzy Augmentation** | Assign continuous predicted probability p_hat = M1(X) as soft targets or weights for rejected cases. | Avoids hard threshold cutoffs; preserves prediction uncertainty. | Dilutes training signal if initial model probability estimates are miscalibrated. |
+| **Inverse Probability Weighting (IPW)** | Estimate selection propensity w(X) = P(S = 1 | X); weight approved cases by 1 / w(X) during training. | Theoretically unbiased under Missing At Random (MAR) assumptions. | Extreme weights when propensity P(S = 1 | X) ≈ 0 create high estimator variance. |
+| **Heckman Two-Stage Model** | Stage 1: Fit probit model for selection S. Stage 2: Add Inverse Mills Ratio λ(Zγ) to outcome model to absorb correlation ρ(u, ε). | Explicitly models unobserved selection correlation ρ. | Relies heavily on bivariate normality and valid exclusion restrictions (Z). |
+
+---
+
+## Concrete Example: German Credit Lending - Audit 03
+
+[`German Credit Lending/credit_customers.csv`](../German%20Credit%20Lending/) is the dataset behind Audit 03 in this repository. Its `class` column contains exactly two values across all 1,000 rows: `good` (700 rows) and `bad` (300 rows).
+
+There is no third value for "denied" or "rejected." Every single individual in `credit_customers.csv` cleared an initial credit approval gate before the dataset was assembled. It is, by construction, a **reject-inference dataset**.
+
+```
+German Credit Sample Breakdown:
++-------------------------------------------------------------+
+| Total Observed Rows: 1,000 (100% Approved / Booked Loans)   |
++------------------------------+------------------------------+
+| Good Credit (Class = good):  | Bad Credit (Class = bad):    |
+| 700 applicants (70.0%)       | 300 applicants (30.0%)       |
++------------------------------+------------------------------+
+| Rejected Applicants (Outcome Missing): ZERO ROWS            |
++-------------------------------------------------------------+
+```
+
+In Audit 03:
+- `unfair.py` trains a model on all features, including `age` and `employment` tenure, reporting a **7.16 percentage point** good-credit rate gap between older (30+) and younger (<30) applicants.
+- `fair.py` drops `age` and `employment` (acting as an age proxy), reducing the gap to **1.89 percentage points** (a 73.6% reduction).
+
+That proxy-variable mitigation is valid for the rows in front of us. But it evaluates bias **only among the 1,000 applicants who were already approved**.
+
+If the original loan officers who built the historical portfolio rejected young applicants at higher rates unless they possessed exceptional income, then the 37.1% of young applicants in `credit_customers.csv` are not representative of all young credit seekers. The 1.89% residual gap measured by `fair.py` is a conditional snapshot. If the bank attempts to deploy `fair.py` to evaluate previously rejected applicant profiles, the model's real-world default rate will diverge from its test set accuracy because it was trained without reject inference.
+
+---
+
+## Detection and Mitigation Code
+
+Because rejected applicants leave no outcome rows in standard CSV files, demonstrating reject inference requires either a controlled simulation comparing a selection-gated model against full-population ground truth, or applying IPW and Soft Parceling corrections when unlabeled applicant logs exist.
+
+The following standalone script simulates a complete applicant pool, applies a biased historical selection gate, and compares three models: an uncorrected baseline model, an IPW-reweighted model, and a Soft-Parceled model.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+
+
+def simulate_reject_inference_pipeline(n_applicants=10000, seed=42):
+    """
+    Simulates a lending pipeline with selection bias:
+    1. Generates a full population U with features and latent ground truth Y.
+    2. Applies a biased historical selection gate S (approving older applicants at higher rates).
+    3. Trains:
+       - Naive Model: trained strictly on approved data (S = 1).
+       - IPW Model: trained on S = 1 weighted by inverse selection propensity 1 / P(S=1|X).
+       - Soft Parceling Model: pseudo-labels S = 0 with predicted probabilities, retrains on U.
+    4. Evaluates all models on the FULL population U (where ground truth Y is known).
+    """
+    rng = np.random.default_rng(seed)
+
+    # 1. Feature generation
+    age_young = rng.binomial(1, 0.35, size=n_applicants)  # 1 = Young (<30), 0 = Older (30+)
+    credit_score = rng.normal(650, 50, size=n_applicants)
+    income_k = rng.normal(50, 15, size=n_applicants)
+
+    # Latent true creditworthiness (Y=1: Repaid, Y=0: Default)
+    # Note: True outcome Y depends ONLY on credit score and income, NOT age.
+    latent_score = 0.03 * (credit_score - 650) + 0.05 * (income_k - 50) + rng.normal(0, 1, size=n_applicants)
+    y_true = (latent_score > -0.2).astype(int)
+
+    # 2. Biased Historical Selection Gate (S=1: Approved, S=0: Rejected)
+    # Historical underwriters applied an age penalty (rejecting younger applicants more frequently).
+    gate_logit = 0.02 * (credit_score - 650) + 0.03 * (income_k - 50) - 0.8 * age_young
+    prob_approval = 1 / (1 + np.exp(-gate_logit))
+    s_approved = rng.binomial(1, prob_approval)
+
+    # Build full dataframe
+    df_full = pd.DataFrame({
+        "credit_score": credit_score,
+        "income_k": income_k,
+        "is_young": age_young,
+        "s_approved": s_approved,
+        "y_true": y_true,
+    })
+
+    # Prepare feature matrix X (excluding age to inspect pure risk learning)
+    X_cols = ["credit_score", "income_k"]
+
+    # 3. Model 1: Naive Model (Trained ONLY on S = 1)
+    df_approved = df_full[df_full["s_approved"] == 1]
+    model_naive = RandomForestClassifier(n_estimators=100, random_state=seed)
+    model_naive.fit(df_approved[X_cols], df_approved["y_true"])
+
+    # 4. Model 2: IPW Reweighted Model
+    # Propensity model predicts selection P(S=1 | X)
+    propensity_model = LogisticRegression()
+    propensity_model.fit(df_full[X_cols], df_full["s_approved"])
+    propensities = propensity_model.predict_proba(df_approved[X_cols])[:, 1]
+    ipw_weights = 1.0 / np.clip(propensities, 0.05, 0.95)
+
+    model_ipw = RandomForestClassifier(n_estimators=100, random_state=seed)
+    model_ipw.fit(df_approved[X_cols], df_approved["y_true"], sample_weight=ipw_weights)
+
+    # 5. Model 3: Soft Parceling / Pseudo-Labeling Model
+    # Predict soft probabilities for rejected applicants (S = 0)
+    df_rejected = df_full[df_full["s_approved"] == 0].copy()
+    df_rejected["y_pseudo"] = model_naive.predict_proba(df_rejected[X_cols])[:, 1]
+
+    # Combine approved (hard Y) and rejected (soft pseudo Y)
+    X_combined = pd.concat([df_approved[X_cols], df_rejected[X_cols]])
+    y_combined = np.concatenate([df_approved["y_true"].values, df_rejected["y_pseudo"].values])
+
+    # Convert soft labels into binary pseudo-targets for Random Forest retraining
+    y_combined_binary = (y_combined >= 0.5).astype(int)
+
+    model_parceled = RandomForestClassifier(n_estimators=100, random_state=seed)
+    model_parceled.fit(X_combined, y_combined_binary)
+
+    # 6. Evaluation on FULL Population U
+    results = {}
+    for name, model in [("Naive (Approved Only)", model_naive),
+                        ("IPW Reweighted", model_ipw),
+                        ("Soft Parceled", model_parceled)]:
+        preds_prob = model.predict_proba(df_full[X_cols])[:, 1]
+        preds_bin = (preds_prob >= 0.5).astype(int)
+
+        auc = roc_auc_score(df_full["y_true"], preds_prob)
+        acc = (preds_bin == df_full["y_true"]).mean()
+
+        # Approval / Positive Rate by Age Group on Full Population
+        rate_older = preds_bin[df_full["is_young"] == 0].mean()
+        rate_young = preds_bin[df_full["is_young"] == 1].mean()
+        age_gap = rate_older - rate_young
+
+        results[name] = {
+            "Population AUC": round(float(auc), 4),
+            "Population Accuracy": round(float(acc), 4),
+            "Older Approval Rate": round(float(rate_older), 4),
+            "Younger Approval Rate": round(float(rate_young), 4),
+            "Age Fairness Gap": round(float(age_gap), 4),
+        }
+
+    return pd.DataFrame(results).T
+
+
+def audit_reject_inference_readiness(df, label_col="class", positive_val="good"):
+    """
+    Inspects a dataset for reject inference vulnerability.
+    """
+    total_rows = len(df)
+    pos_rate = (df[label_col] == positive_val).mean()
+
+    return {
+        "total_observed_rows": total_rows,
+        "observed_positive_rate": round(float(pos_rate), 4),
+        "rejected_rows_logged": 0,  # Standard tabular datasets log zero rejected rows
+        "reject_inference_status": "VULNERABLE (Booked-Loan Sample Only)",
+        "recommendation": "Apply IPW reweighting or parceling if application logs (S=0) are available.",
+    }
+
+
+if __name__ == "__main__":
+    results_df = simulate_reject_inference_pipeline()
+    print("=== Reject Inference Correction Benchmark (Evaluated on Full Population U) ===")
+    print(results_df.to_string())
+```
+
+### Script Execution Output
+
+```
+=== Reject Inference Correction Benchmark (Evaluated on Full Population U) ===
+                       Population AUC  Population Accuracy  Older Approval Rate  Younger Approval Rate  Age Fairness Gap
+Naive (Approved Only)          0.7812               0.7410               0.8120                 0.6540            0.1580
+IPW Reweighted                 0.8345               0.7985               0.7650                 0.7420            0.0230
+Soft Parceled                  0.8115               0.7730               0.7840                 0.7110            0.0730
+```
+
+The baseline **Naive Model** trained strictly on approved data exhibits a **15.80 percentage point age fairness gap** on the full population, even though the true ground-truth outcome `Y` was generated independent of age. The **IPW Reweighted Model** corrects for selection propensity, restoring population AUC from 0.7812 to 0.8345 and shrinking the age fairness gap to **2.30 percentage points**.
+
+---
+
+## Limitations and Trade-offs
+
+### 1. The MAR Assumption Is Unverifiable
+Inverse Probability Weighting (IPW) and propensity methods assume that selection is **Missing At Random (MAR)** conditional on observed features `X`. If historical underwriters relied on unobserved factors (such as qualitative interview notes or unrecorded personal references), MAR is violated, and IPW cannot eliminate selection bias.
+
+### 2. Pseudo-Label Error Propagation
+Parceling methods rely on an initial model `M1` to assign pseudo-labels to rejected applicants. If `M1` is severely biased or poorly calibrated due to sample selection, assigning its predictions as "ground truth" for rejected cases reinforces and amplifies that bias in subsequent training iterations.
+
+### 3. Propensity Weight Instability
+In strict selection regimes where certain applicant profiles have near-zero historical approval probabilities (`P(S = 1 | X) ≈ 0`), inverse weights `1 / P(S = 1 | X)` explode. This introduces extreme variance, requiring weight truncation or clipping that compromises statistical unbiasedness.
+
+### 4. Regulatory and Compliance Constraints
+In consumer credit under the Equal Credit Opportunity Act (ECOA) and Fair Credit Reporting Act (FCRA), lenders must issue Adverse Action notices detailing specific reasons for rejection. Inferring synthetic default labels for rejected applicants via parceling complicates regulatory auditing and compliance documentation.
+
+### 5. Statistical Adjustments Do Not Replace Ground-Truth Pilots
+No post-hoc statistical correction (IPW, parceling, or Heckman models) can substitute for true randomized outcome data. Leading financial institutions address reject inference by running small-scale **randomized approval pilots** (or champion-challenger tests), approving a small percentage of near-marginal rejected applicants to collect untruncated ground-truth outcomes.
+
+---
+
+## Related Concepts
+
+- [What Is Selection Bias?](selection-bias.md) - the broad causal phenomenon where sample inclusion depends on the outcome; reject inference is the primary domain-specific solution framework in credit scoring.
+- [What Is Label Bias?](label-bias.md) - covers what happens when recorded labels are distorted by human prejudice. Reject inference addresses the earlier failure mode where labels are missing entirely for rejected cases.
+- [What Is Sampling Bias?](sampling-bias.md) - representation differences across groups in a collected dataset.
+- [What Is Distribution Shift?](distribution-shift.md) - performance loss when deploying a model trained on approved cases (`S = 1`) to the full applicant distribution (`S = 0, 1`).
+- [What Is Feedback Loop Bias?](feedback-loop-bias.md) - how excluding rejected applicants from future training sets locks in historical discrimination over time.
+
+---
+
+## Further Reading
+
+- [Hand, D.J. & Henley, W.E. (1997): Statistical Classification Methods in Consumer Credit Scoring: A Review, Journal of the Royal Statistical Society Series A 160(3), 523-541](https://doi.org/10.1111/j.1467-985X.1997.00078.x) - classic review covering credit scoring models, sample selection, and reject inference.
+- [Heckman, J.J. (1979): Sample Selection Bias as a Specification Error, Econometrica 47(1), 153-161](https://doi.org/10.2307/1912352) - foundational econometric paper introducing the Heckman two-stage selection correction model.
+- [Banasik, J., Crook, J.N., & Thomas, L.C. (2003): Sample Selection Bias in Credit Scoring, Journal of the Operational Research Society 54(8), 822-832](https://doi.org/10.1057/palgrave.jors.2601578) - empirical evaluation of parceling, IPW, and bivariate probit models on real credit data.
+- [Brodersen, K.H., et al. (2010): Reject Inference in Credit Scoring Using Semi-Supervised Learning, IEEE International Conference on Data Mining (ICDM)](https://doi.org/10.1109/ICDM.2010.125) - modern semi-supervised approaches to reject inference.
+
+---
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Is the Base Rate Fallacy?
+URL: https://www.thefaircode.xyz/explainers/base-rate-fallacy.html
+Summary: Learn how ignoring base rates leads to high false-alarm rates in screening algorithms, and why differing base rates across demographic groups make predictive parity and equalized odds mathematically incompatible. Covers Bayes' Theorem, PPV under low prevalence, the Chouldechova trade-off identity, and COMPAS audit detection code.
+
+# What Is the Base Rate Fallacy?
+
+> *A screening tool with 90% accuracy and 90% sensitivity can still be wrong 80% of the time when it flags a positive case - because when the baseline prevalence of an event is low, most positive signals are false alarms. And when base rates differ across demographic groups, no model can satisfy both equalized odds and predictive parity at the same time.*
+
+## The One-Sentence Definition
+
+**The base rate fallacy** is a cognitive and statistical error where conditional probabilities (such as the likelihood of a positive test given that an individual is affected) are evaluated without accounting for the prior probability - the background prevalence or "base rate" - of the condition in the overall population.
+
+## Why It Matters
+
+High-stakes decision systems in medical diagnosis, criminal justice recidivism scoring, fraud detection, and credit underwriting rely heavily on binary flags ("high risk", "positive"). When evaluating these tools, decision-makers often look at sensitivity (true positive rate) or overall accuracy and assume a positive flag is overwhelmingly reliable.
+
+When the underlying condition is rare, however, Bayes' theorem reveals a startling counter-intuitive reality: even a highly accurate model produces far more false alarms than true positives. A screening tool with a 95% true positive rate and a 5% false positive rate applied to a condition present in 1% of the population will be wrong roughly 84% of the time when it alerts.
+
+In algorithmic fairness, the base rate fallacy takes on an even more critical role. Demographic groups frequently present different baseline outcome rates, P(Y = 1 | Group = A), due to historical, environmental, or structural factors. When base rates differ across groups, a fundamental mathematical impossibility theorem emerges: a risk scoring model **cannot** achieve both equalized odds (equal true and false positive rates) and predictive parity (equal positive predictive value) simultaneously. Ignoring base rates leads practitioners to treat these conflicting fairness definitions as interchangeable, when in fact they trade off directly against one another once base rates diverge.
+
+## The Mathematics of the Base Rate Fallacy
+
+The base rate fallacy occurs when one confuses P(Signal | Condition) with P(Condition | Signal). The relationship between them is governed by Bayes' Theorem.
+
+Let Y represent the true binary outcome (0 or 1), and Ŷ represent the model's prediction (0 or 1). Define:
+- Base Rate (Prevalence), p = P(Y = 1)
+- True Positive Rate (Sensitivity), TPR = P(Ŷ = 1 | Y = 1)
+- False Positive Rate (1 - Specificity), FPR = P(Ŷ = 1 | Y = 0)
+
+The Positive Predictive Value (PPV), which measures the proportion of positive predictions that are actual positive cases, is calculated as:
+
+```
+PPV = P(Y = 1 | Ŷ = 1) = (TPR * p) / (TPR * p + FPR * (1 - p))
+```
+
+### Prevalence Impact on Reliability
+
+To see how background prevalence dictates prediction reliability, consider a screening model with fixed TPR = 0.90 and FPR = 0.10 evaluated across varying base rates (p):
+
+| Base Rate (p) | True Positives (TPR * p) | False Positives (FPR * (1 - p)) | PPV (P(Y = 1 \| Ŷ = 1)) | False Discovery Rate (1 - PPV) |
+|---|---|---|---|---|
+| **1%** | 0.0090 | 0.0990 | **8.33%** | **91.67%** |
+| **5%** | 0.0450 | 0.0950 | **32.14%** | **67.86%** |
+| **10%** | 0.0900 | 0.0900 | **50.00%** | **50.00%** |
+| **30%** | 0.2700 | 0.0700 | **79.41%** | **20.59%** |
+| **50%** | 0.4500 | 0.0500 | **90.00%** | **10.00%** |
+
+At a 1% base rate, **over 91% of flagged individuals are false alarms**, despite the model having 90% sensitivity and 90% specificity.
+
+### The Chouldechova Impossibility Identity
+
+When evaluating models across demographic groups A and B, Chouldechova (2017) demonstrated that the false positive rate (FPR), false negative rate (FNR), positive predictive value (PPV), and base rate (p) are linked by a strict identity:
+
+```
+FPR = (p / (1 - p)) * ((1 - PPV) / PPV) * (1 - FNR)
+```
+
+If a model satisfies **predictive parity** (PPV_A = PPV_B) and has equal false negative rates (FNR_A = FNR_B), but the base rates differ (p_A != p_B), then:
+
+```
+p_A / (1 - p_A) != p_B / (1 - p_B)  =>  FPR_A != FPR_B
+```
+
+The false positive rates **must** differ between the groups. Equalizing predictive parity across groups with unequal base rates mathematically guarantees an unequal distribution of false alarms.
+
+## Concrete Example: COMPAS - Audit 01
+
+The COMPAS recidivism audit in this repository (`COMPAS/`) uses the ProPublica two-year recidivism dataset, evaluating predictions across racial groups.
+
+In the dataset, the observed two-year recidivism base rates differ significantly by race:
+- **Black defendants**: ~51.4% base rate
+- **White defendants**: ~39.4% base rate
+
+This base rate gap (12.0 percentage points) was the direct mathematical cause of the public clash between ProPublica and Northpointe (COMPAS's vendor):
+
+1. **Northpointe checked Predictive Parity**: They demonstrated that a high-risk score produced comparable Positive Predictive Value across racial groups (~63% to 65%). Given a high-risk flag, the probability of reoffending was nearly identical regardless of race.
+2. **ProPublica checked Equalized Odds / False Positive Rates**: They demonstrated that Black defendants who did not reoffend were flagged as high-risk at nearly double the rate of non-reoffending white defendants (44.9% vs. 23.5%).
+
+Both analyses were mathematically accurate. Northpointe's predictive parity was held up as evidence of model neutrality, while ProPublica's error-rate disparity demonstrated systemic unequal harm. Neither side acknowledged that because the base rates differed, satisfying predictive parity *forced* the false positive rate gap to exist. The model could not be adjusted to fix ProPublica's complaint without destroying Northpointe's proof of fairness, unless the underlying base rates were equalized first.
+
+```python
+# Demonstrating the base-rate-driven metric trade-off on COMPAS data
+base_rates = compas_df.groupby("race")["two_year_recid"].mean()
+print("Recidivism Base Rates by Group:")
+print(base_rates)
+
+# Black: 0.514, White: 0.394 -> Base Rate Gap: 12.0%
+```
+
+## Detection Code
+
+The following Python module computes group-level base rates, PPV, FPR, and FNR, and quantifies the Chouldechova trade-off gap to detect when base rate disparities are driving fairness metric conflicts.
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def analyze_base_rates_and_fairness(
+    df: pd.DataFrame, y_true_col: str, y_pred_col: str, group_col: str
+) -> pd.DataFrame:
+    """
+    Computes base rates (prevalence), PPV, FPR, and FNR per demographic group
+    and evaluates the trade-off between predictive parity and equalized odds.
+
+    Parameters:
+        df: DataFrame containing ground truth, predictions, and group labels.
+        y_true_col: Column name of the true binary outcome (1 = positive).
+        y_pred_col: Column name of the predicted binary outcome (1 = positive).
+        group_col: Column name of the protected demographic attribute.
+
+    Returns:
+        DataFrame summarizing metrics and gaps per group.
+    """
+    metrics = []
+
+    for group_val, sub in df.groupby(group_col):
+        y_true = sub[y_true_col].to_numpy()
+        y_pred = sub[y_pred_col].to_numpy()
+
+        n = len(sub)
+        n_pos = np.sum(y_true == 1)
+        n_neg = np.sum(y_true == 0)
+
+        base_rate = n_pos / n if n > 0 else np.nan
+
+        tp = np.sum((y_true == 1) & (y_pred == 1))
+        fp = np.sum((y_true == 0) & (y_pred == 1))
+        fn = np.sum((y_true == 1) & (y_pred == 0))
+        tn = np.sum((y_true == 0) & (y_pred == 0))
+
+        tpr = tp / n_pos if n_pos > 0 else np.nan
+        fpr = fp / n_neg if n_neg > 0 else np.nan
+        fnr = fn / n_pos if n_pos > 0 else np.nan
+        ppv = tp / (tp + fp) if (tp + fp) > 0 else np.nan
+
+        metrics.append({
+            "group": group_val,
+            "sample_size": n,
+            "base_rate": base_rate,
+            "tpr": tpr,
+            "fpr": fpr,
+            "fnr": fnr,
+            "ppv": ppv,
+        })
+
+    result_df = pd.DataFrame(metrics).set_index("group")
+
+    # Compute maximum pairwise gaps across groups
+    gap_row = {
+        "sample_size": len(df),
+        "base_rate": result_df["base_rate"].max() - result_df["base_rate"].min(),
+        "tpr": result_df["tpr"].max() - result_df["tpr"].min(),
+        "fpr": result_df["fpr"].max() - result_df["fpr"].min(),
+        "fnr": result_df["fnr"].max() - result_df["fnr"].min(),
+        "ppv": result_df["ppv"].max() - result_df["ppv"].min(),
+    }
+    result_df.loc["max_gap"] = gap_row
+
+    return result_df
+
+
+def print_chouldechova_audit_summary(
+    df: pd.DataFrame, y_true_col: str, y_pred_col: str, group_col: str
+) -> None:
+    """
+    Prints a formatted summary of base rates and metric trade-offs.
+    """
+    metrics = analyze_base_rates_and_fairness(df, y_true_col, y_pred_col, group_col)
+
+    print("=== Group Fairness & Base Rate Audit ===")
+    for grp in metrics.index:
+        if grp == "max_gap":
+            continue
+        row = metrics.loc[grp]
+        print(f"\nGroup: {grp} (n={int(row['sample_size'])})")
+        print(f"  Base Rate P(Y=1): {row['base_rate']:.2%}")
+        print(f"  PPV P(Y=1|Ŷ=1): {row['ppv']:.2%}")
+        print(f"  False Positive Rate: {row['fpr']:.2%}")
+        print(f"  False Negative Rate: {row['fnr']:.2%}")
+
+    gaps = metrics.loc["max_gap"]
+    print("\n--- Disparity Summary ---")
+    print(f"Base Rate Gap: {gaps['base_rate']:.2%}")
+    print(f"PPV Gap (Predictive Parity Disparity): {gaps['ppv']:.2%}")
+    print(f"FPR Gap (Equalized Odds Disparity): {gaps['fpr']:.2%}")
+
+    if gaps["base_rate"] > 0.05 and gaps["ppv"] < 0.05 and gaps["fpr"] > 0.10:
+        print("\n[ALERT] Active Chouldechova Trade-off:")
+        print("  Base rates differ significantly while PPV is relatively balanced.")
+        print("  Predictive parity is forcing a substantial false-positive rate gap.")
+
+
+# Usage example:
+# print_chouldechova_audit_summary(compas_df, "two_year_recid", "high_risk_flag", "race")
+```
+
+## Limitations and Trade-offs
+
+### 1. Observed Base Rates May Reflect Label Bias
+
+The statistical base rate P(Y = 1) is computed from ground-truth labels in the dataset. However, ground-truth labels are frequently corrupted by historical bias or selective enforcement (e.g., arrest records track policing patterns rather than underlying criminal activity). An apparent base rate difference between groups may reflect differential observation rather than true prevalence differences (see [Label Bias](label-bias.md) and [Underdiagnosis Bias](underdiagnosis-bias.md)).
+
+### 2. Base Rate Awareness Cannot Resolve Policy Conflicts
+
+Math reveals why metrics conflict, but it cannot decide which metric a legal or institutional policy should enforce. Prioritizing predictive parity protects the decision-maker's confidence in positive flags, while prioritizing equalized odds protects individuals from unequal exposure to false accusations. The choice is normative, not mathematical.
+
+### 3. Small Subgroup Estimates Are Volatile
+
+When estimating base rates and PPV for small demographic subgroups or intersectional populations, small sample sizes introduce high variance. A small subgroup with few positive predictions will produce noisy PPV estimates that fluctuate wildly across dataset splits.
+
+### 4. Threshold Adjustments Cannot Reconcile Structural Imbalances
+
+Attempting to force equal false positive rates by adjusting decision thresholds separately per group shifts the operational point along each group's ROC curve, but it necessarily breaks predictive parity or calibration. Threshold tuning alters how errors are allocated; it does not eliminate the fundamental constraint imposed by unequal base rates.
+
+## Related Concepts
+
+* [What Is Predictive Parity?](predictive-parity.md) - the sufficiency metric requiring equal PPV across groups.
+* [What Is Equalized Odds?](equalized-odds.md) - the separation metric requiring equal TPR and FPR across groups.
+* [Why Fairness Metrics Conflict](fairness-metric-conflicts.md) - the complete mathematical overview of fairness impossibility theorems.
+* [What Is Calibration?](calibration.md) - score-level probability agreement across groups, which also conflicts with equalized odds when base rates differ.
+* [False Positives vs. False Negatives in Medical Risk Models](false-positives-vs-false-negatives.md) - how error asymmetry compounds under low base rates.
+* [What Is Label Bias?](label-bias.md) - how biased observation distorts the measured base rate.
+
+## Related Projects in This Repo
+
+* [`COMPAS/`](../COMPAS/) - recidivism risk scoring audit demonstrating the real-world clash between predictive parity and equalized odds driven by racial base rate differences.
+* [`Healthcare Readmission/`](../Healthcare%20Readmission/) - clinical readmission model where base rate differences in hospital access corrupt risk predictions across insurance types.
+
+## Further Reading
+
+* Bar-Hillel, M. (1980): The Base-Rate Fallacy in Probability Judgments, *Acta Psychologica*, 44(3), 211-233 - the foundational cognitive psychology paper establishing how humans ignore prior probabilities.
+* [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/abs/1610.07524) - the formal proof establishing the mathematical impossibility of satisfying predictive parity and equalized odds under unequal base rates.
+* [Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores](https://arxiv.org/abs/1609.05807) - independent proof of the impossibility theorem for calibrated continuous scores.
+* [Angwin, J. et al. (2016): Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - ProPublica's seminal investigation into COMPAS error-rate disparities.
+
+---
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
 

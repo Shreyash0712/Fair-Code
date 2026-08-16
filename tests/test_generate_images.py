@@ -2,7 +2,6 @@ import importlib
 
 from PIL import Image
 import json
-import importlib
 import shutil
 
 def test_generate_favicons(tmp_path):

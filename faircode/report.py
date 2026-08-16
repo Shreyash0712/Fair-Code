@@ -191,8 +191,9 @@ def to_html(result: dict) -> str:
             reference_html = (
                 f'<div class="reference"><h3>Reference '
                 f'<span class="kind">deviation {ref["deviation"] * 100:.1f}%</span></h3>'
-                f'<table><tr><th></th><th class="num">Expected</th>'
-                f'<th class="num">Actual</th><th class="num">Delta</th></tr>'
+                f'<table><caption>Expected vs. actual share - {esc(d["name"])}</caption>'
+                f'<tr><th scope="col"></th><th scope="col" class="num">Expected</th>'
+                f'<th scope="col" class="num">Actual</th><th scope="col" class="num">Delta</th></tr>'
                 f'{ref_rows}</table></div>'
             )
 
@@ -200,7 +201,11 @@ def to_html(result: dict) -> str:
             f'<section class="dim"><h2>{esc(d["name"])} '
             f'<span class="kind">{esc(d["kind"])}</span> '
             f'<span class="score">{d["dimension_score"]}/100</span></h2>'
-            f'<table>{"".join(rows)}</table>{reference_html}</section>'
+            f'<table><caption>Group breakdown - {esc(d["name"])}</caption>'
+            f'<thead><tr><th scope="col">Group</th><th scope="col" class="num">Share</th>'
+            f'<th scope="col" class="num">95% CI</th><th scope="col" class="num">Count</th>'
+            f'<th scope="col" class="bar"></th></tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody></table>{reference_html}</section>'
         )
 
     flag_html = ""
@@ -236,6 +241,11 @@ def to_html(result: dict) -> str:
  .dim {{ background:var(--surface); border:1px solid var(--border); border-radius:8px;
          padding:16px 20px; margin:16px 0; }}
  table {{ width:100%; border-collapse:collapse; }}
+ caption {{ text-align:left; font-size:11px; color:var(--muted); text-transform:uppercase;
+            letter-spacing:.04em; margin-bottom:4px; }}
+ th {{ padding:4px 8px; font-size:14px; font-weight:600; text-align:left;
+       border-bottom:2px solid var(--border); }}
+ th.num {{ text-align:right; }}
  td {{ padding:4px 8px; font-size:14px; border-bottom:1px solid var(--border); }}
  td.num {{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }}
  td.ci {{ color:var(--muted); font-size:12px; }}
@@ -348,7 +358,10 @@ def compare_to_html(cmp: dict) -> str:
                 f'<span class="drift-badge {cd["drift_level"]}">{esc(cd["drift_level"])} drift</span></h2>'
                 f'<div class="drift-metrics">PSI {cd["psi"]:.3f} · TVD {cd["tvd"]:.3f} · score {cd["dimension_score_a"]}→{cd["dimension_score_b"]} ({signed(cd["dimension_score_delta"], 0)})</div>'
                 '</div>'
-                f'<table>{"".join(rows)}</table>'
+                f'<table><caption>Group-level share drift - {esc(cd["name"])}</caption>'
+                f'<thead><tr><th scope="col">Group</th><th scope="col" class="num">Share A → B</th>'
+                f'<th scope="col" class="num">Δ</th><th scope="col" class="bar"></th></tr></thead>'
+                f'<tbody>{"".join(rows)}</tbody></table>'
                 f'{more_html}'
                 '</section>'
             )
@@ -390,6 +403,11 @@ def compare_to_html(cmp: dict) -> str:
         ".drift-card-head h2 { margin:0; font-size:18px; } "
         ".drift-metrics { font-size:12px; color:var(--muted); } "
         "table { width:100%; border-collapse:collapse; } "
+        "caption { text-align:left; font-size:11px; color:var(--muted); text-transform:uppercase; "
+        "letter-spacing:.04em; margin-bottom:4px; } "
+        "th { padding:6px 8px; font-size:14px; font-weight:600; text-align:left; "
+        "border-bottom:2px solid var(--border); } "
+        "th.num { text-align:right; } "
         "td { padding:6px 8px; font-size:14px; border-bottom:1px solid var(--border); } "
         "td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-size:13px; } "
         "td.label { width:25%; } "
