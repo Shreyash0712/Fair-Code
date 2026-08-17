@@ -225,7 +225,7 @@ Attempting to force equal false positive rates by adjusting decision thresholds 
 
 ## Further Reading
 
-* Bar-Hillel, M. (1980): The Base-Rate Fallacy in Probability Judgments, *Acta Psychologica*, 44(3), 211-233 - the foundational cognitive psychology paper establishing how humans ignore prior probabilities.
+* [Bar-Hillel, M. (1980): The Base-Rate Fallacy in Probability Judgments, *Acta Psychologica*, 44(3), 211-233](https://www.researchgate.net/publication/223684493_The_base-rate_fallacy_in_probability_judgments) - the foundational cognitive psychology paper establishing how humans ignore prior probabilities.
 * [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/abs/1610.07524) - the formal proof establishing the mathematical impossibility of satisfying predictive parity and equalized odds under unequal base rates.
 * [Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores](https://arxiv.org/abs/1609.05807) - independent proof of the impossibility theorem for calibrated continuous scores.
 * [Angwin, J. et al. (2016): Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - ProPublica's seminal investigation into COMPAS error-rate disparities.

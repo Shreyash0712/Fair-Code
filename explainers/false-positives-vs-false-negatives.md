@@ -151,6 +151,6 @@ Even a model with perfectly equalized false positive and false negative rates on
 
 * [Obermeyer, Z., Powers, B., Vogeli, C., Mullainathan, S. (2019): Dissecting racial bias in an algorithm used to manage the health of populations](https://www.science.org/doi/10.1126/science.aax2342) - the study behind the concrete example above; shows how a false-negative-heavy error pattern hid behind an apparently race-neutral risk score.
 * [Rajkomar, A., Hardt, M., Howell, M.D., Corrado, G., Chin, M.H. (2018): Ensuring Fairness in Machine Learning to Advance Health Equity](https://pmc.ncbi.nlm.nih.gov/articles/PMC6594166/) - lays out how model design, data, and clinician interaction each shape which patients absorb a clinical model's errors.
-* Chouldechova, A. (2017): Fair Prediction with Disparate Impact - the proof that equalized false positive and false negative rates and equal predictive value cannot all hold at once when groups have different base rates, the statistical root of the threshold trade-off described above.
+* [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/pdf/1703.0056) - the proof that equalized false positive and false negative rates and equal predictive value cannot all hold at once when groups have different base rates, the statistical root of the threshold trade-off described above.
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*

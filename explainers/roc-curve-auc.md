@@ -153,6 +153,6 @@ Two groups can have identical AUCs and still be treated unequally: same ranking 
 
 * [Fawcett, T. (2006): An Introduction to ROC Analysis](https://www.sciencedirect.com/science/article/abs/pii/S016786550500303X) - the standard practical reference for reading ROC curves and the exact meaning of AUC.
 * [Hanley, J.A., McNeil, B.J. (1982): The Meaning and Use of the Area Under a ROC Curve](https://pubs.rsna.org/doi/10.1148/radiology.143.1.7063747) - the paper that established AUC's probabilistic interpretation as the ranking probability.
-* Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning* - the classification chapter connects ROC geometry directly to group fairness criteria, showing why a single threshold on one shared curve cannot satisfy them all when base rates differ.
+* [Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning*](https://fairmlbook.org/classification.html) - the classification chapter connects ROC geometry directly to group fairness criteria, showing why a single threshold on one shared curve cannot satisfy them all when base rates differ.
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
