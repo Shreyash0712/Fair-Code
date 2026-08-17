@@ -1,9 +1,14 @@
 name: Build Explainers
 
-# Verifies explainers/*.html, assets/explainers-data.js, sitemap.xml,
-# llms-full.txt, and assets/og/*.png + assets/og-light/*.png (dark and
-# light OG/Twitter social-preview cards) are in sync with their sources
-# (explainers/*.md, assets/explainers-data.json).
+# Verifies explainers/*.html, assets/explainers-data.js, sitemap.xml, and
+# llms-full.txt are byte-exact with their sources (explainers/*.md,
+# assets/explainers-data.json), and that assets/og/*.png +
+# assets/og-light/*.png (dark and light OG/Twitter social-preview cards)
+# exist, are non-empty, and are correctly sized for every current
+# explainer - not byte- or pixel-compared against this job's own fresh
+# regeneration, since Pillow's bundled FreeType renders text with
+# genuinely different pixels across platforms (see
+# scripts/check_generated_files_current.py's docstring).
 #
 # main requires a PR (branch protection), and github-actions[bot] isn't in
 # that ruleset's bypass list, so this can no longer auto-commit a fix by
@@ -20,12 +25,14 @@ on:
       - "assets/explainers-data.json"
       - "scripts/build_explainers.py"
       - "scripts/generate_og_images.py"
+      - "scripts/check_generated_files_current.py"
   pull_request:
     paths:
       - "explainers/**.md"
       - "assets/explainers-data.json"
       - "scripts/build_explainers.py"
       - "scripts/generate_og_images.py"
+      - "scripts/check_generated_files_current.py"
 
 jobs:
   check:
@@ -49,10 +56,12 @@ jobs:
         run: python3 scripts/generate_og_images.py
 
       - name: Fail if generated files are out of date
-        # scripts/check_generated_files_current.py compares the PNGs by
-        # decoded pixel content, not raw file bytes - a byte-exact git diff
-        # false-positives on cross-platform zlib/compression differences
-        # (see #262 and its follow-up: a macOS-generated commit can produce
-        # different compressed bytes than this Ubuntu runner's fresh
-        # regeneration for pixel-for-pixel identical images).
+        # scripts/check_generated_files_current.py deliberately does NOT
+        # compare the OG PNGs against this job's own fresh regeneration -
+        # Pillow's bundled FreeType renders the same text with different
+        # pixels on this Ubuntu runner than on a contributor's machine (see
+        # #262 and its follow-up), so byte- or pixel-level comparison always
+        # false-positives here regardless of how the PNG is saved. It checks
+        # existence/size/dimensions instead, which is platform-independent.
+        # Text-based generated files still get an exact git diff.
         run: python3 scripts/check_generated_files_current.py
