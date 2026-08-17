@@ -27,7 +27,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Watching | Social Reach | Countries | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 43 | 15 | 21 | 8 | 27K+ | 17 | 7 | 44 | ✅ every push/PR |
+| 43 | 15 | 21 | 8 | 27K+ | 17 | 7 | 45 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -40,7 +40,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 ## Phase 1 - Bias Glossary and Beginner Explainers ✅
 
-**Status: Foundational library complete - 44 explainers published, expanding toward a 60+ library**
+**Status: Foundational library complete - 45 explainers published, expanding toward a 60+ library**
 
 Build the foundational vocabulary and explain core fairness concepts clearly enough for a non-technical reader.
 
@@ -81,6 +81,7 @@ Build the foundational vocabulary and explain core fairness concepts clearly eno
 - [x] What Is the Bias-Variance Trade-off?
 - [x] What Is the Base Rate Fallacy?
 - [x] What Is Reject Inference?
+- [x] What Is a Precision-Recall Curve?
 
 ---
 
