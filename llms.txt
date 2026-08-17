@@ -24,6 +24,7 @@ Full text of every explainer in one file (for AI answer engines): https://www.th
 
 ## Explainers
 
+- [What Is a Precision-Recall Curve?](https://www.thefaircode.xyz/explainers/precision-recall-curve.html)
 - [What Is the Base Rate Fallacy?](https://www.thefaircode.xyz/explainers/base-rate-fallacy.html)
 - [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](https://www.thefaircode.xyz/explainers/obermeyer-cost-proxy.html)
 - [Race Correction in Clinical Algorithms](https://www.thefaircode.xyz/explainers/race-correction-clinical-algorithms.html)
