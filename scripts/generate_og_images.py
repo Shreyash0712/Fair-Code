@@ -159,13 +159,13 @@ def render_card(out_path, kicker, title, subtitle, theme, footer="thefaircode.xy
                right_text, font=foot_font, fill=muted)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    # compress_level is a single deterministic zlib deflate pass; optimize=True
-    # instead runs a per-scanline filter/strategy search whose "best" choice
-    # can differ by a handful of bytes between zlib builds - which made every
-    # image here byte-differ between a macOS-generated commit and CI's Ubuntu
-    # regeneration despite matching Pillow versions, failing
-    # build-explainers.yml's byte-exact drift check. Fixed level 9 keeps the
-    # same file size in practice while actually being reproducible.
+    # A fixed compress_level (vs. optimize=True's per-scanline filter/strategy
+    # search) reduces incidental variance, but even this doesn't guarantee
+    # byte-identical output across zlib builds on different platforms for
+    # pixel-identical input - confirmed the hard way (compress_level=9 alone
+    # still failed CI's old byte-exact check). build-explainers.yml's drift
+    # check now compares these PNGs by decoded pixel content instead
+    # (scripts/check_generated_files_current.py), which is the actual fix.
     img.save(out_path, "PNG", compress_level=9)
 
 
