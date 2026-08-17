@@ -139,7 +139,7 @@ Predictive parity is a property of the decision threshold that produced the pred
 
 * [Angwin, J. et al. (2016): Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - the original ProPublica investigation that surfaced the COMPAS false-positive disparity.
 * [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/abs/1610.07524) - the algebraic proof that predictive parity and error-rate balance conflict when base rates differ.
-* Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores, ITCS 2017 - an independent impossibility result reaching the same conclusion via a different route.
+* [Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores, ITCS 2017](https://arxiv.org/pdf/1609.05807) - an independent impossibility result reaching the same conclusion via a different route.
 
 ---
 

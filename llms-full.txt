@@ -5730,7 +5730,7 @@ Even after a model is shown not to be objective, the institutional response is o
 
 * [O'Neil, C. (2016): Weapons of Math Destruction](https://www.penguinrandomhouse.com/books/241363/weapons-of-math-destruction-by-cathy-oneil/) - the foundational case for why "it's just an algorithm" is not a defense, with examples spanning credit, employment, and criminal justice.
 * [Angwin, J. et al. (2016): Machine Bias, ProPublica](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - the original investigation showing COMPAS scores were presented as objective risk assessments while producing racially disparate outcomes.
-* Barocas, S., Hardt, M., & Narayanan, A.: *Fairness and Machine Learning* (fairmlbook.org) - the standard reference for why statistical models trained on historical data inherit the properties of that history, including its inequities.
+* [Barocas, S., Hardt, M., & Narayanan, A.: *Fairness and Machine Learning* (fairmlbook.org)](https://fairmlbook.org) - the standard reference for why statistical models trained on historical data inherit the properties of that history, including its inequities.
 
 ---
 
@@ -6112,7 +6112,7 @@ Predictive parity is a property of the decision threshold that produced the pred
 
 * [Angwin, J. et al. (2016): Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - the original ProPublica investigation that surfaced the COMPAS false-positive disparity.
 * [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/abs/1610.07524) - the algebraic proof that predictive parity and error-rate balance conflict when base rates differ.
-* Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores, ITCS 2017 - an independent impossibility result reaching the same conclusion via a different route.
+* [Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores, ITCS 2017](https://arxiv.org/pdf/1609.05807) - an independent impossibility result reaching the same conclusion via a different route.
 
 ---
 
@@ -6277,7 +6277,7 @@ Even a model with perfectly equalized false positive and false negative rates on
 
 * [Obermeyer, Z., Powers, B., Vogeli, C., Mullainathan, S. (2019): Dissecting racial bias in an algorithm used to manage the health of populations](https://www.science.org/doi/10.1126/science.aax2342) - the study behind the concrete example above; shows how a false-negative-heavy error pattern hid behind an apparently race-neutral risk score.
 * [Rajkomar, A., Hardt, M., Howell, M.D., Corrado, G., Chin, M.H. (2018): Ensuring Fairness in Machine Learning to Advance Health Equity](https://pmc.ncbi.nlm.nih.gov/articles/PMC6594166/) - lays out how model design, data, and clinician interaction each shape which patients absorb a clinical model's errors.
-* Chouldechova, A. (2017): Fair Prediction with Disparate Impact - the proof that equalized false positive and false negative rates and equal predictive value cannot all hold at once when groups have different base rates, the statistical root of the threshold trade-off described above.
+* [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/pdf/1703.0056) - the proof that equalized false positive and false negative rates and equal predictive value cannot all hold at once when groups have different base rates, the statistical root of the threshold trade-off described above.
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
 
@@ -7404,7 +7404,7 @@ Two groups can have identical AUCs and still be treated unequally: same ranking 
 
 * [Fawcett, T. (2006): An Introduction to ROC Analysis](https://www.sciencedirect.com/science/article/abs/pii/S016786550500303X) - the standard practical reference for reading ROC curves and the exact meaning of AUC.
 * [Hanley, J.A., McNeil, B.J. (1982): The Meaning and Use of the Area Under a ROC Curve](https://pubs.rsna.org/doi/10.1148/radiology.143.1.7063747) - the paper that established AUC's probabilistic interpretation as the ranking probability.
-* Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning* - the classification chapter connects ROC geometry directly to group fairness criteria, showing why a single threshold on one shared curve cannot satisfy them all when base rates differ.
+* [Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning*](https://fairmlbook.org/classification.html) - the classification chapter connects ROC geometry directly to group fairness criteria, showing why a single threshold on one shared curve cannot satisfy them all when base rates differ.
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
 
@@ -9689,7 +9689,7 @@ Attempting to force equal false positive rates by adjusting decision thresholds 
 
 ## Further Reading
 
-* Bar-Hillel, M. (1980): The Base-Rate Fallacy in Probability Judgments, *Acta Psychologica*, 44(3), 211-233 - the foundational cognitive psychology paper establishing how humans ignore prior probabilities.
+* [Bar-Hillel, M. (1980): The Base-Rate Fallacy in Probability Judgments, *Acta Psychologica*, 44(3), 211-233](https://www.researchgate.net/publication/223684493_The_base-rate_fallacy_in_probability_judgments) - the foundational cognitive psychology paper establishing how humans ignore prior probabilities.
 * [Chouldechova, A. (2017): Fair Prediction with Disparate Impact](https://arxiv.org/abs/1610.07524) - the formal proof establishing the mathematical impossibility of satisfying predictive parity and equalized odds under unequal base rates.
 * [Kleinberg, J., Mullainathan, S., Raghavan, M. (2017): Inherent Trade-Offs in the Fair Determination of Risk Scores](https://arxiv.org/abs/1609.05807) - independent proof of the impossibility theorem for calibrated continuous scores.
 * [Angwin, J. et al. (2016): Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - ProPublica's seminal investigation into COMPAS error-rate disparities.
@@ -9871,7 +9871,7 @@ Two groups can have identical AP while one group's curve reaches that area throu
 
 * [Davis, J., Goadrich, M. (2006): The Relationship Between Precision-Recall and ROC Curves](https://dl.acm.org/doi/10.1145/1143844.1143874) - the paper that formally connects the two curve families and proves a curve dominating in ROC space also dominates in PR space, while showing why their *visual* impression of "how good" a model looks can differ sharply under imbalance.
 * [Saito, T., Rehmsmeier, M. (2015): The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432) - a direct empirical demonstration of the exact mechanism this explainer describes: ROC curves that look consistently strong across imbalance levels while the matching PR curves reveal deteriorating precision.
-* Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning* - the classification chapter's discussion of base-rate differences across groups applies directly here: a shared threshold cannot equalize precision across groups with different base rates without giving something else up.
+* [Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning*](https://fairmlbook.org/classification.html) - the classification chapter's discussion of base-rate differences across groups applies directly here: a shared threshold cannot equalize precision across groups with different base rates without giving something else up.
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
 
