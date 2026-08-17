@@ -4,46 +4,49 @@ llms-full.txt) are out of date relative to their sources.
 
 Used by .github/workflows/build-explainers.yml, run *after* the workflow's
 own `build_explainers.py`/`generate_og_images.py` steps have already
-regenerated everything fresh into the working tree - this script then
-checks whether that fresh regeneration actually matches what's committed.
+regenerated everything fresh into the working tree.
 
-Text-based generated files (explainer HTML, explainers-data.js, sitemap.xml,
-llms-full.txt) are compared byte-for-byte via `git diff` - they've never
-shown any platform-dependent variation.
+Text-based generated files (explainer HTML, explainers-data.js,
+sitemap.xml, llms-full.txt) are compared byte-for-byte against the fresh
+regeneration via `git diff` - they've never shown any platform-dependent
+variation, confirmed across two separate incidents below.
 
-PNGs are compared by *decoded pixel content*, not raw file bytes. Pillow's
-`optimize=True` (and even a fixed `compress_level`) runs zlib's deflate,
-and different zlib builds bundled into different platforms' Pillow wheels
-can produce different compressed bytes for identical pixel data - a
-macOS-generated commit can then never byte-match CI's Ubuntu-side fresh
-regeneration, even though the image is genuinely up to date (see #262,
-where this was first hit, and the follow-up where a fixed compress_level
-turned out not to fix it either). Decoding both sides and comparing pixels
-is the check that actually reflects "is this image current."
+OG PNGs are NOT compared against the fresh regeneration at all, by
+design - two earlier attempts at that (byte-exact `git diff`, then a fixed
+`compress_level`, then decoded-pixel comparison) all failed for the same
+underlying reason: Pillow's bundled FreeType renders text with genuinely
+different pixels on Ubuntu (CI) than on macOS (confirmed directly - a
+macOS-side regeneration matches the macOS-committed original byte-for-byte
+and pixel-for-pixel, while CI's Ubuntu-side regeneration of the exact same
+inputs does not). That's not a staleness bug to catch, it's an inherent
+cross-platform rendering difference with no fix available from either
+side. What actually matters - and *is* platform-independent - is that a
+current dark and light OG image exists for every explainer, is non-empty,
+and has the right dimensions; `tests/test_generate_images.py` already
+verifies the *generator* satisfies that in a temp directory, so this
+script checks the same thing for what's actually committed.
 
 Run locally:  python3 scripts/check_generated_files_current.py
 Exit code:    0 = everything current, 1 = something is genuinely stale.
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 from PIL import Image
-import io
 
 ROOT = Path(__file__).resolve().parent.parent
+DATA_JSON = ROOT / "assets" / "explainers-data.json"
+OG_DIMENSIONS = (1200, 630)
 
 TEXT_GLOBS = [
     "explainers/*.html",
     "assets/explainers-data.js",
     "sitemap.xml",
     "llms-full.txt",
-]
-PNG_GLOBS = [
-    "assets/og/*.png",
-    "assets/og-light/*.png",
 ]
 
 
@@ -54,29 +57,9 @@ def _tracked_paths(pattern):
     return [ROOT / line for line in out.splitlines() if line.strip()]
 
 
-def _git_show(rel_path):
-    result = subprocess.run(
-        ["git", "show", f"HEAD:{rel_path}"], cwd=ROOT, capture_output=True, check=False
-    )
-    return result.stdout if result.returncode == 0 else None
-
-
-def _pixels_differ(rel_path, working_path):
-    committed_bytes = _git_show(rel_path)
-    if committed_bytes is None:
-        return True, "not committed at HEAD (new file)"
-
-    try:
-        committed_img = Image.open(io.BytesIO(committed_bytes)).convert("RGBA")
-        working_img = Image.open(working_path).convert("RGBA")
-    except Exception as exc:
-        return True, f"could not decode: {exc}"
-
-    if committed_img.size != working_img.size:
-        return True, f"size differs: committed {committed_img.size} vs fresh {working_img.size}"
-    if committed_img.tobytes() != working_img.tobytes():
-        return True, "pixel content differs"
-    return False, None
+def _expected_og_slugs():
+    entries = json.loads(DATA_JSON.read_text(encoding="utf-8"))
+    return ["home", "profiler"] + [entry["slug"] for entry in entries]
 
 
 def main():
@@ -89,14 +72,26 @@ def main():
                 ["git", "diff", "--quiet", "--", str(rel)], cwd=ROOT
             ).returncode
             if diff != 0:
-                stale.append((rel, "content differs (text diff)"))
+                stale.append((rel, "content differs from a fresh regeneration"))
 
-    for pattern in PNG_GLOBS:
-        for path in _tracked_paths(pattern):
+    for theme_dir in ("assets/og", "assets/og-light"):
+        for slug in _expected_og_slugs():
+            path = ROOT / theme_dir / f"{slug}.png"
             rel = path.relative_to(ROOT)
-            differs, reason = _pixels_differ(str(rel), path)
-            if differs:
-                stale.append((rel, reason))
+            if not path.is_file():
+                stale.append((rel, "missing"))
+                continue
+            if path.stat().st_size == 0:
+                stale.append((rel, "empty file"))
+                continue
+            try:
+                with Image.open(path) as image:
+                    size = image.size
+            except Exception as exc:
+                stale.append((rel, f"could not decode: {exc}"))
+                continue
+            if size != OG_DIMENSIONS:
+                stale.append((rel, f"wrong dimensions: {size}, expected {OG_DIMENSIONS}"))
 
     if stale:
         print("Generated files are out of date - run 'make build-explainers' locally and commit the result.")
@@ -104,7 +99,10 @@ def main():
             print(f"  {rel}: {reason}")
         return 1
 
-    print("Generated files are up to date (text diff exact, PNGs compared by decoded pixel content).")
+    print(
+        "Generated files are up to date (text diff exact; OG images verified present, "
+        "non-empty, and correctly sized - not compared pixel-for-pixel across platforms, see module docstring)."
+    )
     return 0
 
 
