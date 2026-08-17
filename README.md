@@ -236,7 +236,8 @@ Fair-Code/
 │   ├── underdiagnosis-bias.md
 │   ├── race-correction-clinical-algorithms.md
 │   ├── reject-inference.md
-│   └── base-rate-fallacy.md
+│   ├── base-rate-fallacy.md
+│   └── precision-recall-curve.md
 │
 ├── CHANGELOG.md
 ├── CITATION.cff
@@ -711,7 +712,7 @@ features = [
 44 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
 
 <details>
-<summary><strong>Show all 44 explainers →</strong></summary>
+<summary><strong>Show all 45 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -759,6 +760,7 @@ features = [
 | [Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md) | Why race-adjusted clinical formulas (eGFR, spirometry, VBAC) bake bias into the math and delay care for minority patients |
 | [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md) | Why predicting healthcare spending instead of illness systematically under-refers sicker Black patients - target proxy bias, spending disparities, and care re-allocation |
 | [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md) | Why ignoring background prevalence makes screening tools mostly wrong, and why differing base rates across demographic groups drive fairness metric conflicts |
+| [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md) | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in |
 
 </details>
 
@@ -1070,7 +1072,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Combined Social Reach (Instagram + LinkedIn) | 27K+ |
 | Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
-| Explainers Published | 44 |
+| Explainers Published | 45 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

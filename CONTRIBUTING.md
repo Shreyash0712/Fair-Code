@@ -362,6 +362,7 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `race-correction-clinical-algorithms.md` | Why race-adjusted clinical formulas (eGFR, spirometry, VBAC) bake bias into the math and delay care for minority patients |
 | `reject-inference.md` | Why models trained only on approved applicants miss the risk of everyone else - sample selection bias, missing ground-truth outcomes, and IPW/parceling corrections |
 | `underdiagnosis-bias.md` | Why historical gaps in diagnostic testing cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients |
+| `precision-recall-curve.md` | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in, with per-group average-precision detection code |
 
 ### A good explainer should include
 
@@ -502,3 +503,4 @@ Include in the PR description:
 ---
 
 All datasets used in this project are publicly available. Fair Code is for educational and awareness purposes.
+ 

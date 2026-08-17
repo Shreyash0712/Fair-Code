@@ -306,6 +306,13 @@
     "subtitle": "Why ignoring background prevalence makes screening tools mostly wrong - and drives fairness metric conflicts.",
     "summary": "Learn how ignoring base rates leads to high false-alarm rates in screening algorithms, and why differing base rates across demographic groups make predictive parity and equalized odds mathematically incompatible. Covers Bayes' Theorem, PPV under low prevalence, the Chouldechova trade-off identity, and COMPAS audit detection code.",
     "tags": ["metrics", "detection", "explainability"]
+  },
+  {
+    "slug": "precision-recall-curve",
+    "title": "What Is a Precision-Recall Curve?",
+    "subtitle": "Why ROC/AUC looks fine while precision collapses under class imbalance.",
+    "summary": "Learn what a precision-recall curve and average precision (AP) measure, and why they're the honest picture under the heavy class imbalance most fairness audits live in - rare positives, skewed base rates - where ROC/AUC's own arithmetic stays lenient. Anchored to Healthcare Readmission's 11.2% base rate (frozen 88.7% accuracy, 0.62 AUC, but 0.039 F1), with per-group average-precision detection code.",
+    "tags": ["metrics", "detection"]
   }
 ]
 
