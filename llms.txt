@@ -24,6 +24,12 @@ Full text of every explainer in one file (for AI answer engines): https://www.th
 
 ## Explainers
 
+- [What Is a Precision-Recall Curve?](https://www.thefaircode.xyz/explainers/precision-recall-curve.html)
+- [What Is the Base Rate Fallacy?](https://www.thefaircode.xyz/explainers/base-rate-fallacy.html)
+- [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](https://www.thefaircode.xyz/explainers/obermeyer-cost-proxy.html)
+- [Race Correction in Clinical Algorithms](https://www.thefaircode.xyz/explainers/race-correction-clinical-algorithms.html)
+- [What Is Reject Inference?](https://www.thefaircode.xyz/explainers/reject-inference.html)
+- [Underdiagnosis Bias in Healthcare AI](https://www.thefaircode.xyz/explainers/underdiagnosis-bias.html)
 - [Why Medical Imaging Models Fail on Underrepresented Groups](https://www.thefaircode.xyz/explainers/medical-imaging-representation-gaps.html)
 - [Missing Data as Bias in Electronic Health Records](https://www.thefaircode.xyz/explainers/missing-data-bias-ehr.html)
 - [Miscalibration in Clinical Risk Scores Across Groups](https://www.thefaircode.xyz/explainers/clinical-score-miscalibration.html)

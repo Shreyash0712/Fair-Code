@@ -73,6 +73,7 @@ A `Makefile` and a `.pre-commit-config.yaml` reproduce what CI runs, so you can 
 make setup             # install faircode + pytest + pre-commit + ruff
 make check             # everything CI runs: lint + full test suite
 make test              # just the test suite
+make coverage          # test suite with pytest-cov line coverage (informational, not a CI gate)
 make build-explainers  # regenerate explainer pages, sitemap, and OG images (dark + light) after editing explainers/*.md
 make favicons          # regenerate favicon.ico, apple-touch-icon.png, icon-{192,512}.png after editing logo.svg
 make lint              # em-dash-free check + broken internal doc link check + ruff (unused imports, undefined names)
@@ -356,6 +357,12 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `clinical-score-miscalibration.md` | Why a clinical risk score well-calibrated on average can still mean a different real-world risk depending on the patient's group, with per-group reliability and calibration-slope detection code |
 | `missing-data-bias-ehr.md` | Why unequal access to care turns into unequal missingness in EHR data, and why naive imputation encodes the disparity rather than fixing it |
 | `medical-imaging-representation-gaps.md` | Why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the shortcut-learning failure mode where a model keys off scanner or hospital-site artifacts instead of the pathology |
+| `base-rate-fallacy.md` | Why ignoring background prevalence makes screening tools mostly wrong, and why differing base rates across demographic groups drive fairness metric conflicts |
+| `obermeyer-cost-proxy.md` | Why predicting healthcare spending instead of illness systematically under-refers sicker Black patients - target proxy bias, spending disparities, and care re-allocation |
+| `race-correction-clinical-algorithms.md` | Why race-adjusted clinical formulas (eGFR, spirometry, VBAC) bake bias into the math and delay care for minority patients |
+| `reject-inference.md` | Why models trained only on approved applicants miss the risk of everyone else - sample selection bias, missing ground-truth outcomes, and IPW/parceling corrections |
+| `underdiagnosis-bias.md` | Why historical gaps in diagnostic testing cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients |
+| `precision-recall-curve.md` | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in, with per-group average-precision detection code |
 
 ### A good explainer should include
 
@@ -496,3 +503,4 @@ Include in the PR description:
 ---
 
 All datasets used in this project are publicly available. Fair Code is for educational and awareness purposes.
+ 

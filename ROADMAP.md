@@ -27,7 +27,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 | Stars | Contributors | Forks | Watching | Social Reach | Countries | Audits | Explainers | CI |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 42 | 14 | 22 | 8 | 27K+ | 17 | 7 | 39 | ✅ every push/PR |
+| 43 | 15 | 21 | 8 | 27K+ | 17 | 7 | 45 | ✅ every push/PR |
 
 > 🔒 **Paper freeze active.** The benchmark results are cited in a research paper under peer review and are frozen at tag `v1.0-paper` (commit `bbef2ba`). No results-affecting change ships until the paper is published. See [CLAUDE.md](CLAUDE.md) for the full policy.
 
@@ -40,7 +40,7 @@ Fair Code is an open-source responsible AI platform explaining algorithmic bias,
 
 ## Phase 1 - Bias Glossary and Beginner Explainers ✅
 
-**Status: Foundational library complete - 39 explainers published, expanding toward a 60+ library**
+**Status: Foundational library complete - 45 explainers published, expanding toward a 60+ library**
 
 Build the foundational vocabulary and explain core fairness concepts clearly enough for a non-technical reader.
 
@@ -79,6 +79,9 @@ Build the foundational vocabulary and explain core fairness concepts clearly eno
 - [x] What Is a Confusion Matrix?
 - [x] What Is Class Imbalance?
 - [x] What Is the Bias-Variance Trade-off?
+- [x] What Is the Base Rate Fallacy?
+- [x] What Is Reject Inference?
+- [x] What Is a Precision-Recall Curve?
 
 ---
 
@@ -100,12 +103,11 @@ Publish healthcare-specific bias audits and explainers that show how AI discrimi
 - [x] Case study write-up: Insurance Denial Bias 
 - [x] Case study write-up: Benefits Denial Bias (standalone 
 - [x] Case study write-up: Healthcare Readmission Bias 
+- [x] Explainer: Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR kidney function, spirometry, VBAC calculators) bake bias directly into the math
+- [x] Explainer: The Obermeyer Case - When Cost Becomes a Proxy for Health Need - a dedicated case study of the 2019 algorithm that under-referred sicker Black patients
+- [x] Explainer: Underdiagnosis Bias - When the Label Itself Is Sicker for One Group - why historical care gaps make the training target unequal before modeling starts
 
-**Planned healthcare explainers (freeze-safe focus while audits are on hold):**
-
-- [ ] Explainer: Race Correction in Clinical Algorithms - why "race-adjusted" formulas (eGFR kidney function, spirometry, VBAC calculators) bake bias directly into the math
-- [ ] Explainer: The Obermeyer Case - When Cost Becomes a Proxy for Health Need - a dedicated case study of the 2019 algorithm that under-referred sicker Black patients
-- [ ] Explainer: Underdiagnosis Bias - When the Label Itself Is Sicker for One Group - why historical care gaps make the training target unequal before modeling starts
+No further healthcare explainers are currently planned - the freeze-safe backlog from this phase is now fully shipped.
 
 ---
 
@@ -130,7 +132,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 
 ## Phase 4 - Contributor Expansion 🔄 In Progress
 
-**Status: Active - 13 external contributors, growing toward 15+**
+**Status: Active - 15 external contributors, growing toward 15+**
 
 Goal: grow to 15+ contributors with quality-controlled contributions.
 
