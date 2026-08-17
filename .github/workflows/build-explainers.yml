@@ -49,10 +49,10 @@ jobs:
         run: python3 scripts/generate_og_images.py
 
       - name: Fail if generated files are out of date
-        run: |
-          if ! git diff --quiet -- explainers/*.html assets/explainers-data.js sitemap.xml llms-full.txt assets/og/*.png assets/og-light/*.png; then
-            echo "::error::Generated files are out of date - run 'make build-explainers' locally and commit the result."
-            git diff --stat -- explainers/*.html assets/explainers-data.js sitemap.xml llms-full.txt assets/og/*.png assets/og-light/*.png
-            exit 1
-          fi
-          echo "Generated files are up to date."
+        # scripts/check_generated_files_current.py compares the PNGs by
+        # decoded pixel content, not raw file bytes - a byte-exact git diff
+        # false-positives on cross-platform zlib/compression differences
+        # (see #262 and its follow-up: a macOS-generated commit can produce
+        # different compressed bytes than this Ubuntu runner's fresh
+        # regeneration for pixel-for-pixel identical images).
+        run: python3 scripts/check_generated_files_current.py
