@@ -17,8 +17,8 @@ setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commi
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
 
-coverage:  ## Run the test suite with coverage reporting
-	$(PY) -m pytest tests/ --cov=faircode --cov-report=term-missing
+coverage:  ## Run the full test suite with a faircode/ coverage report (informational only)
+	$(PY) -m pytest tests/ -q --cov=faircode --cov-report=term-missing
 
 build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images (dark + light)
 	$(PY) scripts/build_explainers.py
