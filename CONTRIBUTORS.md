@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-17, covering everything merged through **PR #275**.
+**Snapshot:** 2026-08-17, covering everything merged through **PR #276**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -116,7 +116,7 @@ The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https:
 
 ### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
 
-**4 merged PRs · 7 commits · first merged 2026-06-05**
+**5 merged PRs · 9 commits · first merged 2026-06-05**
 
 Ten explainers and two rounds of workflow maintenance:
 [Why AI Hallucinates](explainers/ai-hallucinations.md) ([#43](https://github.com/yakew7/Fair-Code/pull/43)); then
@@ -131,6 +131,7 @@ Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)
 [Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md),
 [What Is Reject Inference?](explainers/reject-inference.md), and
 [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
+Most recently, added reference hyperlinks to six explainers' previously plain-text citations ([#276](https://github.com/yakew7/Fair-Code/pull/276)): [The "AI Is Objective" Myth](explainers/ai-objectivity-myth.md), [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md), [False Positives vs. False Negatives](explainers/false-positives-vs-false-negatives.md), [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md), [What Is Predictive Parity?](explainers/predictive-parity.md), and [ROC Curve and AUC](explainers/roc-curve-auc.md).
 
 ### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
 
