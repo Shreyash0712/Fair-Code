@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-16, covering everything merged through **PR #266**.
+**Snapshot:** 2026-08-17, covering everything merged through **PR #275**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -93,7 +93,7 @@ Ordered by merged PR count, most first (ties broken by commit count, then by ear
 
 ### Evan Jain - [@evanjain-dot](https://github.com/evanjain-dot)
 
-**5 merged PRs · 15 commits · first merged 2026-05-18**
+**6 merged PRs · 28 commits · first merged 2026-05-18**
 
 Author of the second PR ever merged into the repo. Three explainers plus a CI check:
 [Sampling Bias](explainers/sampling-bias.md) ([#2](https://github.com/yakew7/Fair-Code/pull/2)),
@@ -103,7 +103,10 @@ and `codeowners-access.yml` ([#224](https://github.com/yakew7/Fair-Code/pull/224
 listed in `CODEOWNERS` actually holds repo write access, closing issue #219. Later added `ruff check`
 as the repo's first general-purpose Python linter ([#261](https://github.com/yakew7/Fair-Code/pull/261),
 closing issue #248), scoped to Pyflakes-only rules to avoid false-positiving on an intentional
-`pytest.importorskip` import pattern used throughout `tests/`.
+`pytest.importorskip` import pattern used throughout `tests/`. Most recently, the
+[What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md) explainer
+([#275](https://github.com/yakew7/Fair-Code/pull/275), closing issue #92), anchored to Healthcare
+Readmission's real 11.2% base rate rather than an invented one.
 
 ### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
@@ -129,6 +132,12 @@ Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)
 [What Is Reject Inference?](explainers/reject-inference.md), and
 [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
 
+### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
+
+**3 merged PRs · 3 commits · first merged 2026-08-16**
+
+Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249. Later refined the `coverage` Makefile target's comment and added the `-q` flag to match `test`'s style ([#267](https://github.com/yakew7/Fair-Code/pull/267)).
+
 ### Anjali Tiwari - [@cannotdoit13](https://github.com/cannotdoit13)
 
 **2 merged PRs · 2 commits · first merged 2026-06-01**
@@ -146,12 +155,6 @@ Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.
 **2 merged PRs · 2 commits · first merged 2026-08-07**
 
 A build-time check for missing Open Graph images in `scripts/build_explainers.py` ([#191](https://github.com/yakew7/Fair-Code/pull/191)), and a wording standardisation sweep across the docs and audit-script comments ([#232](https://github.com/yakew7/Fair-Code/pull/232)) - prose only, leaving every reported number untouched, as the freeze requires.
-
-### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
-
-**2 merged PRs · 2 commits · first merged 2026-08-16**
-
-Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249.
 
 ### [@YashKewlani1](https://github.com/YashKewlani1)
 
