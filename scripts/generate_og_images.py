@@ -159,7 +159,14 @@ def render_card(out_path, kicker, title, subtitle, theme, footer="thefaircode.xy
                right_text, font=foot_font, fill=muted)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    img.save(out_path, "PNG", optimize=True)
+    # compress_level is a single deterministic zlib deflate pass; optimize=True
+    # instead runs a per-scanline filter/strategy search whose "best" choice
+    # can differ by a handful of bytes between zlib builds - which made every
+    # image here byte-differ between a macOS-generated commit and CI's Ubuntu
+    # regeneration despite matching Pillow versions, failing
+    # build-explainers.yml's byte-exact drift check. Fixed level 9 keeps the
+    # same file size in practice while actually being reproducible.
+    img.save(out_path, "PNG", compress_level=9)
 
 
 def render_card_both_themes(slug, kicker, title, subtitle):
