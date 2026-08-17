@@ -436,5 +436,15 @@ window.FAIR_CODE_EXPLAINERS = [
       "detection",
       "explainability"
     ]
+  },
+  {
+    "slug": "precision-recall-curve",
+    "title": "What Is a Precision-Recall Curve?",
+    "subtitle": "Why ROC/AUC looks fine while precision collapses under class imbalance.",
+    "summary": "Learn what a precision-recall curve and average precision (AP) measure, and why they're the honest picture under the heavy class imbalance most fairness audits live in - rare positives, skewed base rates - where ROC/AUC's own arithmetic stays lenient. Anchored to Healthcare Readmission's 11.2% base rate (frozen 88.7% accuracy, 0.62 AUC, but 0.039 F1), with per-group average-precision detection code.",
+    "tags": [
+      "metrics",
+      "detection"
+    ]
   }
 ];
