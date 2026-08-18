@@ -39,6 +39,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | - | 22 | 7 total |
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
+| 2026-W34 | 43 | 21 | 8 | 15 | 30K+ total | 17 | 35 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -57,6 +58,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W33 (later in week) - a supply-chain/CI hardening + accessibility batch:** two real, previously-unnoticed drifts caught and fixed - `matplotlib`/`numpy` missing from `pyproject.toml` despite being imported unconditionally (#235, closes the same class of gap Pillow once had), and `scikit-learn` locked at `1.8.0` while `pyproject.toml` required `>=1.9.0` after the test that caught it was deleted rather than fixed (#255, restored by `@ahmdkaml`). `check-frozen-files`/`Build Explainers` now also run on direct pushes to `main`, not just PRs (#246, `@ahmdkaml`). `audits.yml`'s `profiler`/`benchmark-harness` jobs are now change-aware, skipping on docs-only pushes the same way the pre-push hook already did (#237); `run-audits` itself is left unconditional since it's the one required status check (#160). A new `scripts/check_broken_links.py` (#253) caught five real broken links in explainer markdown (a misspelled dataset-folder name, a missing `../`) plus a second bug in `build_explainers.py`'s own link resolver that had silently broken every such link in the generated `.html` too. The theme-toggle button now exposes its state via `aria-pressed` (#250), `faircode/report.py`'s HTML report tables get proper `<th scope="col">`/`<caption>` markup (#254, `@propcgamer20-png`), and `ruff check` lands as the repo's first general-purpose Python linter (#248, `@evanjain-dot`). Stars `42 → 43`; forks, watching, and contributors unchanged. Issues-closed for the week isn't re-tallied here since several of these closed same-day as this note.
 >
 > **2026-W33 (weekend update) - five more explainers, non-gating coverage reporting, and a new contributor:** five healthcare-adjacent explainers landed in one PR ([@Shreyash0712](https://github.com/Shreyash0712), #262) - What Is the Base Rate Fallacy?, The Obermeyer Case, Race Correction in Clinical Algorithms, What Is Reject Inference?, and Underdiagnosis Bias in Healthcare AI - closing out Phase 2's planned-healthcare-explainer backlog entirely; explainer count `39 → 44`. `make coverage` (pytest-cov, informational only, no CI gate) landed via three coordinated PRs (#263/#264 by `@ahmdkaml`, #265/#266 by new contributor **Circout-sudo**), but the profiler CI job's install step was never updated to include `pytest-cov`, so the new "Report test coverage" step failed on every run since - masked as an overall job success by `continue-on-error: true`. Fixed directly by adding `pytest-cov` to the install line; verified in a clean venv that it now reports real coverage numbers instead of erroring. Also fixed a stale `Build Explainers` CI failure from #262 skipping `make build-explainers` before opening the PR. **Contributors `14 → 15`** (Circout-sudo's first merged PR): GitHub's contributors API hadn't caught up at check time (same lag pattern as the W32 forks correction) - counted from `CONTRIBUTORS.md`'s manually-verified list instead, which is the more current source. Forks `22 → 21` (a real decrease, per GitHub's live API - not a data error). Stars `43` unchanged.
+>
+> **2026-W34 - traction refresh:** combined Instagram/LinkedIn impressions crossed `27K+ → 30K+`. Countries reached steady at 17. Stars, forks, watching, contributors, and explainers unchanged from last week's live numbers - this week's merged work (#276-#279: a citation-links explainer pass, CLI error-handling test coverage plus a real `--html` traceback fix, favicon-parsing test coverage, and a docstring fix) was fixes and test coverage, not new explainers or audits.
 
 ---
 
@@ -68,9 +71,9 @@ Weekly snapshot of project health. Updated every Friday.
 | Forks | 21 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 15 | 20+ | End of 2026 |
-| Social reach | 27K+ | 40K+ | End of 2026 |
+| Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 17 | 20+ | End of 2026 |
-| Issues closed | 55 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 35 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 45 | 60+ | End of 2026 |
 
@@ -90,4 +93,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **43 stars**, **15 contributors**, **21 forks**, **27K+ social views**, and website visitors from **17 countries**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **43 stars**, **15 contributors**, **21 forks**, **30K+ social views**, and website visitors from **17 countries**.
