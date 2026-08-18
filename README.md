@@ -979,7 +979,7 @@ them:
 | **Intersectional gaps** | For every pair of declared protected attributes, via `faircode.significance.intersectional_report` |
 
 ```bash
-pip install -e ".[benchmark]"                      # scikit-learn + pyyaml + fairlearn
+pip install -e ".[benchmark]"                      # scikit-learn + pyyaml + fairlearn + matplotlib
 faircode benchmark                                  # discovers every */audit.yaml, writes results/
 faircode benchmark --out results/ --n-resamples 2000 --n-permutations 2000
 faircode benchmark COMPAS/audit.yaml                # run a subset explicitly

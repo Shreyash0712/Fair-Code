@@ -19,7 +19,7 @@ Reading .xlsx additionally requires the optional 'openpyxl' extra
 (`pip install faircode[excel]`); reading .parquet additionally requires the
 optional 'pyarrow' extra (`pip install faircode[parquet]`). The `benchmark`
 command additionally requires the optional 'benchmark' extra
-(`pip install faircode[benchmark]`: scikit-learn + pyyaml + fairlearn).
+(`pip install faircode[benchmark]`: scikit-learn + pyyaml + fairlearn + matplotlib).
 """
 
 from __future__ import annotations
