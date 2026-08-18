@@ -194,9 +194,10 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
 
         if args.html:
+            html_content = to_html(result)
             try:
                 with open(args.html, "w", encoding="utf-8") as fh:
-                    fh.write(to_html(result))
+                    fh.write(html_content)
             except OSError as exc:
                 print(f"error: could not write HTML report to {args.html}: {exc}",
                       file=sys.stderr)
@@ -231,9 +232,10 @@ def main(argv: list[str] | None = None) -> int:
             name_a=args.csv_a, name_b=args.csv_b,
         )
         if args.html:
+            html_content = compare_to_html(result)
             try:
                 with open(args.html, "w", encoding="utf-8") as fh:
-                    fh.write(compare_to_html(result))
+                    fh.write(html_content)
             except OSError as exc:
                 print(f"error: could not write HTML report to {args.html}: {exc}",
                       file=sys.stderr)
