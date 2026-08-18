@@ -3,6 +3,7 @@ import json
 
 import pytest
 
+import faircode.cli as cli
 from faircode.cli import main
 
 requires_openpyxl = pytest.mark.skipif(
@@ -113,6 +114,169 @@ def test_compare_without_map_leaves_column_generically_categorical(tmp_path, cap
     assert exit_code == 0
     result = json.loads(captured.out)
     assert [d["kind"] for d in result["dimensions"]] == ["categorical"]
+
+
+def test_map_without_equals_sign_exits_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--map", "sex_no_equals"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "invalid --map 'sex_no_equals', expected COL=KIND" in captured.err
+
+
+def test_map_with_invalid_kind_exits_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--map", "sex=not_a_real_kind"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "invalid --map kind 'not_a_real_kind' for column 'sex'" in captured.err
+
+
+def test_profile_missing_file_exits_2_with_clean_error(tmp_path, capsys):
+    missing = tmp_path / "does_not_exist.csv"
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(missing)])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert f"error: file not found: {missing}" in captured.err
+
+
+def test_profile_read_table_runtime_error_exits_2_with_clean_error(tmp_path, capsys, monkeypatch):
+    path = tmp_path / "a.parquet"
+    path.write_text("not a real parquet file", encoding="utf-8")
+
+    def raise_runtime(_path):
+        raise RuntimeError("reading .parquet files requires the 'pyarrow' package")
+
+    monkeypatch.setattr(cli, "read_table", raise_runtime)
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path)])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "error: reading .parquet files requires the 'pyarrow' package" in captured.err
+
+
+def test_profile_read_table_generic_exception_exits_2_with_clean_error(tmp_path, capsys, monkeypatch):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    def raise_generic(_path):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(cli, "read_table", raise_generic)
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path)])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert f"error: could not read dataset {path}: boom" in captured.err
+
+
+def test_profile_malformed_cross_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    exit_code = main(["profile", str(path), "--cross", "onlyonecolumn"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "--cross expects two column names: COLA,COLB" in captured.err
+
+
+def test_profile_reference_missing_required_columns_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+    ref_path = tmp_path / "ref.csv"
+    ref_path.write_text("nothing,relevant\n1,2\n", encoding="utf-8")
+
+    exit_code = main(["profile", str(path), "--reference", str(ref_path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "reference needs column, group, and share columns" in captured.err
+
+
+def test_profile_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, capsys, monkeypatch):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    def raise_runtime(_df, _dimensions):
+        raise RuntimeError("proxy hints need scipy (install with: pip install faircode[proxy])")
+
+    monkeypatch.setattr(cli, "proxy_hints", raise_runtime)
+
+    exit_code = main(["profile", str(path), "--proxy-hints"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "error: proxy hints need scipy" in captured.err
+
+
+def test_profile_html_write_failure_returns_2_with_clean_error_not_a_traceback(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+    bad_html_path = tmp_path / "no_such_dir" / "out.html"
+
+    exit_code = main(["profile", str(path), "--html", str(bad_html_path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert f"error: could not write HTML report to {bad_html_path}" in captured.err
+
+
+def test_profile_html_write_success_reports_path(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+    html_path = tmp_path / "out.html"
+
+    exit_code = main(["profile", str(path), "--html", str(html_path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert html_path.read_text(encoding="utf-8")
+    assert f"HTML report written to {html_path}" in captured.err
+
+
+def test_compare_html_write_failure_returns_2_with_clean_error_not_a_traceback(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\n", encoding="utf-8")
+    bad_html_path = tmp_path / "no_such_dir" / "out.html"
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--html", str(bad_html_path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert f"error: could not write HTML report to {bad_html_path}" in captured.err
+
+
+def test_compare_html_write_success_reports_path(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\n", encoding="utf-8")
+    html_path = tmp_path / "out.html"
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--html", str(html_path)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert html_path.read_text(encoding="utf-8")
+    assert f"HTML report written to {html_path}" in captured.err
 
 
 @requires_openpyxl
