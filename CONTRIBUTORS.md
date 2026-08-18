@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-17, covering everything merged through **PR #276**.
+**Snapshot:** 2026-08-18, covering everything merged through **PR #279**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -113,7 +113,7 @@ Ordered by merged PR count, most first (ties broken by commit count, then by ear
 
 ### Evan Jain - [@evanjain-dot](https://github.com/evanjain-dot)
 
-**6 merged PRs · 28 commits · first merged 2026-05-18**
+**8 merged PRs · 32 commits · first merged 2026-05-18**
 
 Author of the second PR ever merged into the repo. Three explainers plus a CI check:
 [Sampling Bias](explainers/sampling-bias.md) ([#2](https://github.com/yakew7/Fair-Code/pull/2)),
@@ -123,16 +123,21 @@ and `codeowners-access.yml` ([#224](https://github.com/yakew7/Fair-Code/pull/224
 listed in `CODEOWNERS` actually holds repo write access, closing issue #219. Later added `ruff check`
 as the repo's first general-purpose Python linter ([#261](https://github.com/yakew7/Fair-Code/pull/261),
 closing issue #248), scoped to Pyflakes-only rules to avoid false-positiving on an intentional
-`pytest.importorskip` import pattern used throughout `tests/`. Most recently, the
+`pytest.importorskip` import pattern used throughout `tests/`. Then the
 [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md) explainer
 ([#275](https://github.com/yakew7/Fair-Code/pull/275), closing issue #92), anchored to Healthcare
-Readmission's real 11.2% base rate rather than an invented one.
+Readmission's real 11.2% base rate rather than an invented one. Most recently, fixed `faircode/cli.py`'s
+`--html` flag crashing with a raw traceback when its output directory doesn't exist, plus test coverage
+for every previously-untested `--map`/`--cross`/`--reference`/`--proxy-hints`/`--html` error branch
+([#277](https://github.com/yakew7/Fair-Code/pull/277), closing issues #268 and #269), and added the
+`benchmark` extra's missing `matplotlib` package to the CLI docstring and README
+([#279](https://github.com/yakew7/Fair-Code/pull/279), closing issue #244).
 
 ### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
-**4 merged PRs · 13 commits · first merged 2026-07-06**
+**5 merged PRs · 14 commits · first merged 2026-07-06**
 
-The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254).
+The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254). Most recently, test coverage for `generate_favicons.py`'s malformed-`logo.svg` error paths ([#278](https://github.com/yakew7/Fair-Code/pull/278), closing issue #245).
 
 ### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
 
@@ -217,12 +222,12 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 |------|--------------|
 | **Audits** (`*/unfair.py`, `*/fair.py`, `audit.yaml`) | [@yakew7](https://github.com/yakew7), [@YashKewlani1](https://github.com/YashKewlani1), [@Rajveerx11](https://github.com/Rajveerx11), [@cannotdoit13](https://github.com/cannotdoit13) |
 | **Explainers** (`explainers/`) | [@yakew7](https://github.com/yakew7), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Rajveerx11](https://github.com/Rajveerx11), [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), [@shwetagupta1234](https://github.com/shwetagupta1234), [@Aarav1611](https://github.com/Aarav1611) |
-| **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@propcgamer20-png](https://github.com/propcgamer20-png) |
+| **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@propcgamer20-png](https://github.com/propcgamer20-png), [@evanjain-dot](https://github.com/evanjain-dot) |
 | **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P) |
 | **Benchmark harness & paper freeze** | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml) |
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
-| **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P) |
+| **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png) |
 | **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo) |
 
 ---
