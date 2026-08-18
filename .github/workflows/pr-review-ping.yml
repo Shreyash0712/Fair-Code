@@ -1,15 +1,17 @@
 name: PR Review Ping
 
-# Comments on every new PR, tagging the maintainers CODEOWNERS routes review
-# to so they're notified even when GitHub's own auto-request doesn't fire -
-# e.g. a code owner hasn't accepted their collaborator invite yet, or the PR
-# doesn't touch a CODEOWNERS-matched path. This is a notification only: it
-# does not request review, assign anyone, or gate merging - see
-# .github/CODEOWNERS and branch protection for that.
+# Comments on every new PR, tagging only the CODEOWNERS whose owned paths the
+# PR actually touches - the same routing CODEOWNERS itself does, surfaced as
+# a notification for when GitHub's own auto-request doesn't fire (e.g. a
+# code owner hasn't accepted their collaborator invite yet). This is a
+# notification only: it does not request review, assign anyone, or gate
+# merging - see .github/CODEOWNERS and branch protection for that.
 #
-# The reviewer list is read from .github/CODEOWNERS at runtime (every unique
-# @handle across the file) instead of being hardcoded here, so it can't drift
-# out of sync with CODEOWNERS the way issue #273 found it had.
+# Reviewers are computed from .github/CODEOWNERS at runtime instead of a
+# hardcoded list, so they can't drift out of sync with it the way issue #273
+# found they had; and each owner is only pinged for PRs touching a path they
+# actually own (last-matching CODEOWNERS pattern wins per file, mirroring
+# GitHub's own CODEOWNERS matching), not every PR in the repo.
 
 on:
   pull_request_target:
@@ -25,29 +27,62 @@ jobs:
       - name: Checkout base ref
         uses: actions/checkout@v7
 
-      - name: Mention reviewers
+      - name: Mention owners of the touched paths
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const codeowners = fs.readFileSync('.github/CODEOWNERS', 'utf8');
-            const REVIEWERS = [...new Set(
-              codeowners
-                .split('\n')
-                .map((line) => line.trim())
-                .filter((line) => line && !line.startsWith('#'))
-                .flatMap((line) => line.split(/\s+/).slice(1))
-                .filter((token) => token.startsWith('@'))
-                .map((token) => token.slice(1))
-            )];
+
+            function patternMatches(pattern, filePath) {
+              if (pattern.startsWith('**/')) {
+                return filePath.split('/').pop() === pattern.slice(3);
+              }
+              const anchored = pattern.replace(/^\//, '');
+              if (pattern.endsWith('/')) {
+                const prefix = anchored.endsWith('/') ? anchored : anchored + '/';
+                return filePath.startsWith(prefix);
+              }
+              return filePath === anchored;
+            }
+
+            const entries = fs.readFileSync('.github/CODEOWNERS', 'utf8')
+              .split('\n')
+              .map((line) => line.trim())
+              .filter((line) => line && !line.startsWith('#'))
+              .map((line) => {
+                const [pattern, ...owners] = line.split(/\s+/);
+                return { pattern, owners: owners.map((o) => o.replace(/^@/, '')) };
+              });
+
+            function ownersFor(filePath) {
+              // Last matching pattern wins - mirrors real CODEOWNERS semantics.
+              let owners = [];
+              for (const entry of entries) {
+                if (patternMatches(entry.pattern, filePath)) owners = entry.owners;
+              }
+              return owners;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+
             const author = context.payload.pull_request.user.login;
-            const toMention = REVIEWERS.filter((login) => login !== author);
-            if (toMention.length === 0) return;
+            const toMention = new Set();
+            for (const file of files) {
+              for (const login of ownersFor(file.filename)) {
+                if (login !== author) toMention.add(login);
+              }
+            }
+            if (toMention.size === 0) return;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: toMention.map((login) => `@${login}`).join(' ') + ' - new PR to review.'
+              body: [...toMention].map((login) => `@${login}`).join(' ') + ' - new PR touching a path you own, please review.'
             });
