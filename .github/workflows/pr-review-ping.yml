@@ -1,11 +1,15 @@
 name: PR Review Ping
 
 # Comments on every new PR, tagging the maintainers CODEOWNERS routes review
-# to (@yakew7, @ahmdkaml) so they're notified even when GitHub's own
-# auto-request doesn't fire - e.g. a code owner hasn't accepted their
-# collaborator invite yet, or the PR doesn't touch a CODEOWNERS-matched path.
-# This is a notification only: it does not request review, assign anyone, or
-# gate merging - see .github/CODEOWNERS and branch protection for that.
+# to so they're notified even when GitHub's own auto-request doesn't fire -
+# e.g. a code owner hasn't accepted their collaborator invite yet, or the PR
+# doesn't touch a CODEOWNERS-matched path. This is a notification only: it
+# does not request review, assign anyone, or gate merging - see
+# .github/CODEOWNERS and branch protection for that.
+#
+# The reviewer list is read from .github/CODEOWNERS at runtime (every unique
+# @handle across the file) instead of being hardcoded here, so it can't drift
+# out of sync with CODEOWNERS the way issue #273 found it had.
 
 on:
   pull_request_target:
@@ -18,12 +22,25 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout base ref
+        uses: actions/checkout@v7
+
       - name: Mention reviewers
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const REVIEWERS = ['yakew7', 'ahmdkaml'];
+            const fs = require('fs');
+            const codeowners = fs.readFileSync('.github/CODEOWNERS', 'utf8');
+            const REVIEWERS = [...new Set(
+              codeowners
+                .split('\n')
+                .map((line) => line.trim())
+                .filter((line) => line && !line.startsWith('#'))
+                .flatMap((line) => line.split(/\s+/).slice(1))
+                .filter((token) => token.startsWith('@'))
+                .map((token) => token.slice(1))
+            )];
             const author = context.payload.pull_request.user.login;
             const toMention = REVIEWERS.filter((login) => login !== author);
             if (toMention.length === 0) return;

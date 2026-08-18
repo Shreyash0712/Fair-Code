@@ -119,15 +119,29 @@ This directly connects Fair Code to the broader responsible AI in healthcare con
 Fair-Code/
 │
 ├── .github/
+│   ├── ACTIONS-AUDIT.md
+│   ├── CODEOWNERS
+│   ├── DEAD-FILE-AUDIT.md
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   ├── dependabot.yml
+│   ├── codeql/
+│   │   └── codeql-config.yml
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml
 │   │   ├── new_audit.yml
 │   │   └── new_explainer.yml
 │   └── workflows/
 │       ├── audits.yml                   # CI: runs all audit scripts on every push/PR
+│       ├── build-explainers.yml         # rebuilds explainer HTML/JS/OG images, checks they're current
+│       ├── citation.yml                 # validates CITATION.cff
+│       ├── codeowners-access.yml        # weekly: catches a CODEOWNER whose repo access has lapsed
+│       ├── codeql.yml                   # CodeQL static analysis
 │       ├── first.interaction.yml        # Greets first-time issue/PR contributors
+│       ├── frozen-files.yml             # blocks edits to paper-frozen paths (see CLAUDE.md)
+│       ├── lint.yml                     # em-dash / broken-links / ruff checks
+│       ├── pr-review-ping.yml           # comments @-mentioning CODEOWNERS on every new PR
+│       ├── results-drift.yml            # diffs results/ against the frozen paper snapshot
+│       └── validate-workflow.yml        # YAML-lints every file in this workflows/ folder
 │
 ├── COMPAS/                              # each audit folder has the same structure:
 │   ├── unfair.py                        #   biased model
@@ -150,11 +164,14 @@ Fair-Code/
 │   ├── 04_insurance_denial_bias_audit.ipynb
 │   ├── 05_benefits_denial_bias_audit.ipynb
 │   ├── 06_healthcare_readmission_bias_audit.ipynb
+│   ├── 07_intersectional_bias_audit.ipynb
 │   └── 07_tenant_screening_bias_audit.ipynb
 │
 ├── faircode/                            # Open Dataset Profiler + benchmark harness
 │   ├── SPEC.md                          #   profiler analysis spec, shared with the web port
 │   ├── MANIFEST_SPEC.md                 #   audit.yaml schema for the benchmark harness
+│   ├── __init__.py
+│   ├── __main__.py                      #   `python -m faircode` entry point
 │   ├── detect.py                        #   demographic column auto-detection
 │   ├── profiler.py                      #   core representation engine (pure pandas)
 │   ├── compare.py                       #   two-dataset representation drift (PSI)
@@ -162,6 +179,8 @@ Fair-Code/
 │   ├── significance.py                  #   fairness-gap CI + permutation test
 │   ├── report.py                        #   terminal / JSON / HTML rendering
 │   ├── manifest.py                      #   loads + validates audit.yaml manifests
+│   ├── loaders.py                       #   CSV/Excel/JSON dataset loading
+│   ├── loaders_extra.py                 #   loader edge cases (mixed types, inconsistent keys)
 │   ├── strategies.py                    #   S0-S4 mitigation strategies (incl. fairlearn S3/S4)
 │   ├── models.py                        #   the 3 model families, fixed hyperparameters + seed
 │   ├── metrics.py                       #   6 fairness metrics + accuracy/AUC/F1
@@ -169,10 +188,25 @@ Fair-Code/
 │   ├── figures.py                       #   renders results_fairness.csv → figures/*.png (300 dpi)
 │   └── cli.py                           #   `faircode profile` / `compare` / `benchmark` entry point
 ├── tests/
-│   ├── test_profiler.py                 # pytest suite for the profiler
+│   ├── fixtures/                        #   sample datasets for loader/edge-case tests
+│   ├── test_benchmark.py                # end-to-end benchmark harness tests
+│   ├── test_cli.py                      #   CLI subcommand tests
+│   ├── test_codeowners.py               #   validates .github/CODEOWNERS syntax
 │   ├── test_compare.py                  #   drift / comparison tests
+│   ├── test_declared_dependencies.py    #   every import is declared in pyproject.toml
+│   ├── test_dependency_versions.py      #   requirements-lock.txt pins meet pyproject.toml floors
+│   ├── test_generate_images.py          #   favicon / OG-image generation
+│   ├── test_js_parity.py                #   JS profiler engine mirrors the Python one
+│   ├── test_json_edge_cases.py
+│   ├── test_loaders.py
+│   ├── test_manifest.py                 #   audit.yaml validation
+│   ├── test_metrics.py                  #   the 6 fairness metrics
+│   ├── test_profiler.py                 #   pytest suite for the profiler
 │   ├── test_proxy.py                    #   proxy-hint tests (scipy)
-│   └── test_significance.py             #   significance-module tests
+│   ├── test_report.py
+│   ├── test_significance.py             #   significance-module tests
+│   ├── test_strategies.py
+│   └── test_xlsx_edge_cases.py
 ├── results/                              # `faircode benchmark` output - LIVE, changes on every rerun
 │   ├── results_fairness.csv
 │   ├── results_performance.csv
@@ -188,8 +222,15 @@ Fair-Code/
 │       └── figures/*.png
 ├── scripts/
 │   ├── build_explainers.py              # regenerates explainer HTML/JS/sitemap from the JSON source
-│   ├── render_terminal_png.py            # renders captured stdout as a terminal-style PNG
-│   └── freeze_paper_results.py          # snapshots results/ -> paper/results-frozen/
+│   ├── check_broken_links.py            #   flags dead in-repo markdown links/anchors (make lint)
+│   ├── check_em_dash.py                 #   flags em dashes in tracked source/prose (make lint)
+│   ├── check_generated_files_current.py #   verifies build_explainers.py output is up to date
+│   ├── engine-js.js                     #   Node harness for the JS profiler parity tests
+│   ├── freeze_paper_results.py          #   snapshots results/ -> paper/results-frozen/
+│   ├── generate_favicons.py
+│   ├── generate_og_images.py            #   renders the 1200x630 OG share images
+│   ├── parse-json-js.js
+│   └── render_terminal_png.py           #   renders captured stdout as a terminal-style PNG
 ├── pyproject.toml                       # packages the `faircode` console script
 │
 ├── explainers/
@@ -239,14 +280,29 @@ Fair-Code/
 │   ├── base-rate-fallacy.md
 │   └── precision-recall-curve.md
 │
+├── .pre-commit-config.yaml              # em-dash/broken-links/ruff + build-explainers pre-push hooks
 ├── CHANGELOG.md
 ├── CITATION.cff
+├── CLAUDE.md                            # standing instructions for AI agents + human contributors
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
+├── CONTRIBUTORS.md
 ├── LICENSE
+├── Makefile                             # setup / lint / check / build-explainers / coverage targets
+├── METRICS.md                           # weekly repo activity snapshot
+├── ROADMAP.md
 ├── SECURITY.md
+├── llms.txt                             # hand-maintained summary for LLM consumption
+├── llms-full.txt
+├── robots.txt
+├── sitemap.xml
 ├── assets/                              # web assets (CSS + JS)
+│   ├── fonts/
+│   ├── icons/                           #   favicons + PWA icons
+│   ├── og/                              #   dark-theme OG share images, per explainer
+│   ├── og-light/                        #   light-theme counterparts
 │   └── profiler-engine.js, profiler-ui.js, profiler-compare.js, profiler.css   # client-side profiler
+├── explainer.html                       # explainer-page template, rendered per slug by build_explainers.py
 ├── index.html                           # live at thefaircode.xyz
 ├── profiler.html                        # Open Dataset Profiler - client-side web tool
 ├── requirements.txt                     # loose version ranges - for everyday development
