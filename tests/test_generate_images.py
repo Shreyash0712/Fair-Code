@@ -77,11 +77,11 @@ def test_parse_mark_rejects_mismatched_stem_and_bar_fill(tmp_path):
         script._parse_mark(bad_svg)
 
 
-def test_generate_favicons(tmp_path):
+def test_generate_favicons(tmp_path, monkeypatch):
     script = importlib.import_module("scripts.generate_favicons")
 
-    script.ICONS_DIR = tmp_path
-    script.LOGO_SVG = script.ROOT / "assets" / "icons" / "logo.svg"
+    monkeypatch.setattr(script, "ICONS_DIR", tmp_path)
+    monkeypatch.setattr(script, "LOGO_SVG", script.ROOT / "assets" / "icons" / "logo.svg")
 
     script.main()
 
@@ -107,15 +107,15 @@ def test_generate_favicons(tmp_path):
             assert image.size == expected[filename]
 
 
-def test_generate_og_images(tmp_path):
+def test_generate_og_images(tmp_path, monkeypatch):
     script = importlib.import_module("scripts.generate_og_images")
 
     test_root = script.ROOT / f".tmp-test-{tmp_path.name}"
     test_root.mkdir()
 
     try:
-        script.THEMES["dark"]["out_dir"] = test_root / "og"
-        script.THEMES["light"]["out_dir"] = test_root / "og-light"
+        monkeypatch.setitem(script.THEMES["dark"], "out_dir", test_root / "og")
+        monkeypatch.setitem(script.THEMES["light"], "out_dir", test_root / "og-light")
 
         script.main()
 
