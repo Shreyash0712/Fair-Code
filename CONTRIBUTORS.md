@@ -55,7 +55,7 @@ the [Git identity map](#git-identity-map) so `git shortlog -sne` can be reconcil
 
 | | Who | Role |
 |:--|-----|------|
-| <a href="https://github.com/yakew7"><img src="https://github.com/yakew7.png" width="48" height="48" alt="yakew7"></a> | **Yash Kewlani** - [@yakew7](https://github.com/yakew7) | Creator and maintainer. Author of the seven audits, the `faircode` library and benchmark harness, the Open Dataset Profiler, the website, and the bulk of the 39 explainers. Code owner for `faircode/`, `paper/`, every `audit.yaml`, `explainers/`, and project policy (`CLAUDE.md`, `CONTRIBUTING.md`). |
+| <a href="https://github.com/yakew7"><img src="https://github.com/yakew7.png" width="48" height="48" alt="yakew7"></a> | **Yash Kewlani** - [@yakew7](https://github.com/yakew7) | Creator and maintainer. Author of the seven audits, the `faircode` library and benchmark harness, the Open Dataset Profiler, the website, and the bulk of the 39 explainers. Code owner for `faircode/`, `paper/`, every `audit.yaml`, and project policy (`CLAUDE.md`, `CONTRIBUTING.md`); co-owner of `explainers/`. |
 
 Contact: [yashkewlani2020@gmail.com](mailto:yashkewlani2020@gmail.com) · [@thefaircodeproject](https://instagram.com/thefaircodeproject)
 
@@ -85,6 +85,26 @@ project by volume, concentrated in two areas:
 - CodeQL code scanning ([#153](https://github.com/yakew7/Fair-Code/pull/153), upgraded to v4 in [#229](https://github.com/yakew7/Fair-Code/pull/229)), Dependabot extended to GitHub Actions ([#146](https://github.com/yakew7/Fair-Code/pull/146))
 - `CODEOWNERS` itself ([#142](https://github.com/yakew7/Fair-Code/pull/142)) and the CI-automation ownership entry ([#174](https://github.com/yakew7/Fair-Code/pull/174)), workflow YAML validation ([#225](https://github.com/yakew7/Fair-Code/pull/225)), `CITATION.cff` validation ([#223](https://github.com/yakew7/Fair-Code/pull/223)), optional extras in `make setup` ([#222](https://github.com/yakew7/Fair-Code/pull/222)), Actions maintenance docs ([#196](https://github.com/yakew7/Fair-Code/pull/196)), static favicon assets ([#154](https://github.com/yakew7/Fair-Code/pull/154)), documented the pre-push test suite's runtime ([#238](https://github.com/yakew7/Fair-Code/pull/238)), `frozen-files`/`Build Explainers` running on direct pushes to `main`, not just PRs ([#258](https://github.com/yakew7/Fair-Code/pull/258), [#259](https://github.com/yakew7/Fair-Code/pull/259)), `make coverage` plus a non-gating coverage-report step in the profiler CI job ([#263](https://github.com/yakew7/Fair-Code/pull/263), [#264](https://github.com/yakew7/Fair-Code/pull/264))
 
+### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
+
+**5 merged PRs · 9 commits · first merged 2026-06-05**
+
+Co-code-owner of `explainers/`. The most prolific explainer author after the maintainer - ten
+explainers across three PRs, plus workflow maintenance and a citation cleanup pass:
+[Why AI Hallucinates](explainers/ai-hallucinations.md) ([#43](https://github.com/yakew7/Fair-Code/pull/43)); then
+[Bias-Variance Trade-off](explainers/bias-variance-tradeoff.md),
+[Class Imbalance](explainers/class-imbalance.md),
+[Confusion Matrix](explainers/confusion-matrix.md), and
+[Protected Attribute](explainers/protected-attribute.md) in a single PR ([#102](https://github.com/yakew7/Fair-Code/pull/102)).
+Also fixed the first-interaction greeting trigger and upgraded the audits workflow's action versions ([#46](https://github.com/yakew7/Fair-Code/pull/46)).
+Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)):
+[What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md),
+[The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md),
+[Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md),
+[What Is Reject Inference?](explainers/reject-inference.md), and
+[Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
+Most recently, added reference hyperlinks to six explainers' previously plain-text citations ([#276](https://github.com/yakew7/Fair-Code/pull/276)): [The "AI Is Objective" Myth](explainers/ai-objectivity-myth.md), [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md), [False Positives vs. False Negatives](explainers/false-positives-vs-false-negatives.md), [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md), [What Is Predictive Parity?](explainers/predictive-parity.md), and [ROC Curve and AUC](explainers/roc-curve-auc.md).
+
 ---
 
 ## Contributors
@@ -113,25 +133,6 @@ Readmission's real 11.2% base rate rather than an invented one.
 **4 merged PRs · 13 commits · first merged 2026-07-06**
 
 The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254).
-
-### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
-
-**5 merged PRs · 9 commits · first merged 2026-06-05**
-
-Ten explainers and two rounds of workflow maintenance:
-[Why AI Hallucinates](explainers/ai-hallucinations.md) ([#43](https://github.com/yakew7/Fair-Code/pull/43)); then
-[Bias-Variance Trade-off](explainers/bias-variance-tradeoff.md),
-[Class Imbalance](explainers/class-imbalance.md),
-[Confusion Matrix](explainers/confusion-matrix.md), and
-[Protected Attribute](explainers/protected-attribute.md) in a single PR ([#102](https://github.com/yakew7/Fair-Code/pull/102)).
-Also fixed the first-interaction greeting trigger and upgraded the audits workflow's action versions ([#46](https://github.com/yakew7/Fair-Code/pull/46)).
-Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)):
-[What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md),
-[The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md),
-[Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md),
-[What Is Reject Inference?](explainers/reject-inference.md), and
-[Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
-Most recently, added reference hyperlinks to six explainers' previously plain-text citations ([#276](https://github.com/yakew7/Fair-Code/pull/276)): [The "AI Is Objective" Myth](explainers/ai-objectivity-myth.md), [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md), [False Positives vs. False Negatives](explainers/false-positives-vs-false-negatives.md), [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md), [What Is Predictive Parity?](explainers/predictive-parity.md), and [ROC Curve and AUC](explainers/roc-curve-auc.md).
 
 ### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
 
