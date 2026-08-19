@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-18, covering everything merged through **PR #279**.
+**Snapshot:** 2026-08-19, covering everything merged through **PR #287**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -210,7 +210,12 @@ Fixed the site's theme toggle to respect the OS `prefers-color-scheme` setting (
 **1 merged PR · 1 commit · first merged 2026-08-06**
 
 JSON edge-case coverage and clear parse-error messages on *both* engines ([#175](https://github.com/yakew7/Fair-Code/pull/175)) - `faircode/loaders_extra.py`, `assets/profiler-engine.js`, and a shared parity script, so the CLI and the browser fail the same way on the same bad file.
-Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https://github.com/yakew7/Fair-Code/pull/265), [#266](https://github.com/yakew7/Fair-Code/pull/266)), part of the same test-coverage-reporting effort as [@ahmdkaml](https://github.com/ahmdkaml)'s [#263](https://github.com/yakew7/Fair-Code/pull/263)/[#264](https://github.com/yakew7/Fair-Code/pull/264), both closing issue #249.
+
+### [@nivedmahendran](https://github.com/nivedmahendran)
+
+**1 merged PR · 1 commit · first merged 2026-08-19**
+
+Fixed [CONTRIBUTING.md](CONTRIBUTING.md)'s pre-push trigger-path list, which had drifted from the actual regex in `.pre-commit-config.yaml` - `assets/profiler-engine.js`, `assets/profiler-compare.js`, and an audit's `audit.yaml` were all real trigger paths missing from the prose ([#287](https://github.com/yakew7/Fair-Code/pull/287), closing issue #285).
 
 ---
 
@@ -228,7 +233,7 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png) |
-| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo) |
+| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo), [@nivedmahendran](https://github.com/nivedmahendran) |
 
 ---
 
