@@ -3,11 +3,11 @@
 # Fair Code - Metrics Tracker
 
 ![Stars](https://img.shields.io/badge/Stars-43-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-15-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-21-orange?style=flat-square)
+![Contributors](https://img.shields.io/badge/Contributors-17-blue?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-22-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
-![Countries](https://img.shields.io/badge/Countries-17-informational?style=flat-square)
+![Countries](https://img.shields.io/badge/Countries-18-informational?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.
@@ -39,7 +39,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W31 | 41 | 18 | 8 | 12 | ~23K total | - | 22 | 7 total |
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
-| 2026-W34 | 43 | 21 | 8 | 15 | 30K+ total | 17 | 35 | 7 total |
+| 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -62,6 +62,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W34 - traction refresh:** combined Instagram/LinkedIn impressions crossed `27K+ → 30K+`. Countries reached steady at 17. Stars, forks, watching, and contributors unchanged from last week's live numbers - this week's earlier merged work (#276-#279: a citation-links explainer pass, CLI error-handling test coverage plus a real `--html` traceback fix, favicon-parsing test coverage, and a docstring fix) was fixes and test coverage, not new explainers or audits.
 >
 > **2026-W34 (later in week) - two stale explainer issues closed, two real gaps filled:** cross-checking every open "Explainer:" issue against `explainers/` found four that were already done and never closed (#93, #94, #98, #99, plus #103 and #104 found in a second pass) - all closed with a pointer to the PR that already resolved them. Two were genuine gaps: [What Is Equal Opportunity?](explainers/equal-opportunity.md) (closes #80) and [What Is Intersectional Bias?](explainers/intersectional-bias.md) (closes #67) - both anchored to real frozen benchmark numbers (`equal_opportunity_diff`/`equalized_odds_diff` for COMPAS and Tenant Screening; a superadditive `intersectional_demographic_parity_diff` for Benefits Denial) rather than invented ones. Explainer count `45 → 47`.
+>
+> **2026-W34 (traction refresh) - forks, contributors, and countries caught up to live data:** forks `21 → 22` and countries `17 → 18` per live site analytics; contributors `15 → 17` - one from [@nivedmahendran](https://github.com/nivedmahendran)'s first merged PR (#287), the other from GitHub's contributors API finally catching up on [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), whose own first PR it had been missing since the W32 lag note. Counted from `CONTRIBUTORS.md`'s manually-verified list rather than the raw API count (16), which still lags by that one contributor - the same reasoning as the W32/W33 corrections. Stars and watching unchanged at 43 and 8.
 
 ---
 
@@ -70,11 +72,11 @@ Weekly snapshot of project health. Updated every Friday.
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
 | Stars | 43 | 50+ | End of 2026 |
-| Forks | 21 | 25+ | End of 2026 |
+| Forks | 22 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
-| Contributors | 15 | 20+ | End of 2026 |
+| Contributors | 17 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
-| Countries reached | 17 | 20+ | End of 2026 |
+| Countries reached | 18 | 20+ | End of 2026 |
 | Issues closed | 35 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
@@ -95,4 +97,4 @@ Weekly snapshot of project health. Updated every Friday.
 
 *Resume-ready line (fill in at application time):*
 
-> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **43 stars**, **15 contributors**, **21 forks**, **30K+ social views**, and website visitors from **17 countries**.
+> Created and scaled Fair Code, an open-source responsible AI platform explaining algorithmic bias through code audits, healthcare-bias case studies, beginner explainers, and contributor-led GitHub documentation; grew the project to **43 stars**, **17 contributors**, **22 forks**, **30K+ social views**, and website visitors from **18 countries**.
