@@ -446,5 +446,24 @@ window.FAIR_CODE_EXPLAINERS = [
       "metrics",
       "detection"
     ]
+  },
+  {
+    "slug": "equal-opportunity",
+    "title": "What Is Equal Opportunity (and How It Differs From Equalized Odds)?",
+    "subtitle": "Passing the true-positive-rate check doesn't mean passing the false-positive-rate one.",
+    "summary": "Learn why Equal Opportunity only requires an equal true positive rate across groups, and how that relaxation can hide a false-positive-rate gap that Equalized Odds would catch. Uses two real frozen results: COMPAS, where the two metrics coincide, and Tenant Screening, where they diverge.",
+    "tags": [
+      "metrics"
+    ]
+  },
+  {
+    "slug": "intersectional-bias",
+    "title": "What Is Intersectional Bias?",
+    "subtitle": "Checking one protected attribute at a time can hide harm concentrated at the intersection.",
+    "summary": "Learn why a fairness gap can be larger at the intersection of two protected attributes than either attribute's own single-axis check would predict - a compounding effect Crenshaw (1989) named intersectionality. Anchored to Benefits Denial's real, frozen superadditive gap for sex x national origin, with crosstab detection code and a pointer to the Open Dataset Profiler's own intersectional representation check.",
+    "tags": [
+      "metrics",
+      "detection"
+    ]
   }
 ];

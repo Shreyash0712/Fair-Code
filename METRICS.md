@@ -6,7 +6,7 @@
 ![Contributors](https://img.shields.io/badge/Contributors-15-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-21-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
-![Explainers](https://img.shields.io/badge/Explainers-45-blueviolet?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
 ![Countries](https://img.shields.io/badge/Countries-17-informational?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
@@ -59,7 +59,9 @@ Weekly snapshot of project health. Updated every Friday.
 >
 > **2026-W33 (weekend update) - five more explainers, non-gating coverage reporting, and a new contributor:** five healthcare-adjacent explainers landed in one PR ([@Shreyash0712](https://github.com/Shreyash0712), #262) - What Is the Base Rate Fallacy?, The Obermeyer Case, Race Correction in Clinical Algorithms, What Is Reject Inference?, and Underdiagnosis Bias in Healthcare AI - closing out Phase 2's planned-healthcare-explainer backlog entirely; explainer count `39 → 44`. `make coverage` (pytest-cov, informational only, no CI gate) landed via three coordinated PRs (#263/#264 by `@ahmdkaml`, #265/#266 by new contributor **Circout-sudo**), but the profiler CI job's install step was never updated to include `pytest-cov`, so the new "Report test coverage" step failed on every run since - masked as an overall job success by `continue-on-error: true`. Fixed directly by adding `pytest-cov` to the install line; verified in a clean venv that it now reports real coverage numbers instead of erroring. Also fixed a stale `Build Explainers` CI failure from #262 skipping `make build-explainers` before opening the PR. **Contributors `14 → 15`** (Circout-sudo's first merged PR): GitHub's contributors API hadn't caught up at check time (same lag pattern as the W32 forks correction) - counted from `CONTRIBUTORS.md`'s manually-verified list instead, which is the more current source. Forks `22 → 21` (a real decrease, per GitHub's live API - not a data error). Stars `43` unchanged.
 >
-> **2026-W34 - traction refresh:** combined Instagram/LinkedIn impressions crossed `27K+ → 30K+`. Countries reached steady at 17. Stars, forks, watching, contributors, and explainers unchanged from last week's live numbers - this week's merged work (#276-#279: a citation-links explainer pass, CLI error-handling test coverage plus a real `--html` traceback fix, favicon-parsing test coverage, and a docstring fix) was fixes and test coverage, not new explainers or audits.
+> **2026-W34 - traction refresh:** combined Instagram/LinkedIn impressions crossed `27K+ → 30K+`. Countries reached steady at 17. Stars, forks, watching, and contributors unchanged from last week's live numbers - this week's earlier merged work (#276-#279: a citation-links explainer pass, CLI error-handling test coverage plus a real `--html` traceback fix, favicon-parsing test coverage, and a docstring fix) was fixes and test coverage, not new explainers or audits.
+>
+> **2026-W34 (later in week) - two stale explainer issues closed, two real gaps filled:** cross-checking every open "Explainer:" issue against `explainers/` found four that were already done and never closed (#93, #94, #98, #99, plus #103 and #104 found in a second pass) - all closed with a pointer to the PR that already resolved them. Two were genuine gaps: [What Is Equal Opportunity?](explainers/equal-opportunity.md) (closes #80) and [What Is Intersectional Bias?](explainers/intersectional-bias.md) (closes #67) - both anchored to real frozen benchmark numbers (`equal_opportunity_diff`/`equalized_odds_diff` for COMPAS and Tenant Screening; a superadditive `intersectional_demographic_parity_diff` for Benefits Denial) rather than invented ones. Explainer count `45 → 47`.
 
 ---
 
@@ -75,7 +77,7 @@ Weekly snapshot of project health. Updated every Friday.
 | Countries reached | 17 | 20+ | End of 2026 |
 | Issues closed | 35 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 45 | 60+ | End of 2026 |
+| Explainers | 47 | 60+ | End of 2026 |
 
 ---
 

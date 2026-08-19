@@ -278,7 +278,9 @@ Fair-Code/
 │   ├── race-correction-clinical-algorithms.md
 │   ├── reject-inference.md
 │   ├── base-rate-fallacy.md
-│   └── precision-recall-curve.md
+│   ├── precision-recall-curve.md
+│   ├── equal-opportunity.md
+│   └── intersectional-bias.md
 │
 ├── .pre-commit-config.yaml              # em-dash/broken-links/ruff + build-explainers pre-push hooks
 ├── CHANGELOG.md
@@ -765,10 +767,10 @@ features = [
 
 ## Explainers
 
-44 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
+47 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
 
 <details>
-<summary><strong>Show all 45 explainers →</strong></summary>
+<summary><strong>Show all 47 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -817,6 +819,8 @@ features = [
 | [The Obermeyer Case: When Cost Becomes a Proxy for Health Need](explainers/obermeyer-cost-proxy.md) | Why predicting healthcare spending instead of illness systematically under-refers sicker Black patients - target proxy bias, spending disparities, and care re-allocation |
 | [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md) | Why ignoring background prevalence makes screening tools mostly wrong, and why differing base rates across demographic groups drive fairness metric conflicts |
 | [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md) | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in |
+| [What Is Equal Opportunity (and How It Differs From Equalized Odds)?](explainers/equal-opportunity.md) | Why passing the true-positive-rate check doesn't mean passing the false-positive-rate one |
+| [What Is Intersectional Bias?](explainers/intersectional-bias.md) | Why checking one protected attribute at a time can hide harm concentrated at the intersection |
 
 </details>
 
@@ -1128,7 +1132,7 @@ The full public roadmap - with phases, completion status, and content schedule -
 | Combined Social Reach (Instagram + LinkedIn) | 30K+ |
 | Countries Reached (Website Visitors) | 17 |
 | Code Audits Published | 7 |
-| Explainers Published | 45 |
+| Explainers Published | 47 |
 
 Tracked weekly in [METRICS.md](METRICS.md).
 

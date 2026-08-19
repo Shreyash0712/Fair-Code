@@ -363,6 +363,8 @@ Explainers live in `explainers/` and should make one fairness concept easy to un
 | `reject-inference.md` | Why models trained only on approved applicants miss the risk of everyone else - sample selection bias, missing ground-truth outcomes, and IPW/parceling corrections |
 | `underdiagnosis-bias.md` | Why historical gaps in diagnostic testing cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients |
 | `precision-recall-curve.md` | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in, with per-group average-precision detection code |
+| `equal-opportunity.md` | Why passing the true-positive-rate check (Equal Opportunity) doesn't mean passing the false-positive-rate one (Equalized Odds), with two real frozen results showing them coincide and diverge |
+| `intersectional-bias.md` | Why checking one protected attribute at a time can hide a compounding gap at the intersection, with a real superadditive result and crosstab detection code |
 
 ### A good explainer should include
 
