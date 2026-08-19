@@ -21,7 +21,11 @@ All notable changes to Fair Code are documented here, newest first.
 > on publication. See [CLAUDE.md](CLAUDE.md).
 
 ## [2.0.11] - 14 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Fixed
+- **Homepage explainer-card pill showed the wrong topic after filtering** - the visible pill always rendered `tags[0]`, so filtering by Metrics could surface a card like `class-imbalance.md` (tags `["data", "metrics", "detection"]`) showing a "Data Bias" pill instead of "Metrics" - a real card, wrong-looking match. The shared search script (`index.html`) now shows whichever tag matches the active filter, falling back to the card's first tag when no filter is active; `assets/explainers-ui.js`'s initial render uses the same friendly label map so the two stay consistent before any interaction.
+
 ### Added
+- **New "Healthcare" explainer topic filter** - seven explainers (`accuracy-not-enough-healthcare-ai`, `clinical-score-miscalibration`, `missing-data-bias-ehr`, `medical-imaging-representation-gaps`, `obermeyer-cost-proxy`, `underdiagnosis-bias`, `race-correction-clinical-algorithms`) already form the cluster README's own "Healthcare AI Bias Focus" section calls out, but had no way to filter to just them on the homepage. Added a `healthcare` tag to all seven in `assets/explainers-data.json` and a matching filter button alongside Detection/Metrics/Data Bias/Explainability.
 - **New contributor [@nivedmahendran](https://github.com/nivedmahendran)** - fixed [CONTRIBUTING.md](CONTRIBUTING.md)'s pre-push trigger-path list, which had drifted from the actual `.pre-commit-config.yaml` regex ([#287](https://github.com/yakew7/Fair-Code/pull/287), closing issue #285, first merged PR). `CONTRIBUTORS.md` updated (Contributors section, Contributions-by-area table, snapshot through PR #287); README's contributors-graph note also corrected while there - it still referenced [@Circout-sudo](https://github.com/Circout-sudo)'s once-lagging first PR, which has long since shown up in GitHub's graph.
 
 ### Fixed

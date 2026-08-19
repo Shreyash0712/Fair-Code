@@ -249,49 +249,49 @@
     "title": "Why Accuracy Is Not Enough in Healthcare AI",
     "subtitle": "A 95% accurate model can still miss the sickest patients in one group.",
     "summary": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
-    "tags": ["metrics", "detection"]
+    "tags": ["metrics", "detection", "healthcare"]
   },
   {
     "slug": "clinical-score-miscalibration",
     "title": "Miscalibration in Clinical Risk Scores Across Groups",
     "subtitle": "The same risk score can mean a different real-world risk depending on the patient's group.",
     "summary": "Learn why a clinical risk score that is well-calibrated on average can still be miscalibrated for a specific patient group, so identical scores carry different real-world stakes. Covers reliability diagrams, calibration slope and intercept per group, why a shared score can be calibrated to the wrong target (as in Obermeyer et al. 2019), and why small subgroups make high-risk calibration hardest to verify. Anchored to the Healthcare Readmission audit with per-group reliability and calibration-slope detection code.",
-    "tags": ["metrics", "detection"]
+    "tags": ["metrics", "detection", "healthcare"]
   },
   {
     "slug": "missing-data-bias-ehr",
     "title": "Missing Data as Bias in Electronic Health Records",
     "subtitle": "A patient with fewer recorded labs and visits is less-observed, not lower-risk.",
     "summary": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
-    "tags": ["data", "detection"]
+    "tags": ["data", "detection", "healthcare"]
   },
   {
     "slug": "medical-imaging-representation-gaps",
     "title": "Why Medical Imaging Models Fail on Underrepresented Groups",
     "subtitle": "A model trained mostly on one group's images has barely seen the others.",
     "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
-    "tags": ["data", "detection"]
+    "tags": ["data", "detection", "healthcare"]
   },
   {
     "slug": "obermeyer-cost-proxy",
     "title": "The Obermeyer Case: When Cost Becomes a Proxy for Health Need",
     "subtitle": "How predicting healthcare spending instead of illness systematically under-refers sicker Black patients.",
     "summary": "Explore the canonical case study of Obermeyer et al. (2019): why using healthcare cost as a target variable creates racial bias, how historical spending disparities corrupt algorithm predictions, and how to audit models for proxy label bias using the Healthcare Readmission audit.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare"]
   },
   {
     "slug": "underdiagnosis-bias",
     "title": "Underdiagnosis Bias in Healthcare AI",
     "subtitle": "When the label itself is sicker for one group.",
     "summary": "Learn how historical gaps in diagnostic testing and healthcare access cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients. Covers the gap between true disease state and recorded EHR labels, why standard audits fail to catch unobserved false negatives, and biomarker-to-label consistency detection code.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare"]
   },
   {
     "slug": "race-correction-clinical-algorithms",
     "title": "Race Correction in Clinical Algorithms",
     "subtitle": "Why race-adjusted clinical formulas bake bias directly into the math.",
     "summary": "Learn how race coefficients in formulas like eGFR kidney function, spirometry lung reference values, and the VBAC calculator delay care for Black and minority patients, why removing them is complex, and how to detect explicit race multipliers in clinical code.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare"]
   },
   {
     "slug": "reject-inference",
