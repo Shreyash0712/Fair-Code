@@ -9,6 +9,7 @@
     data: 'Data Bias',
     explainability: 'Explainability',
     healthcare: 'Healthcare',
+    'case-study': 'Case Study',
   };
   const projectAnchors = {
     'COMPAS': 'project-compas',

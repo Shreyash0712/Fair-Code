@@ -25,7 +25,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "subtitle": "When your dataset does not reflect the world it claims to describe.",
     "summary": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
     "tags": [
-      "data"
+      "data",
+      "case-study"
     ]
   },
   {
@@ -89,7 +90,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "subtitle": "Bias that gets stronger after deployment.",
     "summary": "See how model outputs feed back into future data and amplify unfairness over time.",
     "tags": [
-      "data"
+      "data",
+      "case-study"
     ]
   },
   {
@@ -134,7 +136,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "subtitle": "Confident outputs that are still wrong.",
     "summary": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
     "tags": [
-      "explainability"
+      "explainability",
+      "case-study"
     ]
   },
   {
@@ -144,7 +147,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
     "tags": [
       "explainability",
-      "data"
+      "data",
+      "case-study"
     ]
   },
   {
@@ -255,7 +259,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
     "tags": [
       "detection",
-      "explainability"
+      "explainability",
+      "case-study"
     ]
   },
   {
@@ -349,7 +354,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
     "tags": [
       "metrics",
-      "detection"
+      "detection",
+      "healthcare"
     ]
   },
   {
@@ -359,7 +365,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "Learn why a clinical risk score that is well-calibrated on average can still be miscalibrated for a specific patient group, so identical scores carry different real-world stakes. Covers reliability diagrams, calibration slope and intercept per group, why a shared score can be calibrated to the wrong target (as in Obermeyer et al. 2019), and why small subgroups make high-risk calibration hardest to verify. Anchored to the Healthcare Readmission audit with per-group reliability and calibration-slope detection code.",
     "tags": [
       "metrics",
-      "detection"
+      "detection",
+      "healthcare"
     ]
   },
   {
@@ -369,7 +376,8 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
     "tags": [
       "data",
-      "detection"
+      "detection",
+      "healthcare"
     ]
   },
   {
@@ -379,7 +387,9 @@ window.FAIR_CODE_EXPLAINERS = [
     "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
     "tags": [
       "data",
-      "detection"
+      "detection",
+      "healthcare",
+      "case-study"
     ]
   },
   {
@@ -390,7 +400,9 @@ window.FAIR_CODE_EXPLAINERS = [
     "tags": [
       "data",
       "detection",
-      "metrics"
+      "metrics",
+      "healthcare",
+      "case-study"
     ]
   },
   {
@@ -401,7 +413,9 @@ window.FAIR_CODE_EXPLAINERS = [
     "tags": [
       "data",
       "detection",
-      "metrics"
+      "metrics",
+      "healthcare",
+      "case-study"
     ]
   },
   {
@@ -412,7 +426,9 @@ window.FAIR_CODE_EXPLAINERS = [
     "tags": [
       "data",
       "detection",
-      "metrics"
+      "metrics",
+      "healthcare",
+      "case-study"
     ]
   },
   {

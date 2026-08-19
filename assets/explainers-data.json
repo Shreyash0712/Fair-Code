@@ -18,7 +18,7 @@
     "title": "Sampling Bias",
     "subtitle": "When your dataset does not reflect the world it claims to describe.",
     "summary": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
-    "tags": ["data"]
+    "tags": ["data", "case-study"]
   },
   {
     "slug": "shap-values",
@@ -67,7 +67,7 @@
     "title": "Feedback Loop Bias",
     "subtitle": "Bias that gets stronger after deployment.",
     "summary": "See how model outputs feed back into future data and amplify unfairness over time.",
-    "tags": ["data"]
+    "tags": ["data", "case-study"]
   },
   {
     "slug": "label-bias",
@@ -102,14 +102,14 @@
     "title": "AI Hallucinations",
     "subtitle": "Confident outputs that are still wrong.",
     "summary": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
-    "tags": ["explainability"]
+    "tags": ["explainability", "case-study"]
   },
   {
     "slug": "reinforcement-learning",
     "title": "Reinforcement Learning",
     "subtitle": "When reward signals shape real-world policy.",
     "summary": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
-    "tags": ["explainability", "data"]
+    "tags": ["explainability", "data", "case-study"]
   },
   {
     "slug": "proxy-entanglement",
@@ -186,7 +186,7 @@
     "title": "What Is Unsupervised Learning?",
     "subtitle": "It found the split on its own, because the split was already in the data",
     "summary": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
-    "tags": ["detection", "explainability"]
+    "tags": ["detection", "explainability", "case-study"]
   },
   {
     "slug": "model-drift",
@@ -270,28 +270,28 @@
     "title": "Why Medical Imaging Models Fail on Underrepresented Groups",
     "subtitle": "A model trained mostly on one group's images has barely seen the others.",
     "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
-    "tags": ["data", "detection", "healthcare"]
+    "tags": ["data", "detection", "healthcare", "case-study"]
   },
   {
     "slug": "obermeyer-cost-proxy",
     "title": "The Obermeyer Case: When Cost Becomes a Proxy for Health Need",
     "subtitle": "How predicting healthcare spending instead of illness systematically under-refers sicker Black patients.",
     "summary": "Explore the canonical case study of Obermeyer et al. (2019): why using healthcare cost as a target variable creates racial bias, how historical spending disparities corrupt algorithm predictions, and how to audit models for proxy label bias using the Healthcare Readmission audit.",
-    "tags": ["data", "detection", "metrics", "healthcare"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "underdiagnosis-bias",
     "title": "Underdiagnosis Bias in Healthcare AI",
     "subtitle": "When the label itself is sicker for one group.",
     "summary": "Learn how historical gaps in diagnostic testing and healthcare access cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients. Covers the gap between true disease state and recorded EHR labels, why standard audits fail to catch unobserved false negatives, and biomarker-to-label consistency detection code.",
-    "tags": ["data", "detection", "metrics", "healthcare"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "race-correction-clinical-algorithms",
     "title": "Race Correction in Clinical Algorithms",
     "subtitle": "Why race-adjusted clinical formulas bake bias directly into the math.",
     "summary": "Learn how race coefficients in formulas like eGFR kidney function, spirometry lung reference values, and the VBAC calculator delay care for Black and minority patients, why removing them is complex, and how to detect explicit race multipliers in clinical code.",
-    "tags": ["data", "detection", "metrics", "healthcare"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "reject-inference",
