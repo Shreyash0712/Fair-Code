@@ -1,9 +1,16 @@
+import builtins
 import importlib.util
 import json
+from pathlib import Path
+import sys
 
+import pandas as pd
 import pytest
 
 from faircode.cli import main
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SMALL_AUDIT = REPO_ROOT / "German Credit Lending" / "audit.yaml"
 
 requires_openpyxl = pytest.mark.skipif(
     importlib.util.find_spec("openpyxl") is None,
@@ -155,3 +162,95 @@ def test_profile_xlsx_single_sheet_stays_silent(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "ignored" not in captured.err
+
+
+# ── Benchmark subcommand tests ────────────────────────────────────────────────
+
+def test_cli_benchmark_import_error_message(monkeypatch, capsys):
+    """Lines 245-249: Catch ImportError and emit the optional install guidance."""
+    real_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if "benchmark" in name:
+            raise ImportError("No module named 'sklearn'")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+    monkeypatch.delitem(sys.modules, "faircode.benchmark", raising=False)
+
+    exit_code = main(["benchmark"])
+    assert exit_code == 2
+    captured = capsys.readouterr()
+    assert "error: the benchmark command needs scikit-learn and pyyaml" in captured.err
+    assert "pip install faircode[benchmark]" in captured.err
+
+
+def test_cli_benchmark_paper_drift_warning_on_overrides(monkeypatch, tmp_path, capsys):
+    """Lines 253-263: Stderr warning when overriding frozen default resamples/permutations."""
+    pytest.importorskip("sklearn", reason="benchmark extra required")
+    pytest.importorskip("fairlearn", reason="benchmark extra required")
+    pytest.importorskip("yaml", reason="benchmark extra required")
+
+    dummy_fairness = pd.DataFrame([{"audit": "German Credit Lending", "metric": "dp"}])
+    dummy_perf = pd.DataFrame([{"audit": "German Credit Lending", "metric": "auc"}])
+
+    monkeypatch.setattr(
+        "faircode.benchmark.run_benchmark",
+        lambda **kwargs: (dummy_fairness, dummy_perf),
+    )
+    monkeypatch.setattr("faircode.benchmark.write_report", lambda *args, **kwargs: None)
+
+    out_dir = str(tmp_path / "results")
+    exit_code = main([
+        "benchmark",
+        "--n-resamples", "50",
+        "--n-permutations", "50",
+        "--out", out_dir,
+        "--no-plots",
+    ])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "warning: --n-resamples=50, --n-permutations=50 differs from the frozen paper-run default (2000)" in captured.err
+    assert f"Ran 1 audit(s), wrote 1 fairness rows and 1 performance rows to {out_dir}/" in captured.err
+
+
+def test_cli_benchmark_no_manifests_found_error(tmp_path, capsys):
+    """Lines 271-273: Error exit path when no audit.yaml manifests are found in --root."""
+    pytest.importorskip("sklearn", reason="benchmark extra required")
+    pytest.importorskip("fairlearn", reason="benchmark extra required")
+    pytest.importorskip("yaml", reason="benchmark extra required")
+
+    empty_dir = tmp_path / "empty_root"
+    empty_dir.mkdir()
+
+    exit_code = main(["benchmark", "--root", str(empty_dir)])
+    assert exit_code == 2
+    captured = capsys.readouterr()
+    assert f"error: no audit.yaml manifests found under {empty_dir}" in captured.err
+
+
+@pytest.mark.skipif(not SMALL_AUDIT.is_file(), reason="German Credit Lending fixture not found")
+def test_cli_benchmark_success_run(tmp_path, capsys):
+    """Lines 274-283: Full benchmark execution against the German Credit Lending fixture."""
+    pytest.importorskip("sklearn", reason="benchmark extra required")
+    pytest.importorskip("fairlearn", reason="benchmark extra required")
+    pytest.importorskip("yaml", reason="benchmark extra required")
+
+    out_dir = tmp_path / "results"
+    exit_code = main([
+        "benchmark",
+        str(SMALL_AUDIT),
+        "--n-resamples", "5",
+        "--n-permutations", "5",
+        "--out", str(out_dir),
+        "--no-plots",
+    ])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "Ran 1 audit(s)" in captured.err
+    assert f"to {out_dir}/" in captured.err
+    assert (out_dir / "results_fairness.csv").is_file()
+    assert (out_dir / "results_performance.csv").is_file()
+    assert (out_dir / "summary.csv").is_file()
