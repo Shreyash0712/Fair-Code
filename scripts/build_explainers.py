@@ -647,11 +647,14 @@ def main():
             f"Missing markdown file(s) for: {', '.join(missing)}"
         )
 
+    def _og_missing_or_empty(path):
+        return not path.exists() or path.stat().st_size == 0
+
     missing_og = [
         e["slug"]
         for e in entries
-        if not (OG_DIR / f"{e['slug']}.png").exists()
-        or not (OG_LIGHT_DIR / f"{e['slug']}.png").exists()
+        if _og_missing_or_empty(OG_DIR / f"{e['slug']}.png")
+        or _og_missing_or_empty(OG_LIGHT_DIR / f"{e['slug']}.png")
     ]
 
     if missing_og:

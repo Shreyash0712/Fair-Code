@@ -1,6 +1,16 @@
 (function () {
   const repoUrl = 'https://github.com/yakew7/Fair-Code';
   const explainers = window.FAIR_CODE_EXPLAINERS || [];
+  // Keep in sync with the pillLabels map in index.html's search script -
+  // both render the same tag vocabulary as a human-readable pill.
+  const TAG_LABELS = {
+    detection: 'Detection',
+    metrics: 'Metrics',
+    data: 'Data Bias',
+    explainability: 'Explainability',
+    healthcare: 'Healthcare',
+    'case-study': 'Case Study',
+  };
   const projectAnchors = {
     'COMPAS': 'project-compas',
     'AI Fair Recruitment': 'project-hiring',
@@ -251,7 +261,7 @@
             </div>
             <p class="explainer-summary">${escapeHtml(entry.summary)}</p>
             <div class="explainer-card-footer">
-              <span class="explainer-pill">${escapeHtml(entry.tags[0])}</span>
+              <span class="explainer-pill">${escapeHtml(TAG_LABELS[entry.tags[0]] || entry.tags[0])}</span>
               <span class="explainer-link-copy">Open explainer</span>
             </div>
           </a>

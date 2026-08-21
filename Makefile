@@ -11,14 +11,14 @@ help:  ## Show the available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN{FS = ":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 
-setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commit)
-	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pytest-cov pre-commit
+setup:  ## Install the package plus the dev tools (pytest, pytest-cov, pre-commit, ruff)
+	$(PY) -m pip install -e ".[excel,parquet,proxy]" pytest pytest-cov pre-commit ruff
 
 test:  ## Run the full test suite (mirrors CI)
 	$(PY) -m pytest tests/ -q
 
-coverage:  ## Run the test suite with coverage reporting
-	$(PY) -m pytest tests/ --cov=faircode --cov-report=term-missing
+coverage:  ## Run the full test suite with a faircode/ coverage report (informational only)
+	$(PY) -m pytest tests/ -q --cov=faircode --cov-report=term-missing
 
 build-explainers:  ## Regenerate explainer pages, data.js, sitemap, and OG images (dark + light)
 	$(PY) scripts/build_explainers.py

@@ -18,7 +18,7 @@
     "title": "Sampling Bias",
     "subtitle": "When your dataset does not reflect the world it claims to describe.",
     "summary": "Understand how under-sampling, over-sampling, and skewed collection pipelines can distort what a model learns.",
-    "tags": ["data"]
+    "tags": ["data", "case-study"]
   },
   {
     "slug": "shap-values",
@@ -67,7 +67,7 @@
     "title": "Feedback Loop Bias",
     "subtitle": "Bias that gets stronger after deployment.",
     "summary": "See how model outputs feed back into future data and amplify unfairness over time.",
-    "tags": ["data"]
+    "tags": ["data", "case-study"]
   },
   {
     "slug": "label-bias",
@@ -102,14 +102,14 @@
     "title": "AI Hallucinations",
     "subtitle": "Confident outputs that are still wrong.",
     "summary": "See how hallucinations interact with bias, why they are dangerous, and how to spot them in practice.",
-    "tags": ["explainability"]
+    "tags": ["explainability", "case-study"]
   },
   {
     "slug": "reinforcement-learning",
     "title": "Reinforcement Learning",
     "subtitle": "When reward signals shape real-world policy.",
     "summary": "Learn how RL-style systems can reinforce unfair incentives in recommendation, pricing, and risk scoring.",
-    "tags": ["explainability", "data"]
+    "tags": ["explainability", "data", "case-study"]
   },
   {
     "slug": "proxy-entanglement",
@@ -186,7 +186,7 @@
     "title": "What Is Unsupervised Learning?",
     "subtitle": "It found the split on its own, because the split was already in the data",
     "summary": "See how k-means clustering on the Benefits Denial dataset recovers a strong sex split (89.3% male in one cluster) and a real race split without sex, race, or national origin ever being part of the feature set. Includes detection code that clusters on non-protected features, then checks the result for demographic skew.",
-    "tags": ["detection", "explainability"]
+    "tags": ["detection", "explainability", "case-study"]
   },
   {
     "slug": "model-drift",
@@ -249,49 +249,49 @@
     "title": "Why Accuracy Is Not Enough in Healthcare AI",
     "subtitle": "A 95% accurate model can still miss the sickest patients in one group.",
     "summary": "Learn why a high accuracy number can hide a model that systematically fails the patients who matter most. Covers the accuracy paradox on rare clinical outcomes (a 'predict nothing' model scoring 97% while catching zero at-risk patients), why a single aggregate score masks per-group recall and false-negative gaps, and why in medicine a missed case and a false alarm are never equally costly. Anchored to the Healthcare Readmission audit and the Obermeyer et al. (2019) study, with per-group accuracy-vs-recall detection code.",
-    "tags": ["metrics", "detection"]
+    "tags": ["metrics", "detection", "healthcare"]
   },
   {
     "slug": "clinical-score-miscalibration",
     "title": "Miscalibration in Clinical Risk Scores Across Groups",
     "subtitle": "The same risk score can mean a different real-world risk depending on the patient's group.",
     "summary": "Learn why a clinical risk score that is well-calibrated on average can still be miscalibrated for a specific patient group, so identical scores carry different real-world stakes. Covers reliability diagrams, calibration slope and intercept per group, why a shared score can be calibrated to the wrong target (as in Obermeyer et al. 2019), and why small subgroups make high-risk calibration hardest to verify. Anchored to the Healthcare Readmission audit with per-group reliability and calibration-slope detection code.",
-    "tags": ["metrics", "detection"]
+    "tags": ["metrics", "detection", "healthcare"]
   },
   {
     "slug": "missing-data-bias-ehr",
     "title": "Missing Data as Bias in Electronic Health Records",
     "subtitle": "A patient with fewer recorded labs and visits is less-observed, not lower-risk.",
     "summary": "Learn how unequal access to care turns into unequal missingness in EHR data, and why a model reading a blank field as 'nothing notable happened' is actually reading 'this group is observed less.' Covers the MCAR/MAR/MNAR framework, why naive imputation and row-dropping both make access-driven missingness worse, and why a missingness indicator can become a new proxy for the protected attribute it was meant to work around. Anchored to real missingness rates computed directly from the Healthcare Readmission dataset (a 10.7-point payer-code gap by race), with detection code that flags MNAR candidates by group.",
-    "tags": ["data", "detection"]
+    "tags": ["data", "detection", "healthcare"]
   },
   {
     "slug": "medical-imaging-representation-gaps",
     "title": "Why Medical Imaging Models Fail on Underrepresented Groups",
     "subtitle": "A model trained mostly on one group's images has barely seen the others.",
     "summary": "Learn why dermatology, radiology, and retinal imaging models underperform on groups thin in the training data, and the more insidious failure mode of shortcut learning, where a model keys off a confounder like scanner type or hospital site instead of the pathology. Covers the difference between a representation gap and shortcut confounding, why internal validation cannot rule out either, and per-group AUC plus proxy-detection code. Anchored to two documented real-world cases: Zech et al. (2018)'s hospital-site shortcut in pneumonia detection and Larrazabal et al. (2020)'s sex-imbalance study in chest X-ray diagnosis.",
-    "tags": ["data", "detection"]
+    "tags": ["data", "detection", "healthcare", "case-study"]
   },
   {
     "slug": "obermeyer-cost-proxy",
     "title": "The Obermeyer Case: When Cost Becomes a Proxy for Health Need",
     "subtitle": "How predicting healthcare spending instead of illness systematically under-refers sicker Black patients.",
     "summary": "Explore the canonical case study of Obermeyer et al. (2019): why using healthcare cost as a target variable creates racial bias, how historical spending disparities corrupt algorithm predictions, and how to audit models for proxy label bias using the Healthcare Readmission audit.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "underdiagnosis-bias",
     "title": "Underdiagnosis Bias in Healthcare AI",
     "subtitle": "When the label itself is sicker for one group.",
     "summary": "Learn how historical gaps in diagnostic testing and healthcare access cause ground-truth labels to under-count active disease in underserved groups - training models to systematically under-flag those exact patients. Covers the gap between true disease state and recorded EHR labels, why standard audits fail to catch unobserved false negatives, and biomarker-to-label consistency detection code.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "race-correction-clinical-algorithms",
     "title": "Race Correction in Clinical Algorithms",
     "subtitle": "Why race-adjusted clinical formulas bake bias directly into the math.",
     "summary": "Learn how race coefficients in formulas like eGFR kidney function, spirometry lung reference values, and the VBAC calculator delay care for Black and minority patients, why removing them is complex, and how to detect explicit race multipliers in clinical code.",
-    "tags": ["data", "detection", "metrics"]
+    "tags": ["data", "detection", "metrics", "healthcare", "case-study"]
   },
   {
     "slug": "reject-inference",
@@ -306,6 +306,27 @@
     "subtitle": "Why ignoring background prevalence makes screening tools mostly wrong - and drives fairness metric conflicts.",
     "summary": "Learn how ignoring base rates leads to high false-alarm rates in screening algorithms, and why differing base rates across demographic groups make predictive parity and equalized odds mathematically incompatible. Covers Bayes' Theorem, PPV under low prevalence, the Chouldechova trade-off identity, and COMPAS audit detection code.",
     "tags": ["metrics", "detection", "explainability"]
+  },
+  {
+    "slug": "precision-recall-curve",
+    "title": "What Is a Precision-Recall Curve?",
+    "subtitle": "Why ROC/AUC looks fine while precision collapses under class imbalance.",
+    "summary": "Learn what a precision-recall curve and average precision (AP) measure, and why they're the honest picture under the heavy class imbalance most fairness audits live in - rare positives, skewed base rates - where ROC/AUC's own arithmetic stays lenient. Anchored to Healthcare Readmission's 11.2% base rate (frozen 88.7% accuracy, 0.62 AUC, but 0.039 F1), with per-group average-precision detection code.",
+    "tags": ["metrics", "detection"]
+  },
+  {
+    "slug": "equal-opportunity",
+    "title": "What Is Equal Opportunity (and How It Differs From Equalized Odds)?",
+    "subtitle": "Passing the true-positive-rate check doesn't mean passing the false-positive-rate one.",
+    "summary": "Learn why Equal Opportunity only requires an equal true positive rate across groups, and how that relaxation can hide a false-positive-rate gap that Equalized Odds would catch. Uses two real frozen results: COMPAS, where the two metrics coincide, and Tenant Screening, where they diverge.",
+    "tags": ["metrics"]
+  },
+  {
+    "slug": "intersectional-bias",
+    "title": "What Is Intersectional Bias?",
+    "subtitle": "Checking one protected attribute at a time can hide harm concentrated at the intersection.",
+    "summary": "Learn why a fairness gap can be larger at the intersection of two protected attributes than either attribute's own single-axis check would predict - a compounding effect Crenshaw (1989) named intersectionality. Anchored to Benefits Denial's real, frozen superadditive gap for sex x national origin, with crosstab detection code and a pointer to the Open Dataset Profiler's own intersectional representation check.",
+    "tags": ["metrics", "detection"]
   }
 ]
 

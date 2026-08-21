@@ -1,14 +1,87 @@
 import importlib
 
+import pytest
 from PIL import Image
 import json
 import shutil
 
-def test_generate_favicons(tmp_path):
+_VALID_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="32" y="18" width="13" height="64" fill="#14171A"/>
+  <rect x="32" y="18" width="42" height="13" fill="#14171A"/>
+  <rect x="32" y="44" width="36" height="13" fill="#4F7A5B"/>
+</svg>
+"""
+
+
+def test_parse_mark_accepts_the_real_logo_svg():
     script = importlib.import_module("scripts.generate_favicons")
 
-    script.ICONS_DIR = tmp_path
-    script.LOGO_SVG = script.ROOT / "assets" / "icons" / "logo.svg"
+    spec = script._parse_mark(script.ROOT / "assets" / "icons" / "logo.svg")
+
+    assert spec["size"] == 100.0
+    assert spec["mark_fill"] == "#14171A"
+    assert spec["accent_fill"] == "#4F7A5B"
+
+
+def test_parse_mark_rejects_non_square_viewbox(tmp_path):
+    script = importlib.import_module("scripts.generate_favicons")
+    bad_svg = tmp_path / "bad.svg"
+    bad_svg.write_text(
+        _VALID_SVG.replace('viewBox="0 0 100 100"', 'viewBox="0 0 100 80"'),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="expected a square viewBox starting at 0,0"):
+        script._parse_mark(bad_svg)
+
+
+def test_parse_mark_rejects_viewbox_not_at_origin(tmp_path):
+    script = importlib.import_module("scripts.generate_favicons")
+    bad_svg = tmp_path / "bad.svg"
+    bad_svg.write_text(
+        _VALID_SVG.replace('viewBox="0 0 100 100"', 'viewBox="10 0 100 100"'),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="expected a square viewBox starting at 0,0"):
+        script._parse_mark(bad_svg)
+
+
+def test_parse_mark_rejects_a_fourth_rect(tmp_path):
+    script = importlib.import_module("scripts.generate_favicons")
+    bad_svg = tmp_path / "bad.svg"
+    bad_svg.write_text(
+        _VALID_SVG.replace(
+            "</svg>",
+            '  <rect x="0" y="0" width="10" height="10" fill="#000000"/>\n</svg>',
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="no longer exactly three rects"):
+        script._parse_mark(bad_svg)
+
+
+def test_parse_mark_rejects_mismatched_stem_and_bar_fill(tmp_path):
+    script = importlib.import_module("scripts.generate_favicons")
+    bad_svg = tmp_path / "bad.svg"
+    bad_svg.write_text(
+        _VALID_SVG.replace(
+            '<rect x="32" y="18" width="42" height="13" fill="#14171A"/>',
+            '<rect x="32" y="18" width="42" height="13" fill="#000000"/>',
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="stem and top bar are expected to share one fill color"):
+        script._parse_mark(bad_svg)
+
+
+def test_generate_favicons(tmp_path, monkeypatch):
+    script = importlib.import_module("scripts.generate_favicons")
+
+    monkeypatch.setattr(script, "ICONS_DIR", tmp_path)
+    monkeypatch.setattr(script, "LOGO_SVG", script.ROOT / "assets" / "icons" / "logo.svg")
 
     script.main()
 
@@ -34,15 +107,15 @@ def test_generate_favicons(tmp_path):
             assert image.size == expected[filename]
 
 
-def test_generate_og_images(tmp_path):
+def test_generate_og_images(tmp_path, monkeypatch):
     script = importlib.import_module("scripts.generate_og_images")
 
     test_root = script.ROOT / f".tmp-test-{tmp_path.name}"
     test_root.mkdir()
 
     try:
-        script.THEMES["dark"]["out_dir"] = test_root / "og"
-        script.THEMES["light"]["out_dir"] = test_root / "og-light"
+        monkeypatch.setitem(script.THEMES["dark"], "out_dir", test_root / "og")
+        monkeypatch.setitem(script.THEMES["light"], "out_dir", test_root / "og-light")
 
         script.main()
 

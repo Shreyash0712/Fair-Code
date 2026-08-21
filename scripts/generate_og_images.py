@@ -159,7 +159,14 @@ def render_card(out_path, kicker, title, subtitle, theme, footer="thefaircode.xy
                right_text, font=foot_font, fill=muted)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    img.save(out_path, "PNG", optimize=True)
+    # A fixed compress_level (vs. optimize=True's per-scanline filter/strategy
+    # search) reduces incidental variance, but even this doesn't guarantee
+    # byte-identical output across zlib builds on different platforms for
+    # pixel-identical input - confirmed the hard way (compress_level=9 alone
+    # still failed CI's old byte-exact check). build-explainers.yml's drift
+    # check now compares these PNGs by decoded pixel content instead
+    # (scripts/check_generated_files_current.py), which is the actual fix.
+    img.save(out_path, "PNG", compress_level=9)
 
 
 def render_card_both_themes(slug, kicker, title, subtitle):

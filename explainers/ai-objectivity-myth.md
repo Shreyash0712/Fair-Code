@@ -141,7 +141,7 @@ Even after a model is shown not to be objective, the institutional response is o
 
 * [O'Neil, C. (2016): Weapons of Math Destruction](https://www.penguinrandomhouse.com/books/241363/weapons-of-math-destruction-by-cathy-oneil/) - the foundational case for why "it's just an algorithm" is not a defense, with examples spanning credit, employment, and criminal justice.
 * [Angwin, J. et al. (2016): Machine Bias, ProPublica](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) - the original investigation showing COMPAS scores were presented as objective risk assessments while producing racially disparate outcomes.
-* Barocas, S., Hardt, M., & Narayanan, A.: *Fairness and Machine Learning* (fairmlbook.org) - the standard reference for why statistical models trained on historical data inherit the properties of that history, including its inequities.
+* [Barocas, S., Hardt, M., & Narayanan, A.: *Fairness and Machine Learning* (fairmlbook.org)](https://fairmlbook.org) - the standard reference for why statistical models trained on historical data inherit the properties of that history, including its inequities.
 
 ---
 
