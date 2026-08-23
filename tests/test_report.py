@@ -86,6 +86,9 @@ def test_to_html_renders_key_figures(mock_profile_result):
     assert "88/100" in html_out
     assert "B+" in html_out
     assert "Gender" in html_out
+    assert "imbalance 1.6x" in html_out
+    assert "missing 2.0%" in html_out
+    assert "skew +0.30" in html_out
 
 
 def test_to_html_renders_proxy_hints(mock_profile_result):
