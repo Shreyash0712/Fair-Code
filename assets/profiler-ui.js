@@ -504,7 +504,7 @@
           return '<tr><td>' + esc(g.label) + '</td>' +
             '<td class="num">' + (g.expected * 100).toFixed(1) + '%</td>' +
             '<td class="num">' + (g.actual * 100).toFixed(1) + '%</td>' +
-            '<td class="num">' + (g.delta > 0 ? '+' : '') + (g.delta * 100).toFixed(1) + ' pp</td></tr>';
+            '<td class="num">' + (g.delta >= 0 ? '+' : '') + (g.delta * 100).toFixed(1) + ' pp</td></tr>';
         }).join('');
         referenceHtml = '<div class="reference"><h3>Reference ' +
           '<span class="kind">deviation ' + (d.reference.deviation * 100).toFixed(1) + '%</span></h3>' +
@@ -513,9 +513,18 @@
           refRows + '</table></div>';
       }
 
+      // Same meta line as faircode/report.py's to_terminal()/to_html() (issue #283).
+      var metaParts = [];
+      if (d.imbalance_ratio !== null) metaParts.push('imbalance ' + d.imbalance_ratio.toFixed(1) + 'x');
+      else if (d.n_groups > 1) metaParts.push('imbalance inf (empty subgroup)');
+      if (d.missing_pct > 0) metaParts.push('missing ' + pct(d.missing_pct));
+      if (d.skewness !== null) metaParts.push('skew ' + (d.skewness >= 0 ? '+' : '') + d.skewness.toFixed(2));
+      var metaHtml = metaParts.length
+        ? ' <span class="meta">(' + esc(metaParts.join('  ')) + ')</span>' : '';
+
       return '<section class="dim"><h2>' + esc(d.name) +
         ' <span class="kind">' + esc(d.kind) + '</span> ' +
-        '<span class="score">' + d.dimension_score + '/100</span></h2>' +
+        '<span class="score">' + d.dimension_score + '/100</span>' + metaHtml + '</h2>' +
         '<table>' + rows + '</table>' + referenceHtml + '</section>';
     }).join('');
 
@@ -535,6 +544,7 @@
       ' h1 { font-family:Georgia,serif; }\n' +
       ' .score { color:var(--accent3); font-size:.7em; font-weight:600; }\n' +
       ' .kind { color:var(--muted); font-size:.6em; text-transform:uppercase; letter-spacing:.08em; }\n' +
+      ' .meta { color:var(--muted); font-size:.6em; }\n' +
       ' .dim { background:var(--surface); border:1px solid var(--border); border-radius:8px;\n' +
       '         padding:16px 20px; margin:16px 0; }\n' +
       ' table { width:100%; border-collapse:collapse; }\n' +
