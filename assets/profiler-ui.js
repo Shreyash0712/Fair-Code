@@ -497,10 +497,26 @@
           '<td class="num">' + g.count.toLocaleString() + '</td>' +
           '<td class="bar"><span style="width:' + (g.share * 100).toFixed(1) + '%"></span></td></tr>';
       }).join('');
+
+      var referenceHtml = '';
+      if (d.reference) {
+        var refRows = d.reference.groups.slice(0, DISPLAY_GROUPS).map(function (g) {
+          return '<tr><td>' + esc(g.label) + '</td>' +
+            '<td class="num">' + (g.expected * 100).toFixed(1) + '%</td>' +
+            '<td class="num">' + (g.actual * 100).toFixed(1) + '%</td>' +
+            '<td class="num">' + (g.delta > 0 ? '+' : '') + (g.delta * 100).toFixed(1) + ' pp</td></tr>';
+        }).join('');
+        referenceHtml = '<div class="reference"><h3>Reference ' +
+          '<span class="kind">deviation ' + (d.reference.deviation * 100).toFixed(1) + '%</span></h3>' +
+          '<table><tr><th></th><th class="num">Expected</th>' +
+          '<th class="num">Actual</th><th class="num">Delta</th></tr>' +
+          refRows + '</table></div>';
+      }
+
       return '<section class="dim"><h2>' + esc(d.name) +
         ' <span class="kind">' + esc(d.kind) + '</span> ' +
         '<span class="score">' + d.dimension_score + '/100</span></h2>' +
-        '<table>' + rows + '</table></section>';
+        '<table>' + rows + '</table>' + referenceHtml + '</section>';
     }).join('');
 
     var flagHtml = '';
@@ -530,6 +546,10 @@
       ' tr.under td.bar span { background:var(--accent); }\n' +
       ' tr.under td:first-child::after { content:\' (under-represented)\'; color:var(--accent); font-size:11px; }\n' +
       ' tr.small-group td:first-child::before { content:\'⚠ small group \'; color:var(--accent); }\n' +
+      ' .reference { margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); }\n' +
+      ' .reference h3 { font-size:.75em; margin:0 0 6px; }\n' +
+      ' .reference th { text-align:right; font-size:11px; color:var(--muted); font-weight:normal; }\n' +
+      ' .reference th:first-child { text-align:left; }\n' +
       ' .flags ul { list-style:none; padding:0; }\n' +
       ' .flags li { background:#fbeae3; border-left:3px solid var(--accent); padding:8px 12px; margin:6px 0; border-radius:0 4px 4px 0; }\n' +
       ' .head { border-bottom:2px solid var(--accent); padding-bottom:12px; }\n' +

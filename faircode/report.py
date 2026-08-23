@@ -197,10 +197,24 @@ def to_html(result: dict) -> str:
                 f'{ref_rows}</table></div>'
             )
 
+        meta_parts = []
+        if d["imbalance_ratio"] is not None:
+            meta_parts.append(f"imbalance {d['imbalance_ratio']:.1f}x")
+        elif d["n_groups"] > 1:
+            meta_parts.append("imbalance inf (empty subgroup)")
+        if d["missing_pct"] > 0:
+            meta_parts.append(f"missing {d['missing_pct'] * 100:.1f}%")
+        if d["skewness"] is not None:
+            meta_parts.append(f"skew {d['skewness']:+.2f}")
+        meta_html = (
+            f' <span class="meta">({esc("  ".join(meta_parts))})</span>'
+            if meta_parts else ""
+        )
+
         dim_blocks.append(
             f'<section class="dim"><h2>{esc(d["name"])} '
             f'<span class="kind">{esc(d["kind"])}</span> '
-            f'<span class="score">{d["dimension_score"]}/100</span></h2>'
+            f'<span class="score">{d["dimension_score"]}/100</span>{meta_html}</h2>'
             f'<table><caption>Group breakdown - {esc(d["name"])}</caption>'
             f'<thead><tr><th scope="col">Group</th><th scope="col" class="num">Share</th>'
             f'<th scope="col" class="num">95% CI</th><th scope="col" class="num">Count</th>'
@@ -238,6 +252,7 @@ def to_html(result: dict) -> str:
  h1 {{ font-family:Georgia,serif; }}
  .score {{ color:var(--accent3); font-size:.7em; font-weight:600; }}
  .kind {{ color:var(--muted); font-size:.6em; text-transform:uppercase; letter-spacing:.08em; }}
+ .meta {{ color:var(--muted); font-size:.6em; }}
  .dim {{ background:var(--surface); border:1px solid var(--border); border-radius:8px;
          padding:16px 20px; margin:16px 0; }}
  table {{ width:100%; border-collapse:collapse; }}
