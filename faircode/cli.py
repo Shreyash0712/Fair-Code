@@ -104,8 +104,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="imbalance-ratio flag threshold (default 3.0)")
     p.add_argument("--missing-flag", type=float, metavar="F",
                    help="missing-data flag threshold (default 0.05)")
-    p.add_argument("--min-group-size", type=int, default=100, metavar="N",
-                   help="warn when a subgroup has fewer than N rows (default: 100)")
+    p.add_argument("--min-group-size", type=int, metavar="N",
+                   help="warn when a subgroup has fewer than N rows (default: profiler.MIN_GROUP_SIZE)")
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
@@ -126,8 +126,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="imbalance-ratio flag threshold (default 3.0)")
     c.add_argument("--missing-flag", type=float, metavar="F",
                    help="missing-data flag threshold (default 0.05)")
-    c.add_argument("--min-group-size", type=int, default=100, metavar="N",
-                   help="warn when a subgroup has fewer than N rows (default: 100)")
+    c.add_argument("--min-group-size", type=int, metavar="N",
+                   help="warn when a subgroup has fewer than N rows (default: profiler.MIN_GROUP_SIZE)")
     c.add_argument("--fail-on-drift", action="store_true",
                    help="exit 1 when any dimension shows drift or the overall score drops")
 
