@@ -116,7 +116,7 @@ jobs:
       - name: Install faircode + pytest
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[excel,parquet]" pytest pytest-cov
+          pip install -e ".[excel,parquet,proxy]" pytest pytest-cov
 
       - name: Run profiler tests
         run: make test
