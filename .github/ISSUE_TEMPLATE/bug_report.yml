@@ -17,6 +17,8 @@ body:
         - German Credit Lending
         - Insurance Denial
         - Benefits Denial
+        - Healthcare Readmission
+        - Tenant Screening
         - Notebook (specify below)
         - Other (specify below)
     validations:
