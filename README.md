@@ -1070,7 +1070,7 @@ never displaces `v2.0.0`. Under the freeze it stays fixed until the paper is pub
 - [x] Insurance Denial - Healthcare Bias
 - [x] Benefits Denial - Welfare Eligibility Bias
 - [x] Healthcare Readmission - Clinical Bias
-- [x] Jupyter notebook walkthroughs for all five audits
+- [x] Jupyter notebook walkthroughs for each audit
 - [x] CI pipeline - all audit scripts run automatically on every push and PR
 - [x] Explainer: Proxy Variables
 - [x] Explainer: Equalized Odds
