@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-19, covering everything merged through **PR #287**.
+**Snapshot:** 2026-08-25, covering everything merged through **PR #312**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -67,7 +67,7 @@ People carrying sustained ownership of an area, reflected in [`.github/CODEOWNER
 
 ### Ahmed Mohamed Abdelhady Kamel - [@ahmdkaml](https://github.com/ahmdkaml)
 
-**38 merged PRs · 54 commits · first merged 2026-07-31**
+**39 merged PRs · 55 commits · first merged 2026-07-31**
 
 Co-code-owner of `.github/workflows/`, `.github/CODEOWNERS`, `scripts/`, `tests/`, `profiler.html`,
 and the three `assets/profiler-*.js` engines. The single largest external contribution to the
@@ -77,7 +77,7 @@ project by volume, concentrated in two areas:
 - Parquet and JSON loaders for the CLI ([#127](https://github.com/yakew7/Fair-Code/pull/127)), client-side JSON support in the web profiler ([#144](https://github.com/yakew7/Fair-Code/pull/144)), documented JSON orientations ([#155](https://github.com/yakew7/Fair-Code/pull/155))
 - Lazy-loaded SheetJS for XLSX profiling ([#192](https://github.com/yakew7/Fair-Code/pull/192)), CDN pin kept in sync ([#193](https://github.com/yakew7/Fair-Code/pull/193)), XLSX edge cases ([#194](https://github.com/yakew7/Fair-Code/pull/194)), ignored-sheet reporting in both the web UI ([#197](https://github.com/yakew7/Fair-Code/pull/197)) and the CLI ([#198](https://github.com/yakew7/Fair-Code/pull/198)), documented `--proxy-hints` on the web profiler landing copy ([#236](https://github.com/yakew7/Fair-Code/pull/236))
 - Standalone HTML report for `faircode compare` ([#128](https://github.com/yakew7/Fair-Code/pull/128)), configurable `--min-group-size` warnings ([#124](https://github.com/yakew7/Fair-Code/pull/124)), `--reference` help-text fix ([#145](https://github.com/yakew7/Fair-Code/pull/145))
-- JS/Python profiler parity tests ([#126](https://github.com/yakew7/Fair-Code/pull/126)), HTML report smoke tests ([#172](https://github.com/yakew7/Fair-Code/pull/172)), `--fail-under` equality test ([#123](https://github.com/yakew7/Fair-Code/pull/123)), XLSX tests in CI ([#200](https://github.com/yakew7/Fair-Code/pull/200)), favicon/OG image generator coverage ([#234](https://github.com/yakew7/Fair-Code/pull/234)), a locked-vs-declared dependency version test ([#233](https://github.com/yakew7/Fair-Code/pull/233), restored and its scikit-learn drift fixed in [#256](https://github.com/yakew7/Fair-Code/pull/256))
+- JS/Python profiler parity tests ([#126](https://github.com/yakew7/Fair-Code/pull/126)), HTML report smoke tests ([#172](https://github.com/yakew7/Fair-Code/pull/172)), `--fail-under` equality test ([#123](https://github.com/yakew7/Fair-Code/pull/123)), XLSX tests in CI ([#200](https://github.com/yakew7/Fair-Code/pull/200)), favicon/OG image generator coverage ([#234](https://github.com/yakew7/Fair-Code/pull/234)), a locked-vs-declared dependency version test ([#233](https://github.com/yakew7/Fair-Code/pull/233), restored and its scikit-learn drift fixed in [#256](https://github.com/yakew7/Fair-Code/pull/256)), and test coverage for `cli.py`'s `benchmark` subcommand - the import-error fallback, paper-drift warning, no-manifests error, and a full success run ([#288](https://github.com/yakew7/Fair-Code/pull/288), closing issue #270)
 
 **CI, supply chain & freeze safety**
 - CI enforcement of the frozen files ([#157](https://github.com/yakew7/Fair-Code/pull/157)) - the guardrail that makes the paper freeze in [CLAUDE.md](CLAUDE.md) mechanical rather than a matter of trust
@@ -87,7 +87,7 @@ project by volume, concentrated in two areas:
 
 ### Shreyash Swami - [@Shreyash0712](https://github.com/Shreyash0712)
 
-**5 merged PRs · 9 commits · first merged 2026-06-05**
+**6 merged PRs · 10 commits · first merged 2026-06-05**
 
 Co-code-owner of `explainers/`. The most prolific explainer author after the maintainer - ten
 explainers across three PRs, plus workflow maintenance and a citation cleanup pass:
@@ -103,7 +103,7 @@ Later, five more in one PR ([#262](https://github.com/yakew7/Fair-Code/pull/262)
 [Race Correction in Clinical Algorithms](explainers/race-correction-clinical-algorithms.md),
 [What Is Reject Inference?](explainers/reject-inference.md), and
 [Underdiagnosis Bias in Healthcare AI](explainers/underdiagnosis-bias.md).
-Most recently, added reference hyperlinks to six explainers' previously plain-text citations ([#276](https://github.com/yakew7/Fair-Code/pull/276)): [The "AI Is Objective" Myth](explainers/ai-objectivity-myth.md), [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md), [False Positives vs. False Negatives](explainers/false-positives-vs-false-negatives.md), [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md), [What Is Predictive Parity?](explainers/predictive-parity.md), and [ROC Curve and AUC](explainers/roc-curve-auc.md).
+Added reference hyperlinks to six explainers' previously plain-text citations ([#276](https://github.com/yakew7/Fair-Code/pull/276)): [The "AI Is Objective" Myth](explainers/ai-objectivity-myth.md), [What Is the Base Rate Fallacy?](explainers/base-rate-fallacy.md), [False Positives vs. False Negatives](explainers/false-positives-vs-false-negatives.md), [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md), [What Is Predictive Parity?](explainers/predictive-parity.md), and [ROC Curve and AUC](explainers/roc-curve-auc.md). Most recently, extended the web profiler's downloadable HTML report's imbalance/missing/skew meta line to the reference-baseline comparison section ([#295](https://github.com/yakew7/Fair-Code/pull/295)), a follow-up to [@AnayDhawan](https://github.com/AnayDhawan)'s [#294](https://github.com/yakew7/Fair-Code/pull/294).
 
 ---
 
@@ -135,9 +135,15 @@ for every previously-untested `--map`/`--cross`/`--reference`/`--proxy-hints`/`-
 
 ### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
-**5 merged PRs · 14 commits · first merged 2026-07-06**
+**6 merged PRs · 15 commits · first merged 2026-07-06**
 
-The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254). Most recently, test coverage for `generate_favicons.py`'s malformed-`logo.svg` error paths ([#278](https://github.com/yakew7/Fair-Code/pull/278), closing issue #245).
+The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254). Then test coverage for `generate_favicons.py`'s malformed-`logo.svg` error paths ([#278](https://github.com/yakew7/Fair-Code/pull/278), closing issue #245). Most recently, added the missing `proxy` extra to `audits.yml`'s profiler job install line, which had left `tests/test_proxy.py` silently skipped in CI ([#311](https://github.com/yakew7/Fair-Code/pull/311), closing issue #298).
+
+### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
+
+**3 merged PRs · 3 commits · first merged 2026-07-14**
+
+[Unsupervised Learning](explainers/unsupervised-learning.md) ([#74](https://github.com/yakew7/Fair-Code/pull/74)), on k-means over the Benefits Denial dataset recovering a sex split without sex ever being a feature, and [Model Drift](explainers/model-drift.md) ([#75](https://github.com/yakew7/Fair-Code/pull/75)), on why a fairness gap measured once at launch is not guaranteed to hold months later. Most recently, fixed two related report-rendering parity bugs: `to_html()`'s and the web profiler's downloadable report's missing imbalance/missing/skew meta line, and the web profiler's downloadable report dropping the reference-baseline comparison section entirely ([#294](https://github.com/yakew7/Fair-Code/pull/294), closing issues #283 and #272).
 
 ### Yojeet - [@Circout-sudo](https://github.com/Circout-sudo)
 
@@ -150,12 +156,6 @@ Added a `test` extra (`pytest`, `pytest-cov`) to `pyproject.toml` ([#265](https:
 **2 merged PRs · 2 commits · first merged 2026-06-01**
 
 Fixed the dataset path in the AI Fair Recruitment scripts ([#27](https://github.com/yakew7/Fair-Code/pull/27)), then standardised path resolution across *every* audit and added the workflow that runs all of them on each push and PR ([#29](https://github.com/yakew7/Fair-Code/pull/29)). That PR is the origin of [`audits.yml`](.github/workflows/audits.yml) and of the "each script resolves its dataset relative to its own location" guarantee in the README.
-
-### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
-
-**2 merged PRs · 2 commits · first merged 2026-07-14**
-
-[Unsupervised Learning](explainers/unsupervised-learning.md) ([#74](https://github.com/yakew7/Fair-Code/pull/74)), on k-means over the Benefits Denial dataset recovering a sex split without sex ever being a feature, and [Model Drift](explainers/model-drift.md) ([#75](https://github.com/yakew7/Fair-Code/pull/75)), on why a fairness gap measured once at launch is not guaranteed to hold months later.
 
 ### Swastik Yadav - [@Swastik-Yadav](https://github.com/Swastik-Yadav)
 
@@ -217,6 +217,12 @@ JSON edge-case coverage and clear parse-error messages on *both* engines ([#175]
 
 Fixed [CONTRIBUTING.md](CONTRIBUTING.md)'s pre-push trigger-path list, which had drifted from the actual regex in `.pre-commit-config.yaml` - `assets/profiler-engine.js`, `assets/profiler-compare.js`, and an audit's `audit.yaml` were all real trigger paths missing from the prose ([#287](https://github.com/yakew7/Fair-Code/pull/287), closing issue #285).
 
+### [@VedantMadane](https://github.com/VedantMadane)
+
+**1 merged PR · 1 commit · first merged 2026-08-24**
+
+Dropped `faircode/cli.py`'s hardcoded `default=100` on `--min-group-size`, which had been the one threshold flag not deferring to `profiler.MIN_GROUP_SIZE` the way its four sibling flags already do ([#312](https://github.com/yakew7/Fair-Code/pull/312), closing issue #299).
+
 ---
 
 ## Contributions by area
@@ -227,8 +233,8 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 |------|--------------|
 | **Audits** (`*/unfair.py`, `*/fair.py`, `audit.yaml`) | [@yakew7](https://github.com/yakew7), [@YashKewlani1](https://github.com/YashKewlani1), [@Rajveerx11](https://github.com/Rajveerx11), [@cannotdoit13](https://github.com/cannotdoit13) |
 | **Explainers** (`explainers/`) | [@yakew7](https://github.com/yakew7), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Rajveerx11](https://github.com/Rajveerx11), [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), [@shwetagupta1234](https://github.com/shwetagupta1234), [@Aarav1611](https://github.com/Aarav1611) |
-| **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@propcgamer20-png](https://github.com/propcgamer20-png), [@evanjain-dot](https://github.com/evanjain-dot) |
-| **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P) |
+| **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@propcgamer20-png](https://github.com/propcgamer20-png), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@VedantMadane](https://github.com/VedantMadane) |
+| **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P), [@AnayDhawan](https://github.com/AnayDhawan), [@Shreyash0712](https://github.com/Shreyash0712) |
 | **Benchmark harness & paper freeze** | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml) |
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
