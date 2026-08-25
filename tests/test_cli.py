@@ -328,6 +328,57 @@ def test_profile_xlsx_single_sheet_stays_silent(tmp_path, capsys):
     assert "ignored" not in captured.err
 
 
+def _make_multi_sheet_xlsx(path, sex_values):
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    first = wb.active
+    first.title = "Data"
+    first.append(["sex"])
+    for value in sex_values:
+        first.append([value])
+    wb.create_sheet("Notes")
+    wb.create_sheet("Extra")
+    wb.save(path)
+
+
+@requires_openpyxl
+def test_compare_xlsx_reports_ignored_sheets_for_both_files(tmp_path, capsys):
+    path_a = tmp_path / "a.xlsx"
+    path_b = tmp_path / "b.xlsx"
+    _make_multi_sheet_xlsx(path_a, ["M", "F"])
+    _make_multi_sheet_xlsx(path_b, ["M", "M"])
+
+    exit_code = main(["compare", str(path_a), str(path_b)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert f"{path_a}: read sheet 'Data' - 2 other sheet(s) ignored." in captured.err
+    assert f"{path_b}: read sheet 'Data' - 2 other sheet(s) ignored." in captured.err
+
+
+@requires_openpyxl
+def test_compare_xlsx_single_sheet_stays_silent(tmp_path, capsys):
+    import openpyxl
+
+    path_a = tmp_path / "a.xlsx"
+    path_b = tmp_path / "b.xlsx"
+    for path, sex_values in ((path_a, ["M", "F"]), (path_b, ["M", "M"])):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Data"
+        ws.append(["sex"])
+        for value in sex_values:
+            ws.append([value])
+        wb.save(path)
+
+    exit_code = main(["compare", str(path_a), str(path_b)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "ignored" not in captured.err
+
+
 # ── Benchmark subcommand tests ────────────────────────────────────────────────
 
 def test_cli_benchmark_import_error_message(monkeypatch, capsys):

@@ -226,9 +226,23 @@ def main(argv: list[str] | None = None) -> int:
             "missing_flag": args.missing_flag,
             "min_group_size": args.min_group_size,
         }
+        df_a = _read_or_exit(args.csv_a)
+        df_b = _read_or_exit(args.csv_b)
+
+        for path in (args.csv_a, args.csv_b):
+            sheet_info = get_xlsx_sheet_info(path)
+            if sheet_info is not None:
+                sheet_name, ignored_sheets = sheet_info
+                if ignored_sheets:
+                    print(
+                        f"{path}: read sheet '{sheet_name}' - {len(ignored_sheets)} "
+                        f"other sheet(s) ignored.",
+                        file=sys.stderr,
+                    )
+
         result = compare(
-            profile(_read_or_exit(args.csv_a), overrides, opts),
-            profile(_read_or_exit(args.csv_b), overrides, opts),
+            profile(df_a, overrides, opts),
+            profile(df_b, overrides, opts),
             name_a=args.csv_a, name_b=args.csv_b,
         )
         if args.html:
