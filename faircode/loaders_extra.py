@@ -11,15 +11,26 @@ to the frozen `read_table()` for everything it already handles.
 
 from __future__ import annotations
 
+import io
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
 
+from .loaders import SNIFF_SAMPLE_BYTES, _sniff_delimiter
 from .loaders import read_table as _read_table_frozen
 
 
 def read_table(path: str) -> pd.DataFrame:
+    if path == "-":
+        # No file extension to dispatch on for a stdin stream, so always
+        # sniff - the same fallback loaders.read_table() uses for an
+        # unrecognized/missing extension on a real file.
+        content = sys.stdin.read()
+        delimiter = _sniff_delimiter(content[:SNIFF_SAMPLE_BYTES])
+        return pd.read_csv(io.StringIO(content), sep=delimiter)
+
     suffix = Path(path).suffix.lower()
 
     if suffix == ".json":

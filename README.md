@@ -928,6 +928,7 @@ faircode profile data.xlsx                         # Excel workbooks work too
 faircode profile data.json                         # JSON records (or split-orient) work too
 faircode profile data.parquet                      # Parquet files work too
 faircode profile data.csv --json                   # machine-readable
+cat data.csv | faircode profile -                  # pipe CSV/TSV in via stdin
 faircode profile data.csv --html report.html       # standalone HTML report
 faircode profile data.csv --fail-under 70          # fail CI if score is below 70
 faircode profile data.csv --min-group-size 50      # warn on subgroups under 50 rows

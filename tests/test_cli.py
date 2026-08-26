@@ -1,5 +1,6 @@
 import builtins
 import importlib.util
+import io
 import json
 from pathlib import Path
 import sys
@@ -193,6 +194,43 @@ def test_profile_missing_file_exits_2_with_clean_error(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exc_info.value.code == 2
     assert f"error: file not found: {missing}" in captured.err
+
+
+def test_profile_reads_csv_from_stdin(monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO("sex\nM\nF\nM\nF\n"))
+
+    exit_code = main(["profile", "-", "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    assert result["n_rows"] == 4
+    assert result["dimensions"][0]["name"] == "sex"
+
+
+def test_profile_reads_tsv_from_stdin_via_delimiter_sniffing(monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO("sex\tage\nM\t30\nF\t40\n"))
+
+    exit_code = main(["profile", "-", "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    assert result["n_cols"] == 2
+
+
+def test_compare_reads_one_side_from_stdin(tmp_path, monkeypatch, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\nM\nF\n", encoding="utf-8")
+    monkeypatch.setattr("sys.stdin", io.StringIO("sex\nM\nM\nM\nF\n"))
+
+    exit_code = main(["compare", str(path_a), "-", "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    assert result["a"]["n_rows"] == 4
+    assert result["b"]["n_rows"] == 4
 
 
 def test_profile_read_table_runtime_error_exits_2_with_clean_error(tmp_path, capsys, monkeypatch):

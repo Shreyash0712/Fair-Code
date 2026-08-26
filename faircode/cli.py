@@ -92,7 +92,8 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("profile", help="profile a dataset for demographic imbalance")
-    p.add_argument("csv", help="path to the dataset file (.csv, .tsv, .xlsx, .json, or .parquet)")
+    p.add_argument("csv", help="path to the dataset file (.csv, .tsv, .xlsx, .json, or .parquet), "
+                               "or - to read CSV/TSV from stdin")
     p.add_argument("--json", action="store_true", help="emit JSON to stdout")
     p.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
@@ -121,8 +122,10 @@ def main(argv: list[str] | None = None) -> int:
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
-    c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, .xlsx, .json, or .parquet)")
-    c.add_argument("csv_b", help="current dataset B (.csv, .tsv, .xlsx, .json, or .parquet)")
+    c.add_argument("csv_a", help="baseline dataset A (.csv, .tsv, .xlsx, .json, or .parquet), "
+                                 "or - to read CSV/TSV from stdin")
+    c.add_argument("csv_b", help="current dataset B (.csv, .tsv, .xlsx, .json, or .parquet), "
+                                 "or - to read CSV/TSV from stdin")
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
     c.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
