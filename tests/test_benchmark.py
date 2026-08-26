@@ -14,8 +14,10 @@ locally and commit results/ output instead of running it in CI.
 Run from the repo root:  pytest tests/ -q
 """
 
+import shutil
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -23,7 +25,7 @@ pytest.importorskip("sklearn", reason="the benchmark harness needs the optional 
 pytest.importorskip("fairlearn", reason="the benchmark harness needs the optional benchmark extra")
 pytest.importorskip("yaml", reason="the benchmark harness needs the optional benchmark extra")
 
-from faircode.benchmark import run_audit, write_report
+from faircode.benchmark import GLOBAL_SEED, run_audit, run_benchmark, write_report
 from faircode.manifest import load_manifest
 from faircode.metrics import METRICS, PERFORMANCE_METRICS
 from faircode.strategies import STRATEGIES
@@ -144,3 +146,83 @@ def test_write_report_skips_figures_for_empty_fairness_df(tmp_path):
 
     assert (out_dir / "results_fairness.csv").is_file()
     assert not (out_dir / "figures").exists()
+
+
+# ── Intersectional reporting (#271) ─────────────────────────────────────────
+# Insurance Denial is used here (not German Credit Lending, which has only
+# one protected attribute and no intersectional row) because it's the
+# smallest two-protected-attribute audit (1,341 rows, age x gender).
+
+TWO_ATTR_AUDIT = REPO_ROOT / "Insurance Denial" / "audit.yaml"
+
+
+@pytest.fixture(scope="module")
+def two_attr_result():
+    manifest = load_manifest(TWO_ATTR_AUDIT)
+    return run_audit(manifest, n_resamples=N_RESAMPLES, n_permutations=N_PERMUTATIONS)
+
+
+def test_intersectional_row_present_for_a_two_attribute_audit(two_attr_result):
+    fairness_rows, _ = two_attr_result
+    df = pd.DataFrame(fairness_rows)
+    intersectional = df[df["protected_attribute"] == "age_x_gender"]
+
+    # One row per (strategy, model): 5 strategies x 3 models, all tagged with
+    # the single intersectional metric - the pair combinations() produces for
+    # exactly two declared protected attributes.
+    assert len(intersectional) == 5 * 3
+    assert (intersectional["metric"] == "intersectional_demographic_parity_diff").all()
+
+
+def test_intersectional_row_has_required_keys(two_attr_result):
+    fairness_rows, _ = two_attr_result
+    df = pd.DataFrame(fairness_rows)
+    row = df[df["protected_attribute"] == "age_x_gender"].iloc[0]
+
+    for key in ("value", "ci_low", "ci_high", "p_value", "significant",
+                "n_disadvantaged", "n_advantaged", "small_sample_warning", "note"):
+        assert key in row.index
+
+    # note is either None or the literal string "superadditive" - never a
+    # different/unexpected value the intersectional_report() -> row mapping
+    # could have mangled.
+    assert row["note"] in (None, "superadditive")
+
+
+# ── run_benchmark() itself (#271) ────────────────────────────────────────────
+# Existing tests above all call the lower-level run_audit() directly;
+# run_benchmark() (discovery + seeding + multi-audit aggregation) had no
+# direct test at all.
+
+def test_run_benchmark_discovers_and_runs_a_manifest_directory(tmp_path):
+    audit_dir = tmp_path / "Some Audit"
+    audit_dir.mkdir()
+    shutil.copy(SMALL_AUDIT, audit_dir / "audit.yaml")
+    shutil.copy(SMALL_AUDIT.parent / "credit_customers.csv", audit_dir / "credit_customers.csv")
+
+    fairness_df, performance_df = run_benchmark(
+        root=str(tmp_path), n_resamples=N_RESAMPLES, n_permutations=N_PERMUTATIONS)
+
+    assert not fairness_df.empty
+    assert not performance_df.empty
+    assert set(fairness_df["audit"]) == {"german_credit_lending"}
+
+
+def test_run_benchmark_uses_explicit_manifest_list_over_discovery(tmp_path):
+    # An explicit `audits` list should be used as-is, without also scanning
+    # `root` for other manifests - tmp_path here is deliberately empty.
+    fairness_df, performance_df = run_benchmark(
+        root=str(tmp_path), audits=[SMALL_AUDIT],
+        n_resamples=N_RESAMPLES, n_permutations=N_PERMUTATIONS)
+
+    assert set(fairness_df["audit"]) == {"german_credit_lending"}
+    assert not performance_df.empty
+
+
+def test_run_benchmark_seeds_global_random_state(monkeypatch):
+    seeds_used = []
+    monkeypatch.setattr(np.random, "seed", lambda s: seeds_used.append(s))
+
+    run_benchmark(audits=[SMALL_AUDIT], n_resamples=N_RESAMPLES, n_permutations=N_PERMUTATIONS)
+
+    assert seeds_used == [GLOBAL_SEED]
