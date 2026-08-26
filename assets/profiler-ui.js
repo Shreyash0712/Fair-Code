@@ -402,6 +402,8 @@
   });
 
   // ── Intersection cross-selectors (issue #58) ───────────────────────────
+  var prevCrossA, prevCrossB;
+
   function populateCrossSelects(dims) {
     var names = dims.map(function (d) { return d.name; });
     var selA = currentOpts.cross ? currentOpts.cross[0] : names[0];
@@ -413,10 +415,25 @@
           '>' + esc(n) + '</option>';
       }).join('');
     });
+    prevCrossA = crossA.value;
+    prevCrossB = crossB.value;
   }
 
-  crossControls.addEventListener('change', function () {
+  crossControls.addEventListener('change', function (e) {
     if (!currentTable) return;
+    if (crossA.value === crossB.value) {
+      // Picking the same dimension for both sides would produce a same-column
+      // x same-column intersection grid - every off-diagonal cell is a
+      // tautological 0, which looks like a real gap but isn't one. Swap the
+      // other side back to what just got vacated instead of allowing it.
+      if (e.target === crossA) {
+        crossB.value = prevCrossA;
+      } else if (e.target === crossB) {
+        crossA.value = prevCrossB;
+      }
+    }
+    prevCrossA = crossA.value;
+    prevCrossB = crossB.value;
     currentOpts.cross = [crossA.value, crossB.value];
     reprofile(false);
   });
