@@ -40,7 +40,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
-| 2026-W35 | 47 | 23 | 8 | 18 | 30K+ total | 18 | 14 | 7 total |
+| 2026-W35 | 47 | 23 | 8 | 18 | 30K+ total | 18 | 30 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -67,6 +67,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W34 (traction refresh) - forks, contributors, and countries caught up to live data:** forks `21 → 22` and countries `17 → 18` per live site analytics; contributors `15 → 17` - one from [@nivedmahendran](https://github.com/nivedmahendran)'s first merged PR (#287), the other from GitHub's contributors API finally catching up on [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), whose own first PR it had been missing since the W32 lag note. Counted from `CONTRIBUTORS.md`'s manually-verified list rather than the raw API count (16), which still lags by that one contributor - the same reasoning as the W32/W33 corrections. Stars and watching unchanged at 43 and 8.
 >
 > **2026-W35 - two report-rendering parity bugs fixed, two contributor-submitted one-liners:** [@AnayDhawan](https://github.com/AnayDhawan) fixed `to_html()`/the web profiler's downloadable report missing their imbalance/missing/skew meta line and reference-baseline section (#294, closing #283 and #272), with [@Shreyash0712](https://github.com/Shreyash0712) following up on the web profiler side (#295). New contributor [@VedantMadane](https://github.com/VedantMadane) dropped `--min-group-size`'s hardcoded CLI default (#312, closing #299), and [@propcgamer20-png](https://github.com/propcgamer20-png) added the missing `proxy` extra to `audits.yml`'s profiler job, which had left `tests/test_proxy.py` silently skipped in CI (#311, closing #298). [@ahmdkaml](https://github.com/ahmdkaml)'s #288 added the `cli.py` `benchmark` subcommand test coverage issue #270 asked for, but never referenced the issue number - found and closed manually with a credit comment. Stars `43 → 47`, forks `22 → 23` (live GitHub numbers); contributors `17 → 18` (VedantMadane's first merged PR - counted from `CONTRIBUTORS.md`, the raw API still lags on `@TanishGoyal-Dev`). Countries and social reach unchanged. Explainers and audits unchanged - this week's merged work was fixes and test coverage, not new content.
+>
+> **2026-W35 (later in week) - all 12 open non-explainer issues closed:** #247 (`--proxy-hints` on `compare`), #251 (stdin support), #284 (web profiler advanced-thresholds panel), #302 and #271 (test coverage for `compare_to_html` and `benchmark.py`'s intersectional/`run_benchmark()` paths), #303-#306 (four web profiler bugs: keyboard focus, JSON-without-extension detection, compare-view scroll-jacking, same-dimension crossing), #301 (`--map` unknown-column error), #286 (`build-explainers.yml` trigger gap), and #309 (a ROADMAP/README contradiction) - each committed and pushed individually, verified with tests/manual CLI runs before every commit. Also credited [@propcgamer20-png](https://github.com/propcgamer20-png)'s bundled #314 (closing #300, #307, #308, #310, merged the same day). No numeric changes this note - same live GitHub snapshot as the entry above, just a lot more closed issues.
 
 ---
 
@@ -80,7 +82,7 @@ Weekly snapshot of project health. Updated every Friday.
 | Contributors | 18 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 18 | 20+ | End of 2026 |
-| Issues closed | 14 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 30 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
 

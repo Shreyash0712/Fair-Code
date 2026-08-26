@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-25, covering everything merged through **PR #312**.
+**Snapshot:** 2026-08-25, covering everything merged through **PR #314**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -135,9 +135,9 @@ for every previously-untested `--map`/`--cross`/`--reference`/`--proxy-hints`/`-
 
 ### [@propcgamer20-png](https://github.com/propcgamer20-png)
 
-**6 merged PRs · 15 commits · first merged 2026-07-06**
+**7 merged PRs · 20 commits · first merged 2026-07-06**
 
-The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254). Then test coverage for `generate_favicons.py`'s malformed-`logo.svg` error paths ([#278](https://github.com/yakew7/Fair-Code/pull/278), closing issue #245). Most recently, added the missing `proxy` extra to `audits.yml`'s profiler job install line, which had left `tests/test_proxy.py` silently skipped in CI ([#311](https://github.com/yakew7/Fair-Code/pull/311), closing issue #298).
+The [Predictive Parity](explainers/predictive-parity.md) explainer ([#72](https://github.com/yakew7/Fair-Code/pull/72)) - the ProPublica vs. Northpointe dispute as two correct fairness checks that cannot both hold. Then the contributor tooling: [`Makefile`](Makefile), [`.pre-commit-config.yaml`](.pre-commit-config.yaml), and the local-setup section of [CONTRIBUTING.md](CONTRIBUTING.md) ([#125](https://github.com/yakew7/Fair-Code/pull/125), closing issue #114). Later refactored the first-interaction workflow to find a contributor's genuinely earliest issue/PR ([#227](https://github.com/yakew7/Fair-Code/pull/227)), and added proper `<th scope="col">`/`<caption>` markup to `faircode/report.py`'s HTML report tables ([#260](https://github.com/yakew7/Fair-Code/pull/260), closing issue #254). Then test coverage for `generate_favicons.py`'s malformed-`logo.svg` error paths ([#278](https://github.com/yakew7/Fair-Code/pull/278), closing issue #245), and the missing `proxy` extra in `audits.yml`'s profiler job install line ([#311](https://github.com/yakew7/Fair-Code/pull/311), closing issue #298). Most recently, a bundled four-issue PR: `faircode compare` reporting ignored `.xlsx` sheets, the stale "five audits" README wording, the `bug_report.yml` audit dropdown missing two domains, and `CODEOWNERS` missing `profiler.css` ([#314](https://github.com/yakew7/Fair-Code/pull/314), closing issues #300, #308, #307, and #310).
 
 ### Anay Dhawan - [@AnayDhawan](https://github.com/AnayDhawan)
 

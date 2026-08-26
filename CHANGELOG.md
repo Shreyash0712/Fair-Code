@@ -14,11 +14,29 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` / `2.0.11` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` / `2.0.11` / `2.0.12` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.12] - 25 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **`--proxy-hints` on `faircode compare`** (closes #247) - previously only wired into `profile`, even though `proxy_hints()` never depended on anything profile-specific. Computed separately for both datasets (`proxy_hints_a`/`proxy_hints_b`, not a single diff - there's no natural single chi-squared value to subtract) and surfaced in terminal, `--json`, and `--html` output the same way `profile` already does. No JS-side change needed - proxy-hints is documented as deliberately CLI-only.
+- **`-` as a stdin path for `faircode profile`/`compare`** (closes #251) - every input path dispatched by file extension, so there was no way to pipe data in without a temp file. Scoped to CSV/TSV via delimiter sniffing, per the issue; `.xlsx`/`.parquet`/`.json` over stdin can be a follow-up.
+- **Advanced-thresholds panel in the web profiler** (closes #284) - `assets/profiler-engine.js`'s `resolveOpts()` already accepted `min_share`/`intersection_floor`/`imbalance_flag`/`missing_flag`/`min_group_size` overrides; `assets/profiler-ui.js` never wired any UI to them, unlike the CLI's five matching flags. Added a collapsible panel with one number input per threshold (blank = default, shown as the placeholder), wired generically via each input's `data-opt` attribute.
+- **`compare_to_html` test coverage for added/removed dimensions and appeared/disappeared groups** (closes #302) - `compare_to_terminal` already had this; the HTML branch, and the appeared/disappeared group markup itself, had none.
+- **End-to-end test coverage for intersectional reporting and `run_benchmark()`** (closes #271) - the two-protected-attribute fairness-reporting block and the `run_benchmark()` discovery/seeding entrypoint were both untested; existing tests only used the one-attribute fixture and called the lower-level `run_audit()` directly. Uses Insurance Denial (1,341 rows, age × gender) - the smallest real two-attribute audit.
+
+### Fixed
+- **Web profiler's reference-file picker strands keyboard focus** (closes #303) - every other file-picker path already returned focus to a visible element after the hidden input's native picker closed; the reference-baseline input was the one exception.
+- **Web profiler mis-parses a records-orientation JSON file as CSV without a `.json` extension** (closes #304) - the content sniff only checked for a leading `{`; `E.parseJSON()` already handled the records-array branch correctly, it just never got the chance to run.
+- **Web profiler's compare view scroll-jacks the page on every column-mapping change** (closes #305) - `profiler-ui.js`'s single-dataset view already gated its scroll behind an explicit flag for exactly this reason; `profiler-compare.js` had no equivalent.
+- **Web profiler lets you cross a dimension with itself** (closes #306) - produced a same-column × same-column intersection grid where every off-diagonal cell is a tautological 0 that renders as a wall of false "empty subgroup" flags. The change handler now swaps the other side back to the vacated value instead of allowing the collision.
+- **`--map COL=KIND` silently no-ops on a nonexistent column** (closes #301) - `detect_columns()` only applies an override `if col in overrides` while iterating real `df.columns`, so a typo'd column was dropped with zero feedback. Now errors with the unknown column name(s) listed, checked against both datasets' columns for `compare`.
+- **`build-explainers.yml`/pre-commit hook never triggered on `assets/explainers-ui.js` changes** (closes #286) - `build_explainers.py`'s own docstring says it mirrors that file's rendering rules, but it was absent from both the CI path filters and the local rebuild hook. Scoped to the trigger-path gap only; the actual JS/Python parity test is a separate stretch goal.
+- **ROADMAP.md and README.md disagreed on whether the LLM bias audit is done** (closes #309) - ROADMAP had it checked off; README's own "What's Next" section, and ROADMAP's own "7 of 9 audits" count, both say it isn't. There's no LLM audit folder or code anywhere in the repo.
+- **`faircode compare` never reports ignored `.xlsx` sheets, `bug_report.yml`'s audit dropdown missing two domains, README's stale "five audits" wording, `CODEOWNERS` missing `profiler.css`** (closes #300, #307, #308, #310, by [@propcgamer20-png](https://github.com/propcgamer20-png), [#314](https://github.com/yakew7/Fair-Code/pull/314)) - a bundled four-issue PR; `compare` silently profiled sheet 0 of each workbook with no indication others existed, mirroring the fix already made for `profile`.
 
 ## [2.0.11] - 14 Aug 2026 *(pending - will be tagged after the paper is published)*
 ### Fixed
