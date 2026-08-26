@@ -942,12 +942,19 @@ faircode profile data.csv --cross race,age         # choose the intersection pai
 faircode profile data.csv --reference census.csv   # score vs a population baseline
 faircode profile data.csv --proxy-hints            # chi-squared proxy hints (needs scipy)
 faircode profile data.csv --min-share 0.1          # tune the flagging thresholds
+faircode profile data.csv --json --no-provenance   # drop the run-metadata block
 ```
 
 For CI, `--fail-under N` returns exit code `1` and explains the failing score
 on stderr when the overall representation score is below `N`; report output,
 including `--json`, remains on stdout. A score at or above the threshold exits
 successfully.
+
+`--json` output carries a `provenance` block recording the SHA-256 of the input
+file, the `faircode` version, and the thresholds actually resolved for the run,
+so an exported report can be tied back to what produced it - see
+[faircode/SPEC.md](faircode/SPEC.md#10-export-provenance). It is derived purely
+from the inputs, so `--json` stays reproducible; `--no-provenance` omits it.
 
 The engine is domain-agnostic - it works on any tabular CSV (health, hiring, lending, justice),
 auto-detecting demographic columns (sex, race, age, geography) by name. Beyond the single-dataset

@@ -15,7 +15,7 @@ before any model is trained. It does not train models, drop columns, or measure 
 that is what the `unfair.py` / `fair.py` audits do. The Profiler answers a different question:
 **"who is, and is not, adequately represented in this data?"**
 
-[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift) · [9. Reference](#9-reference-baseline)
+[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift) · [9. Reference](#9-reference-baseline) · [10. Provenance](#10-export-provenance)
 
 </div>
 
@@ -290,3 +290,52 @@ unchanged.
   "groups": [ { "label": "White", "expected": 0.60, "actual": 0.80, "delta": 0.20 } ]
 }
 ```
+
+---
+
+## 10. Export provenance
+
+Sections 1-9 describe *what the numbers are*. This section describes *what produced them*, so an
+exported report can be tied back to its run. Without it a pasted result cannot be checked: the same
+CSV scores differently under a different `--map`, a different `--min-share`, or a different
+reference baseline, and none of that is visible in the result shape of section 6.
+
+**The block is attached at the export boundary, not inside `profile()`/`compare()`.** The two
+engines are compared with `==` in `tests/test_js_parity.py`, so a local file name cannot live in the
+result. `report.to_json(result, provenance=...)` adds it in Python; the web export adds the same
+field names in `copyResultAsJSON()`. Section 6's shape is unchanged, and the parity test needs no
+edit.
+
+```jsonc
+"provenance": {
+  "faircode_version": "2.0.0",
+  "engine": "python",                       // or "js"
+  "dataset_hash": "sha256:9f86d081884c7d65...",
+  "params": { "cross": null, "imbalance_flag": 3.0, "intersection_floor": 0.01,
+              "min_group_size": 100, "min_share": 0.05, "missing_flag": 0.05,
+              "reference_flag": 0.05 },
+  "overrides": { "gndr": "sex" }
+}
+```
+
+- **`dataset_hash`** - lowercase hex of the SHA-256 over the **raw file bytes**, prefixed with the
+  algorithm. Raw bytes, not the parsed frame: `hashlib.sha256().hexdigest()` and
+  `crypto.subtle.digest('SHA-256', bytes)` rendered as hex give the identical string, so a CLI
+  report and a web report of one upload are recognisably the same measurement with no shared code.
+  The digest identifies the file **as stored** - a CRLF checkout of one logical CSV digests
+  differently from an LF one.
+- **`dataset_hash_a` / `dataset_hash_b`** - `compare` replaces `dataset_hash` with these two,
+  matching the `a` / `b` naming the compare result already uses in section 8.
+- **`reference_hash`** - present only when a section 9 baseline was supplied.
+- **`<field>_note`** - present only when the matching digest is `null`, saying why the bytes were
+  not available (stdin, an in-memory frame). An absent digest must not look like a present one, and
+  must say why it is absent.
+- **`params`** - the knobs of section 7 **as resolved**, defaults included, since a defaulted
+  threshold is as load-bearing as a typed one. The parsed `reference` table is not echoed here; it
+  is identified by `reference_hash` instead.
+- **`overrides`** - the section 1 `{column: kind}` map. It changes which columns are scored at all,
+  and a forced column is exempt from the `MAX_DIMENSION_GROUPS` drop, so it can change how many
+  dimensions exist.
+
+Every field is a function of the inputs, so `--json` output stays byte-for-byte reproducible across
+runs. `--no-provenance` restores the previous shape exactly.
