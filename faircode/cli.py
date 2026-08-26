@@ -126,6 +126,9 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--json", action="store_true", help="emit JSON to stdout")
     c.add_argument("--html", metavar="PATH",
                    help="write a standalone HTML report to PATH")
+    c.add_argument("--proxy-hints", action="store_true",
+                   help="flag strongly-associated column pairs via chi-squared, "
+                        "for both datasets separately (needs scipy)")
     c.add_argument("--map", action="append", metavar="COL=KIND",
                    help="force a column's dimension when auto-detection misses it "
                         "(applied to both datasets); KIND is one of " +
@@ -255,11 +258,18 @@ def main(argv: list[str] | None = None) -> int:
                         file=sys.stderr,
                     )
 
-        result = compare(
-            profile(df_a, overrides, opts),
-            profile(df_b, overrides, opts),
-            name_a=args.csv_a, name_b=args.csv_b,
-        )
+        profile_a = profile(df_a, overrides, opts)
+        profile_b = profile(df_b, overrides, opts)
+        result = compare(profile_a, profile_b, name_a=args.csv_a, name_b=args.csv_b)
+
+        if args.proxy_hints:
+            try:
+                result["proxy_hints_a"] = proxy_hints(df_a, profile_a["dimensions"])
+                result["proxy_hints_b"] = proxy_hints(df_b, profile_b["dimensions"])
+            except RuntimeError as exc:
+                print(f"error: {exc}", file=sys.stderr)
+                return 2
+
         if args.html:
             html_content = compare_to_html(result)
             try:

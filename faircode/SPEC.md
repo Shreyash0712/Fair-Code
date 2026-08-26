@@ -99,7 +99,7 @@ For a dimension with `k` groups and null-excluded normalized shares `p_1 … p_k
   `g1 = (1/N · Σ (x−x̄)³) / (1/N · Σ (x−x̄)²)^1.5`. `null`/`0` if variance is 0 or `N < 3`.
 
 ### Proxy hints (opt-in, informational, not scored)
-An optional pass (`faircode profile … --proxy-hints`) runs a chi-squared test of independence
+An optional pass (`faircode profile/compare … --proxy-hints`) runs a chi-squared test of independence
 (`scipy.stats.chi2_contingency`) over every pair of detected dimensions and reports pairs with
 `p < 0.05`, each with its p-value and Cramér's V effect size, most-significant first. It surfaces
 "this column may be a proxy for that protected attribute" - the same pattern the bias audits use.

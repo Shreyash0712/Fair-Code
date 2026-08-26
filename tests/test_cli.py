@@ -269,6 +269,53 @@ def test_profile_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, 
     assert "error: proxy hints need scipy" in captured.err
 
 
+requires_scipy = pytest.mark.skipif(
+    importlib.util.find_spec("scipy") is None,
+    reason="optional 'proxy' extra not installed",
+)
+
+
+@requires_scipy
+def test_compare_proxy_hints_flags_a_real_proxy_in_both_datasets(tmp_path, capsys):
+    # occupation is a perfect function of sex in both files -> maximal
+    # association, so both A and B should surface the same proxy pair.
+    rows = ["sex,occupation"] + [
+        f"{'male' if i % 2 == 0 else 'female'},{'engineer' if i % 2 == 0 else 'nurse'}"
+        for i in range(100)
+    ]
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("\n".join(rows), encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("\n".join(rows), encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--proxy-hints", "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    for key in ("proxy_hints_a", "proxy_hints_b"):
+        pair = next(h for h in result[key] if {h["a"], h["b"]} == {"sex", "occupation"})
+        assert pair["p_value"] < 0.05
+
+
+def test_compare_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, capsys, monkeypatch):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    def raise_runtime(_df, _dimensions):
+        raise RuntimeError("proxy hints need scipy (install with: pip install faircode[proxy])")
+
+    monkeypatch.setattr(cli, "proxy_hints", raise_runtime)
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--proxy-hints"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "error: proxy hints need scipy" in captured.err
+
+
 def test_profile_html_write_failure_returns_2_with_clean_error_not_a_traceback(tmp_path, capsys):
     path = tmp_path / "a.csv"
     path.write_text("sex\nM\nF\n", encoding="utf-8")
