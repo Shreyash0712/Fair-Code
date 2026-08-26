@@ -304,6 +304,24 @@
 .map-select:hover { border-color: var(--accent); }
 .map-row.overridden .map-select { border-color: var(--accent3); color: var(--accent3); }
 
+/* ── Advanced thresholds (issue #284) ────────────────── */
+.threshold-controls {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px; padding-bottom: 18px;
+}
+.threshold-controls label {
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+}
+.threshold-controls code { color: var(--text); }
+.threshold-input {
+  font-family: var(--mono); font-size: 12.5px; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border2); border-radius: 6px; padding: 6px 10px;
+}
+.threshold-input:hover { border-color: var(--accent); }
+.threshold-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.threshold-input.overridden { border-color: var(--accent3); color: var(--accent3); }
+
 /* ── Compare two datasets: representation drift ──────── */
 .compare-block { margin-top: 56px; padding-top: 8px; }
 .compare-drops {

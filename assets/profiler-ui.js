@@ -30,6 +30,9 @@
   var referenceClearBtn = document.getElementById('referenceClearBtn');
   var referenceInput = document.getElementById('referenceInput');
   var referenceStatus = document.getElementById('referenceStatus');
+  var thresholdControls = document.getElementById('thresholdControls');
+  var thresholdInputs = thresholdControls ?
+    Array.prototype.slice.call(thresholdControls.querySelectorAll('[data-opt]')) : [];
 
   var currentResult = null;
   var currentName = '';
@@ -163,6 +166,7 @@
     currentOverrides = {};
     currentOpts = {};
     resetReference();
+    resetThresholdInputs();
     var result = E.profile(table);
     autoKinds = {};
     result.dimensions.forEach(function (d) { autoKinds[d.name] = d.kind; });
@@ -436,6 +440,35 @@
     prevCrossB = crossB.value;
     currentOpts.cross = [crossA.value, crossB.value];
     reprofile(false);
+  });
+
+  // ── Advanced thresholds (issue #284) - min_share/intersection_floor/
+  // imbalance_flag/missing_flag/min_group_size, mirroring the CLI flags of
+  // the same name (faircode/SPEC.md section 7). Left blank, each falls back
+  // to the engine's own default via resolveOpts() the same way an unset
+  // CLI flag falls back to profiler.py's module constant.
+  function resetThresholdInputs() {
+    thresholdInputs.forEach(function (input) {
+      input.value = '';
+      input.classList.remove('overridden');
+    });
+  }
+
+  thresholdInputs.forEach(function (input) {
+    input.addEventListener('input', function () {
+      var opt = input.dataset.opt;
+      var raw = input.value.trim();
+      if (raw === '') {
+        delete currentOpts[opt];
+        input.classList.remove('overridden');
+      } else {
+        var num = Number(raw);
+        if (Number.isNaN(num)) return;
+        currentOpts[opt] = num;
+        input.classList.add('overridden');
+      }
+      reprofile(false);
+    });
   });
 
   // ── Reference baseline (issue #56) ──────────────────────────────────────

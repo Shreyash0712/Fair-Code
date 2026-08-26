@@ -224,6 +224,38 @@
         <div class="mapping-list" id="mappingList"></div>
       </details>
 
+      <details class="mapping-block" id="thresholdsBlock">
+        <summary class="mapping-summary">
+          <span class="section-title" style="margin:0">Advanced thresholds</span>
+          <span class="mapping-hint">tune what counts as under-represented, imbalanced, or small</span>
+        </summary>
+        <p class="section-note">Leave a field blank to use its default (shown as the placeholder).
+        The audit re-runs instantly - nothing leaves your browser. These match
+        <code>faircode profile</code>'s CLI flags of the same name.</p>
+        <div class="threshold-controls" id="thresholdControls">
+          <label>Min share (<code>--min-share</code>)
+            <input type="number" class="threshold-input" id="minShareInput" data-opt="min_share"
+                   step="0.01" min="0" max="1" placeholder="0.05" inputmode="decimal">
+          </label>
+          <label>Intersection floor (<code>--intersection-floor</code>)
+            <input type="number" class="threshold-input" id="intersectionFloorInput" data-opt="intersection_floor"
+                   step="0.01" min="0" max="1" placeholder="0.01" inputmode="decimal">
+          </label>
+          <label>Imbalance flag (<code>--imbalance-flag</code>)
+            <input type="number" class="threshold-input" id="imbalanceFlagInput" data-opt="imbalance_flag"
+                   step="0.1" min="1" placeholder="3.0" inputmode="decimal">
+          </label>
+          <label>Missing flag (<code>--missing-flag</code>)
+            <input type="number" class="threshold-input" id="missingFlagInput" data-opt="missing_flag"
+                   step="0.01" min="0" max="1" placeholder="0.05" inputmode="decimal">
+          </label>
+          <label>Min group size (<code>--min-group-size</code>)
+            <input type="number" class="threshold-input" id="minGroupSizeInput" data-opt="min_group_size"
+                   step="1" min="1" placeholder="100" inputmode="numeric">
+          </label>
+        </div>
+      </details>
+
       <h3 class="section-title">Detected demographic dimensions</h3>
       <div class="dimensions" id="dimensions"></div>
 
