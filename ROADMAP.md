@@ -124,7 +124,7 @@ Each audit follows the same pipeline: train a biased model → measure the fairn
 - [x] Benefits Denial - Welfare Eligibility Bias
 - [x] Healthcare Readmission - Clinical Bias
 - [x] Tenant Screening - Rental Application Bias
-- [x] LLM bias audit
+- [ ] LLM bias audit
 - [ ] HMDA Mortgage Lending Bias *(post-paper)*
 - [ ] Facial Recognition Accuracy Gaps (MIT Gender Shades methodology) *(post-paper)*
 
