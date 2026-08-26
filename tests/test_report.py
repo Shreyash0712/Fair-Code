@@ -152,6 +152,34 @@ def test_compare_to_html_renders_key_figures(mock_compare_result):
     assert "Dataset B" in html_out
 
 
+def test_compare_to_html_renders_added_removed_dimensions(mock_compare_result):
+    """Mirrors test_compare_to_terminal_renders_added_removed_dimensions for
+    the HTML branch, which had no equivalent coverage (#302)."""
+    html_out = compare_to_html(mock_compare_result)
+
+    assert "Only in B" in html_out and "NewDim" in html_out
+    assert "Only in A" in html_out and "OldDim" in html_out
+
+
+def test_compare_to_html_renders_appeared_disappeared_groups(mock_compare_result):
+    """Mirrors compare_to_terminal's appeared/disappeared coverage for the
+    HTML branch's class="gone"/"new" row styling and status tag (#302)."""
+    mock_compare_result["dimensions"][0]["groups"] = [
+        {"label": "Female", "status": "shifted", "share_a": 0.50, "share_b": 0.40, "share_delta": -0.10},
+        {"label": "Non-binary", "status": "appeared", "share_a": 0.0, "share_b": 0.05, "share_delta": 0.05},
+        {"label": "Prefer not to say", "status": "disappeared", "share_a": 0.03, "share_b": 0.0, "share_delta": -0.03},
+    ]
+
+    html_out = compare_to_html(mock_compare_result)
+
+    assert 'class="drift-row new"' in html_out
+    assert 'class="drift-row gone"' in html_out
+    assert '<span class="tag">appeared</span>' in html_out
+    assert '<span class="tag">disappeared</span>' in html_out
+    assert "Non-binary" in html_out
+    assert "Prefer not to say" in html_out
+
+
 def test_to_terminal_smoke(mock_profile_result):
     """Smoke test for the default (no --json/--html) profile report."""
     out = to_terminal(mock_profile_result)
