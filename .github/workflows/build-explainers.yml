@@ -23,6 +23,7 @@ on:
     paths:
       - "explainers/**.md"
       - "assets/explainers-data.json"
+      - "assets/explainers-ui.js"
       - "scripts/build_explainers.py"
       - "scripts/generate_og_images.py"
       - "scripts/check_generated_files_current.py"
@@ -30,6 +31,7 @@ on:
     paths:
       - "explainers/**.md"
       - "assets/explainers-data.json"
+      - "assets/explainers-ui.js"
       - "scripts/build_explainers.py"
       - "scripts/generate_og_images.py"
       - "scripts/check_generated_files_current.py"

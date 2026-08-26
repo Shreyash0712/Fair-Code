@@ -25,7 +25,7 @@ repos:
         entry: python3 scripts/build_explainers.py
         language: system
         pass_filenames: false
-        files: '^(explainers/.*\.md|assets/explainers-data\.json)$'
+        files: '^(explainers/.*\.md|assets/explainers-data\.json|assets/explainers-ui\.js)$'
 
       - id: generate-og-images
         name: regenerate OG/Twitter social preview images
