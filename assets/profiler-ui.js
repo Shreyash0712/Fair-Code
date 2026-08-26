@@ -423,6 +423,9 @@
   // ── Reference baseline (issue #56) ──────────────────────────────────────
   referenceBtn.addEventListener('click', function () { referenceInput.click(); });
   referenceInput.addEventListener('change', function (e) {
+    // The hidden input can't visibly hold focus after the native picker
+    // closes - return it to the button so keyboard users aren't stranded.
+    referenceBtn.focus();
     var f = e.target.files && e.target.files[0];
     if (!f) return;
     var reader = new FileReader();
