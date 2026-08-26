@@ -149,14 +149,14 @@
     maybeCompare();
   }
 
-  function maybeCompare() {
+  function maybeCompare(scroll) {
     if (!slot.A || !slot.B) return;
     try {
       var cmp = E.compare(E.profile(slot.A.table, currentOverrides),
                           E.profile(slot.B.table, currentOverrides),
                           slot.A.name, slot.B.name);
       errorEl.hidden = true;
-      render(cmp);
+      render(cmp, scroll !== false);
     } catch (err) {
       showError('Could not compare those files: ' + err.message);
     }
@@ -248,7 +248,7 @@
   mappingList.addEventListener('change', function (e) {
     if (!e.target.classList.contains('map-select')) return;
     currentOverrides = readOverrides();
-    maybeCompare();
+    maybeCompare(false);
   });
 
   function showError(msg) {
@@ -260,7 +260,7 @@
   }
 
   // ── Rendering ──────────────────────────────────────────────────────────
-  function render(cmp) {
+  function render(cmp, scroll) {
     currentCmp = cmp;
     reportActionsEl.hidden = false;
     var d = cmp.score_delta;
@@ -303,7 +303,9 @@
 
     resultsEl.innerHTML = summary + flags + cards + only;
     resultsEl.hidden = false;
-    resultsEl.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'nearest' });
+    if (scroll) {
+      resultsEl.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'nearest' });
+    }
 
     announcer.textContent = 'Comparison complete. Overall score change ' + signed(d, 0) +
       ' points. ' + cmp.flags.length + ' drift flag' + (cmp.flags.length === 1 ? '' : 's') + '.';
