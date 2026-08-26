@@ -55,6 +55,18 @@ def _parse_map(pairs):
     return overrides
 
 
+def _check_map_columns(overrides, known_columns):
+    """Error out on any --map key that isn't an actual column, instead of
+    silently no-opping - detect_columns() only applies an override `if col
+    in overrides` while iterating real df.columns, so a typo'd column name
+    was previously dropped with no feedback at all."""
+    unknown = [col for col in overrides if col not in known_columns]
+    if unknown:
+        print(f"error: --map column(s) not found in the dataset: {', '.join(unknown)}",
+              file=sys.stderr)
+        raise SystemExit(2)
+
+
 def _read_or_exit(path: str):
     """Read a table, or print a plain error and raise SystemExit(2)."""
     try:
@@ -184,7 +196,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"error: {exc}", file=sys.stderr)
                 return 2
 
-        result = profile(df, _parse_map(args.map), opts)
+        overrides = _parse_map(args.map)
+        _check_map_columns(overrides, df.columns)
+        result = profile(df, overrides, opts)
 
         if args.proxy_hints:
             try:
@@ -228,6 +242,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         df_a = _read_or_exit(args.csv_a)
         df_b = _read_or_exit(args.csv_b)
+        _check_map_columns(overrides, set(df_a.columns) | set(df_b.columns))
 
         for path in (args.csv_a, args.csv_b):
             sheet_info = get_xlsx_sheet_info(path)

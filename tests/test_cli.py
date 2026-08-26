@@ -123,6 +123,43 @@ def test_compare_without_map_leaves_column_generically_categorical(tmp_path, cap
     assert [d["kind"] for d in result["dimensions"]] == ["categorical"]
 
 
+def test_profile_map_unknown_column_exits_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--map", "nonexistent_col=race"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "--map column(s) not found in the dataset: nonexistent_col" in captured.err
+
+
+def test_compare_map_unknown_column_exits_2_with_clean_error(tmp_path, capsys):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex\nM\nF\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["compare", str(path_a), str(path_b), "--map", "nonexistent_col=race"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "--map column(s) not found in the dataset: nonexistent_col" in captured.err
+
+
+def test_compare_map_column_present_in_only_one_dataset_is_accepted(tmp_path):
+    path_a = tmp_path / "a.csv"
+    path_a.write_text("sex,extra\nM,1\nF,2\n", encoding="utf-8")
+    path_b = tmp_path / "b.csv"
+    path_b.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    exit_code = main(["compare", str(path_a), str(path_b), "--map", "extra=ignore", "--json"])
+
+    assert exit_code == 0
+
+
 def test_map_without_equals_sign_exits_2_with_clean_error(tmp_path, capsys):
     path = tmp_path / "a.csv"
     path.write_text("sex\nM\nF\n", encoding="utf-8")
