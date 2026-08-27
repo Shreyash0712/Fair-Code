@@ -922,6 +922,7 @@ pip install -e .                                   # installs the faircode conso
 pip install -e ".[excel]"                          # + .xlsx support (openpyxl)
 pip install -e ".[parquet]"                        # + .parquet support (pyarrow)
 pip install -e ".[proxy]"                           # + chi-squared proxy hints (scipy)
+pip install -e ".[mcp]"                             # + MCP server for agent tool-calling
 faircode profile "Insurance Denial/insurance.csv"  # terminal report
 faircode profile data.tsv                          # tab-separated exports work too
 faircode profile data.xlsx                         # Excel workbooks work too
@@ -955,6 +956,20 @@ file, the `faircode` version, and the thresholds actually resolved for the run,
 so an exported report can be tied back to what produced it - see
 [faircode/SPEC.md](faircode/SPEC.md#10-export-provenance). It is derived purely
 from the inputs, so `--json` stays reproducible; `--no-provenance` omits it.
+
+**MCP server - for coding agents.** `faircode-mcp` exposes `profile_dataset`, `compare_datasets`,
+and `proxy_hints` as [MCP](https://modelcontextprotocol.io) tools over stdio, so an MCP-aware
+agent can profile a file mid-conversation instead of shelling out to the CLI and parsing text.
+Same local-only trust boundary as the CLI - stdio, no network listener, no auth; nothing here is a
+new capability. Point a client at it with:
+
+```json
+{ "mcpServers": { "faircode": { "command": "faircode-mcp" } } }
+```
+
+`profile_dataset`/`compare_datasets` return the same shape `--json` does, provenance block
+included by default. See [faircode/SPEC.md](faircode/SPEC.md#11-mcp-tools) for the full tool
+contract.
 
 The engine is domain-agnostic - it works on any tabular CSV (health, hiring, lending, justice),
 auto-detecting demographic columns (sex, race, age, geography) by name. Beyond the single-dataset

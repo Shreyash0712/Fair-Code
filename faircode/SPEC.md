@@ -15,7 +15,7 @@ before any model is trained. It does not train models, drop columns, or measure 
 that is what the `unfair.py` / `fair.py` audits do. The Profiler answers a different question:
 **"who is, and is not, adequately represented in this data?"**
 
-[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift) · [9. Reference](#9-reference-baseline) · [10. Provenance](#10-export-provenance)
+[1. Detection](#1-column-auto-detection) · [2. Age](#2-age-normalization) · [3. Metrics](#3-per-dimension-metrics) · [4. Intersections](#4-intersectional-gaps-informational-not-scored) · [5. Score](#5-headline-score--grade) · [6. Shape](#6-result-shape) · [7. Defaults](#7-defaults-single-place-to-tune) · [8. Comparison](#8-dataset-comparison-representation-drift) · [9. Reference](#9-reference-baseline) · [10. Provenance](#10-export-provenance) · [11. MCP](#11-mcp-tools)
 
 </div>
 
@@ -339,3 +339,38 @@ edit.
 
 Every field is a function of the inputs, so `--json` output stays byte-for-byte reproducible across
 runs. `--no-provenance` restores the previous shape exactly.
+
+---
+
+## 11. MCP tools
+
+`faircode/mcp_server.py` exposes the Python engine as [MCP](https://modelcontextprotocol.io) tools
+over stdio (`faircode-mcp`, needs the optional `mcp` extra), so an agent can call these directly
+instead of shelling out to the CLI and parsing text. This is a thin adapter, not a third engine: it
+calls the same `profile()`/`compare()`/`proxy_hints()` functions `cli.py` wraps, so it carries no
+parity obligation of its own - there is no equivalent MCP surface for the JS engine, the same way
+`--proxy-hints` (section 3) has none.
+
+| Tool | Wraps | Notes |
+|------|-------|-------|
+| `profile_dataset` | `profile()` | Same shape as `profile --json` (section 6), `provenance` (section 10) attached by default via `include_provenance` |
+| `compare_datasets` | `compare()` | Same shape as `compare --json` (section 8), `dataset_hash_a`/`dataset_hash_b` in provenance |
+| `proxy_hints` | `proxy_hints()` | Returns `{"hints": [...]}`, never a bare list - a list return value gets split by the MCP SDK into one content block per element, and an empty list becomes zero blocks, indistinguishable from an error to a caller |
+
+All three tools accept `overrides` (the section 1 `{column: kind}` map, as a JSON object rather
+than repeated `--map COL=KIND` strings) and the relevant section 7 thresholds by name.
+`profile_dataset` also accepts `cross` and `reference_path`, matching `profile`'s `--cross` and
+`--reference`; `compare_datasets` does not, matching `compare`'s own flag set. `proxy_hints` only
+exposes `min_share`/`min_group_size` - the two thresholds that feed dimension detection - since
+`intersection_floor`/`imbalance_flag`/`missing_flag` affect intersections/flags, which this tool
+never touches.
+
+An anticipated failure (an unreadable path, an unknown `overrides` column, `proxy_hints` without
+the `proxy` extra installed) is raised inside the tool as a plain Python exception and converted to
+an MCP `ToolError` at the tool boundary, so the actual message reaches the calling agent - any other
+exception is treated by the SDK as a crash and replaced with a generic `Error executing tool <name>`,
+withholding the real text.
+
+`proxy_hints` carries the same limitation documented in section 3: it only tests columns present in
+the dataset given, so it cannot flag a remaining column as a proxy for a protected attribute that has
+already been dropped from the dataset entirely. See issue #328.
