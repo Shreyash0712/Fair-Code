@@ -14,11 +14,15 @@ All notable changes to Fair Code are documented here, newest first.
 
 > **Paper freeze in effect.** The benchmark results are cited in a research paper under peer review
 > and are frozen at the [`v1.0-paper`](https://github.com/yakew7/Fair-Code/releases/tag/v1.0-paper)
-> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` / `2.0.11` / `2.0.12` entries that follow are additive (explainers, docs, governance)
+> tag below. The `2.0.1` / `2.0.2` / `2.0.3` / `2.0.4` / `2.0.5` / `2.0.6` / `2.0.7` / `2.0.8` / `2.0.9` / `2.0.10` / `2.0.11` / `2.0.12` / `2.0.13` entries that follow are additive (explainers, docs, governance)
 > and do **not** touch the frozen results, so they are safe under the freeze - but no new version is
 > tagged while the freeze holds. They are numbered here for clarity and **will be tagged once the
 > paper is published.** The next *major* release (`v3.0.0`, re-run benchmark + new audits) is gated
 > on publication. See [CLAUDE.md](CLAUDE.md).
+
+## [2.0.13] - 27 Aug 2026 *(pending - will be tagged after the paper is published)*
+### Added
+- **`provenance` block on `--json` exports** (relates to #327, by [@mahirhir](https://github.com/mahirhir), [#330](https://github.com/yakew7/Fair-Code/pull/330), first merged PR) - an exported result previously carried no answer to "what produced these numbers": the same CSV scores differently under a different `--map`, `--min-share`, or reference baseline, and none of that was visible in the export. New `faircode/provenance.py` attaches `faircode_version`, `engine` ("python", so a matching web-profiler port under #329 can slot in as `"js"`), a `sha256:` dataset digest (over the raw file bytes, so a CLI report and a browser report of the same upload are recognisably the same measurement without sharing code), the resolved `params` (defaults included), and `overrides`. `compare` gets `dataset_hash_a`/`dataset_hash_b`, matching the existing `a`/`b` naming, plus `reference_hash` when a baseline is supplied. Attached at the export boundary rather than inside `profile()`/`compare()`, so the result shape in `faircode/SPEC.md` section 6 is unchanged and `tests/test_js_parity.py`'s `==` comparison needs no edit. `--no-provenance` restores the exact pre-2.0.13 export shape. Documented as new SPEC.md section 10. Does not address the web profiler's own JSON export (#329) or the `proxy_hints()` dropped-column blind spot (#328), both still open.
 
 ## [2.0.12] - 25 Aug 2026 *(pending - will be tagged after the paper is published)*
 ### Added
