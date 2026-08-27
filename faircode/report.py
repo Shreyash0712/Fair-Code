@@ -14,8 +14,23 @@ WIDTH = 62
 DISPLAY_GROUPS = 12  # cap rows shown per dimension; full data stays in the result
 
 
-def to_json(result: dict, indent: int = 2) -> str:
-    return json.dumps(result, indent=indent)
+def to_json(result: dict, indent: int = 2, provenance: dict | None = None) -> str:
+    """Serialise a profile or compare result.
+
+    `provenance`, when supplied, is attached as a top-level "provenance" key
+    (SPEC section 10) so an exported report says which file, which faircode
+    version, and which resolved thresholds produced it. It is attached here
+    rather than inside profile() on purpose: the Python engine and the JS port
+    are compared with `==` in tests/test_js_parity.py, so a local file name
+    cannot live in the engine result. The web export mirrors the same field
+    names at the same boundary.
+
+    The result dict is not mutated - callers still print the terminal or HTML
+    rendering from the same object afterwards.
+    """
+    if provenance is None:
+        return json.dumps(result, indent=indent)
+    return json.dumps(dict(result, provenance=provenance), indent=indent)
 
 
 def _bar(share: float, width: int = 24) -> str:

@@ -31,7 +31,12 @@ from . import __version__
 from .compare import compare
 from .detect import VALID_KINDS
 from .loaders_extra import get_xlsx_sheet_info, read_table
-from .profiler import parse_reference, profile
+# _resolve_opts gives the thresholds that were actually in force, defaults
+# included, which is what the provenance block has to record. Reaching for the
+# private helper follows the existing precedent in compare.py (`from .profiler
+# import _r`) and keeps profiler.py - a parity-sensitive file - untouched.
+from .profiler import _resolve_opts, parse_reference, profile
+from .provenance import build as build_provenance
 from .proxy import proxy_hints
 from .report import compare_to_terminal, to_html, compare_to_html, to_json, to_terminal
 
@@ -119,6 +124,9 @@ def main(argv: list[str] | None = None) -> int:
                    help="missing-data flag threshold (default 0.05)")
     p.add_argument("--min-group-size", type=int, metavar="N",
                    help="warn when a subgroup has fewer than N rows (default: profiler.MIN_GROUP_SIZE)")
+    p.add_argument("--no-provenance", action="store_true",
+                   help="omit the provenance block from --json output "
+                        "(restores the pre-2.1 export shape exactly)")
 
     c = sub.add_parser("compare",
                        help="compare two datasets for representation drift")
@@ -148,6 +156,9 @@ def main(argv: list[str] | None = None) -> int:
                    help="warn when a subgroup has fewer than N rows (default: profiler.MIN_GROUP_SIZE)")
     c.add_argument("--fail-on-drift", action="store_true",
                    help="exit 1 when any dimension shows drift or the overall score drops")
+    c.add_argument("--no-provenance", action="store_true",
+                   help="omit the provenance block from --json output "
+                        "(restores the pre-2.1 export shape exactly)")
 
     b = sub.add_parser("benchmark",
                        help="run the cross-domain fairness benchmark harness over every audit.yaml")
@@ -225,7 +236,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"HTML report written to {args.html}", file=sys.stderr)
 
         if args.json:
-            print(to_json(result))
+            provenance = None
+            if not args.no_provenance:
+                digests = [("dataset_hash", args.csv)]
+                if args.reference:
+                    digests.append(("reference_hash", args.reference))
+                provenance = build_provenance(digests, _resolve_opts(opts), overrides)
+            print(to_json(result, provenance=provenance))
         else:
             print(to_terminal(result))
         if args.fail_under is not None and result["overall_score"] < args.fail_under:
@@ -284,7 +301,12 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             print(f"HTML report written to {args.html}", file=sys.stderr)
         if args.json:
-            print(to_json(result))
+            provenance = None
+            if not args.no_provenance:
+                provenance = build_provenance(
+                    [("dataset_hash_a", args.csv_a), ("dataset_hash_b", args.csv_b)],
+                    _resolve_opts(opts), overrides)
+            print(to_json(result, provenance=provenance))
         else:
             print(compare_to_terminal(result))
         if args.fail_on_drift and result["flags"]:
