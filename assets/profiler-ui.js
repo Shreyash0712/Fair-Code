@@ -10,6 +10,7 @@
 
   var DISPLAY_GROUPS = 12; // mirror faircode/report.py
   var E = window.FairCodeProfiler;
+  var FAIRCODE_VERSION = '2.0.0';
 
   var dropzone = document.getElementById('dropzone');
   var fileInput = document.getElementById('fileInput');
@@ -35,6 +36,7 @@
     Array.prototype.slice.call(thresholdControls.querySelectorAll('[data-opt]')) : [];
 
   var currentResult = null;
+  var currentFile = null;
   var currentName = '';
   var currentTable = null;   // parsed table, kept so overrides can re-profile
   var currentOverrides = {}; // column -> forced kind (issue #62)
@@ -109,6 +111,7 @@
   copyJsonBtn.addEventListener('click', copyResultAsJSON);
 
   function readFile(file) {
+  currentFile = file;
     var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
     var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
       file.type === 'application/json' ||
@@ -535,6 +538,33 @@
   });
 
   // ── Report export: "Download report (HTML)" / "Copy as JSON" ────────────
+  async function fileDigest(file) {
+    if (!file) {
+      return {
+        digest: null,
+        note: 'dataset was generated in memory; raw bytes were not retained'
+      };
+    }
+
+    try {
+      var buffer = await file.arrayBuffer();
+      var hash = await crypto.subtle.digest('SHA-256', buffer);
+      var bytes = new Uint8Array(hash);
+      var hex = Array.prototype.map.call(bytes, function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+
+      return {
+        digest: 'sha256:' + hex,
+        note: null
+      };
+    } catch (err) {
+      return {
+        digest: null,
+        note: 'could not read file for hashing: ' + err.message
+      };
+    }
+  }
   // Ports faircode/report.py's to_html so the browser report matches the
   // CLI's --html output (same palette, same layout).
   function buildHtmlReport(r) {
@@ -672,9 +702,29 @@
     return ok;
   }
 
-  function copyResultAsJSON() {
+    async function copyResultAsJSON() {
     if (!currentResult) return;
-    var text = JSON.stringify(currentResult, null, 2);
+
+    var hash = await fileDigest(currentFile);
+
+    var provenance = {
+      faircode_version: FAIRCODE_VERSION,
+      engine: 'javascript',
+      dataset_hash: hash.digest,
+      params: Object.assign({}, currentOpts),
+      overrides: Object.assign({}, currentOverrides)
+    };
+
+    if (hash.note !== null) {
+      provenance.dataset_hash_note = hash.note;
+    }
+
+    var exported = Object.assign({}, currentResult, {
+      provenance: provenance
+    });
+
+    var text = JSON.stringify(exported, null, 2);
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () {
         flashButton(copyJsonBtn, '✓ Copied');
