@@ -3,8 +3,8 @@
 # Fair Code - Metrics Tracker
 
 ![Stars](https://img.shields.io/badge/Stars-47-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-19-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-24-orange?style=flat-square)
+![Contributors](https://img.shields.io/badge/Contributors-20-blue?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-25-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
 ![Countries](https://img.shields.io/badge/Countries-18-informational?style=flat-square)
@@ -40,7 +40,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
-| 2026-W35 | 47 | 24 | 8 | 19 | 30K+ total | 18 | 31 | 7 total |
+| 2026-W35 | 47 | 25 | 8 | 20 | 30K+ total | 18 | 32 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -71,6 +71,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W35 (later in week) - all 12 open non-explainer issues closed:** #247 (`--proxy-hints` on `compare`), #251 (stdin support), #284 (web profiler advanced-thresholds panel), #302 and #271 (test coverage for `compare_to_html` and `benchmark.py`'s intersectional/`run_benchmark()` paths), #303-#306 (four web profiler bugs: keyboard focus, JSON-without-extension detection, compare-view scroll-jacking, same-dimension crossing), #301 (`--map` unknown-column error), #286 (`build-explainers.yml` trigger gap), and #309 (a ROADMAP/README contradiction) - each committed and pushed individually, verified with tests/manual CLI runs before every commit. Also credited [@propcgamer20-png](https://github.com/propcgamer20-png)'s bundled #314 (closing #300, #307, #308, #310, merged the same day). No numeric changes this note - same live GitHub snapshot as the entry above, just a lot more closed issues.
 >
 > **2026-W35 (weekend update) - a 12-issue re-seed, then the first one closed:** with the backlog cleared, 12 fresh non-explainer issues were opened (#315-#326) covering real, independently-reproduced gaps - a Python/JS parity break in age-band labeling on date columns (#315), literal NUL bytes in `profiler-engine.js` that hide the file from plain `grep` (#316), a silently-misparsed split-orient JSON shape (#317), a spurious 100%-drift false positive when a column auto-detects to different kinds across two datasets (#318), a `parse_reference()`/JS parity break on percent-formatted shares (#319), plus several smaller CLI/report/tooling gaps (#320-#326). Separately, a contributor conversation about wanting to verify a profiler result after the fact - "was this actually produced from this dataset, these thresholds, this version of the tool" - turned into three more issues (#327-#329) once the code confirmed the gap was real: `to_json()` echoed none of that. New contributor [@mahirhir](https://github.com/mahirhir) closed the first one same-day: `faircode/provenance.py` (#330) attaches a `provenance` block - dataset SHA-256, `faircode` version, resolved params - to `--json` exports, at the export boundary so the JS-parity test needs no change. **Contributors `18 → 19`** (mahirhir's first merged PR, counted from `CONTRIBUTORS.md` - the raw API still lags). Forks `23 → 24` (live GitHub numbers). Stars, watching, countries, and social reach unchanged.
+>
+> **2026-W35 (later still) - the MCP server ships, `faircode` goes live on PyPI, and a second same-week new contributor:** Phase 1 of the MCP plan discussed for #327-#329 landed - `faircode/mcp_server.py` exposes `profile_dataset`, `compare_datasets`, and `proxy_hints` as MCP tools over stdio, a thin adapter over the existing `profile()`/`compare()`/`proxy_hints()` functions with no new analysis logic and the same local-only trust boundary as the CLI. `faircode` was then published to PyPI for the first time (`pip install faircode` / `faircode[mcp]` now work without cloning the repo). New contributor [@Ayaan-20-11](https://github.com/Ayaan-20-11) fixed `scripts/render_terminal_png.py`'s hardcoded macOS-only font path (#331, closing #323) - it now uses the repo-bundled `assets/fonts/IBMPlexMono-Regular.ttf`, the same font `generate_og_images.py` already uses. **Contributors `19 → 20`** (Ayaan's first merged PR). Forks `24 → 25` (live GitHub numbers). Stars, watching, countries, and social reach unchanged.
 
 ---
 
@@ -79,12 +81,12 @@ Weekly snapshot of project health. Updated every Friday.
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
 | Stars | 47 | 50+ | End of 2026 |
-| Forks | 24 | 25+ | End of 2026 |
+| Forks | 25 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
-| Contributors | 19 | 20+ | End of 2026 |
+| Contributors | 20 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 18 | 20+ | End of 2026 |
-| Issues closed | 31 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 32 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
 
