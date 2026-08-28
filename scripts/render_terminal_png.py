@@ -13,7 +13,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-FONT_PATH = "/System/Library/Fonts/Menlo.ttc"
+ROOT = Path(__file__).resolve().parent.parent
+FONT_PATH = ROOT / "assets" / "fonts" / "IBMPlexMono-Regular.ttf"
 FONT_SIZE = 15
 LINE_HEIGHT = 21
 PAD_X = 18
@@ -25,7 +26,7 @@ MAX_WIDTH_CHARS = 92
 
 def render(text: str, out_path):
     lines = text.rstrip("\n").split("\n")
-    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    font = ImageFont.truetype(str(FONT_PATH), FONT_SIZE)
 
     # Measure with a scratch image, since char width needs a real font metric.
     scratch = Image.new("RGB", (10, 10))
