@@ -3,7 +3,7 @@
 # Fair Code - Metrics Tracker
 
 ![Stars](https://img.shields.io/badge/Stars-47-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-20-blue?style=flat-square)
+![Contributors](https://img.shields.io/badge/Contributors-21-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-25-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
@@ -40,7 +40,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W32 | 42 | 22 | 8 | 14 | 26K+ total | 17 | 11 | 7 total |
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
-| 2026-W35 | 47 | 25 | 8 | 20 | 30K+ total | 18 | 32 | 7 total |
+| 2026-W35 | 47 | 25 | 8 | 21 | 30K+ total | 18 | 33 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -73,6 +73,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W35 (weekend update) - a 12-issue re-seed, then the first one closed:** with the backlog cleared, 12 fresh non-explainer issues were opened (#315-#326) covering real, independently-reproduced gaps - a Python/JS parity break in age-band labeling on date columns (#315), literal NUL bytes in `profiler-engine.js` that hide the file from plain `grep` (#316), a silently-misparsed split-orient JSON shape (#317), a spurious 100%-drift false positive when a column auto-detects to different kinds across two datasets (#318), a `parse_reference()`/JS parity break on percent-formatted shares (#319), plus several smaller CLI/report/tooling gaps (#320-#326). Separately, a contributor conversation about wanting to verify a profiler result after the fact - "was this actually produced from this dataset, these thresholds, this version of the tool" - turned into three more issues (#327-#329) once the code confirmed the gap was real: `to_json()` echoed none of that. New contributor [@mahirhir](https://github.com/mahirhir) closed the first one same-day: `faircode/provenance.py` (#330) attaches a `provenance` block - dataset SHA-256, `faircode` version, resolved params - to `--json` exports, at the export boundary so the JS-parity test needs no change. **Contributors `18 → 19`** (mahirhir's first merged PR, counted from `CONTRIBUTORS.md` - the raw API still lags). Forks `23 → 24` (live GitHub numbers). Stars, watching, countries, and social reach unchanged.
 >
 > **2026-W35 (later still) - the MCP server ships, `faircode` goes live on PyPI, and a second same-week new contributor:** Phase 1 of the MCP plan discussed for #327-#329 landed - `faircode/mcp_server.py` exposes `profile_dataset`, `compare_datasets`, and `proxy_hints` as MCP tools over stdio, a thin adapter over the existing `profile()`/`compare()`/`proxy_hints()` functions with no new analysis logic and the same local-only trust boundary as the CLI. `faircode` was then published to PyPI for the first time (`pip install faircode` / `faircode[mcp]` now work without cloning the repo). New contributor [@Ayaan-20-11](https://github.com/Ayaan-20-11) fixed `scripts/render_terminal_png.py`'s hardcoded macOS-only font path (#331, closing #323) - it now uses the repo-bundled `assets/fonts/IBMPlexMono-Regular.ttf`, the same font `generate_og_images.py` already uses. **Contributors `19 → 20`** (Ayaan's first merged PR). Forks `24 → 25` (live GitHub numbers). Stars, watching, countries, and social reach unchanged.
+>
+> **2026-W35 (yet later) - a third same-week new contributor:** [@StudentSuite3](https://github.com/StudentSuite3) added the guard the web profiler already had (#306) but the CLI didn't - `faircode profile --cross COLA,COLA` (the same column crossed with itself) silently produced flags claiming an absent subgroup that was really just the tautological zero of a same-column crosstab. Now errors with a clear message (#337, closing #320). **Contributors `20 → 21`** (StudentSuite3's first merged PR). Stars, forks, watching, countries, and social reach unchanged from the entry above.
 
 ---
 
@@ -83,10 +85,10 @@ Weekly snapshot of project health. Updated every Friday.
 | Stars | 47 | 50+ | End of 2026 |
 | Forks | 25 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
-| Contributors | 20 | 20+ | End of 2026 |
+| Contributors | 21 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 18 | 20+ | End of 2026 |
-| Issues closed | 32 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 33 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
 
