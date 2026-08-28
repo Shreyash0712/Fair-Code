@@ -297,6 +297,7 @@ makes `git shortlog -sne` reconcilable with the list above.
 | [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev) | `TanishGoyal-Dev` |
 | [@shwetagupta1234](https://github.com/shwetagupta1234) | `shwetagupta1234` |
 | [@Circout-sudo](https://github.com/Circout-sudo) | `Yojeet` |
+| [@Ayaan-20-11](https://github.com/Ayaan-20-11) | `Ayaan Kapoor` - commit email is a local hostname (`ayaankapoor@Mac.lan`), not linked to the GitHub account, so [#331](https://github.com/yakew7/Fair-Code/pull/331) doesn't register in the repo's contributors graph despite being a real merged PR |
 
 If your name is wrong, missing, or you would rather be listed under a different handle, or not
 listed at all, open an issue or a one-line PR against this file. It gets merged, no questions asked.
