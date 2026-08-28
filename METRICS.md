@@ -2,12 +2,12 @@
 
 # Fair Code - Metrics Tracker
 
-![Stars](https://img.shields.io/badge/Stars-47-brightgreen?style=flat-square&logo=github)
+![Stars](https://img.shields.io/badge/Stars-48-brightgreen?style=flat-square&logo=github)
 ![Contributors](https://img.shields.io/badge/Contributors-21-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-25-orange?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-26-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
-![Countries](https://img.shields.io/badge/Countries-18-informational?style=flat-square)
+![Countries](https://img.shields.io/badge/Countries-20-informational?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
 Weekly snapshot of project health. Updated every Friday.
@@ -41,6 +41,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
 | 2026-W35 | 47 | 25 | 8 | 21 | 30K+ total | 18 | 33 | 7 total |
+| 2026-W36 | 48 | 26 | 8 | 21 | 30K+ total | 20 | 0 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -75,6 +76,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W35 (later still) - the MCP server ships, `faircode` goes live on PyPI, and a second same-week new contributor:** Phase 1 of the MCP plan discussed for #327-#329 landed - `faircode/mcp_server.py` exposes `profile_dataset`, `compare_datasets`, and `proxy_hints` as MCP tools over stdio, a thin adapter over the existing `profile()`/`compare()`/`proxy_hints()` functions with no new analysis logic and the same local-only trust boundary as the CLI. `faircode` was then published to PyPI for the first time (`pip install faircode` / `faircode[mcp]` now work without cloning the repo). New contributor [@Ayaan-20-11](https://github.com/Ayaan-20-11) fixed `scripts/render_terminal_png.py`'s hardcoded macOS-only font path (#331, closing #323) - it now uses the repo-bundled `assets/fonts/IBMPlexMono-Regular.ttf`, the same font `generate_og_images.py` already uses. **Contributors `19 → 20`** (Ayaan's first merged PR). Forks `24 → 25` (live GitHub numbers). Stars, watching, countries, and social reach unchanged.
 >
 > **2026-W35 (yet later) - a third same-week new contributor:** [@StudentSuite3](https://github.com/StudentSuite3) added the guard the web profiler already had (#306) but the CLI didn't - `faircode profile --cross COLA,COLA` (the same column crossed with itself) silently produced flags claiming an absent subgroup that was really just the tautological zero of a same-column crosstab. Now errors with a clear message (#337, closing #320). **Contributors `20 → 21`** (StudentSuite3's first merged PR). Stars, forks, watching, countries, and social reach unchanged from the entry above.
+>
+> **2026-W36 - new week, traction refresh:** Stars `47 → 48`, forks `25 → 26` (live GitHub numbers). Countries reached `18 → 20`, per site analytics. Contributors, watching, social reach, explainers, and audits unchanged from last week's snapshot. Issues-closed resets to `0` for the new week - nothing has closed yet since the #320 close that closed out W35's count.
 
 ---
 
@@ -82,13 +85,13 @@ Weekly snapshot of project health. Updated every Friday.
 
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
-| Stars | 47 | 50+ | End of 2026 |
-| Forks | 25 | 25+ | End of 2026 |
+| Stars | 48 | 50+ | End of 2026 |
+| Forks | 26 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
 | Contributors | 21 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
-| Countries reached | 18 | 20+ | End of 2026 |
-| Issues closed | 33 (past 7 days) | Track weekly | Ongoing |
+| Countries reached | 20 | 20+ | End of 2026 |
+| Issues closed | 0 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
 
