@@ -205,6 +205,10 @@ def main(argv: list[str] | None = None) -> int:
                 print("error: --cross expects two column names: COLA,COLB",
                       file=sys.stderr)
                 return 2
+            if parts[0] == parts[1]:
+                print("error: --cross needs two different columns, got "
+                      f"'{parts[0]}' twice", file=sys.stderr)
+                return 2
             opts["cross"] = parts
         if args.reference:
             try:
