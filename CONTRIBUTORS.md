@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-27, covering everything merged through **PR #330**.
+**Snapshot:** 2026-08-28, covering everything merged through **PR #331**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -233,6 +233,15 @@ inside `profile()`/`compare()`, so `tests/test_js_parity.py`'s `==` comparison o
 no change ([#330](https://github.com/yakew7/Fair-Code/pull/330), relates to issue #327). Documented as
 new SPEC.md section 10; `--no-provenance` restores the pre-existing export shape exactly.
 
+### Ayaan Kapoor - [@Ayaan-20-11](https://github.com/Ayaan-20-11)
+
+**1 merged PR · 1 commit · first merged 2026-08-28**
+
+Fixed `scripts/render_terminal_png.py`'s hardcoded macOS-only font path
+(`/System/Library/Fonts/Menlo.ttc`), which crashed with an opaque PIL `OSError` on any non-macOS
+contributor's machine. Now resolves to the repo-bundled `assets/fonts/IBMPlexMono-Regular.ttf`,
+the same font `generate_og_images.py` already uses for exactly this reason ([#331](https://github.com/yakew7/Fair-Code/pull/331), closing issue #323).
+
 ---
 
 ## Contributions by area
@@ -247,7 +256,7 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 | **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P), [@AnayDhawan](https://github.com/AnayDhawan), [@Shreyash0712](https://github.com/Shreyash0712) |
 | **Benchmark harness & paper freeze** | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml) |
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
-| **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
+| **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Ayaan-20-11](https://github.com/Ayaan-20-11) |
 | **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@mahirhir](https://github.com/mahirhir) |
 | **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo), [@nivedmahendran](https://github.com/nivedmahendran) |
 
@@ -288,6 +297,7 @@ makes `git shortlog -sne` reconcilable with the list above.
 | [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev) | `TanishGoyal-Dev` |
 | [@shwetagupta1234](https://github.com/shwetagupta1234) | `shwetagupta1234` |
 | [@Circout-sudo](https://github.com/Circout-sudo) | `Yojeet` |
+| [@Ayaan-20-11](https://github.com/Ayaan-20-11) | `Ayaan Kapoor` - commit email is a local hostname (`ayaankapoor@Mac.lan`), not linked to the GitHub account, so [#331](https://github.com/yakew7/Fair-Code/pull/331) doesn't register in the repo's contributors graph despite being a real merged PR |
 
 If your name is wrong, missing, or you would rather be listed under a different handle, or not
 listed at all, open an issue or a one-line PR against this file. It gets merged, no questions asked.
