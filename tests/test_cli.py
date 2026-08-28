@@ -278,6 +278,17 @@ def test_profile_malformed_cross_returns_2_with_clean_error(tmp_path, capsys):
     assert "--cross expects two column names: COLA,COLB" in captured.err
 
 
+def test_profile_cross_same_column_twice_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    exit_code = main(["profile", str(path), "--cross", "sex,sex"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "--cross needs two different columns, got 'sex' twice" in captured.err
+
+
 def test_profile_reference_missing_required_columns_returns_2_with_clean_error(tmp_path, capsys):
     path = tmp_path / "a.csv"
     path.write_text("sex\nM\nF\n", encoding="utf-8")
