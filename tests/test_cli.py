@@ -233,6 +233,14 @@ def test_compare_reads_one_side_from_stdin(tmp_path, monkeypatch, capsys):
     assert result["b"]["n_rows"] == 4
 
 
+def test_compare_both_sides_from_stdin_returns_2_with_clean_error(capsys):
+    exit_code = main(["compare", "-", "-"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "--compare can't read both datasets from stdin" in captured.err
+
+
 def test_profile_read_table_runtime_error_exits_2_with_clean_error(tmp_path, capsys, monkeypatch):
     path = tmp_path / "a.parquet"
     path.write_text("not a real parquet file", encoding="utf-8")

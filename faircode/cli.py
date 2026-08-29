@@ -259,6 +259,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "compare":
+        if args.csv_a == "-" and args.csv_b == "-":
+            print("error: --compare can't read both datasets from stdin "
+                  "(a stream can only be read once)", file=sys.stderr)
+            return 2
         overrides = _parse_map(args.map)
         opts = {
             "min_share": args.min_share,
