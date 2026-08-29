@@ -709,7 +709,7 @@
 
     var provenance = {
       faircode_version: FAIRCODE_VERSION,
-      engine: 'javascript',
+      engine: 'js',
       dataset_hash: hash.digest,
       params: Object.assign({}, currentOpts),
       overrides: Object.assign({}, currentOverrides)
