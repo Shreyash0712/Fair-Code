@@ -115,6 +115,20 @@ def _age_band(num) -> str | None:
     return f"{edges[-1]}+"
 
 
+_AGE_BAND_LABELS = {f"{AGE_BANDS[i]}-{AGE_BANDS[i + 1]}" for i in range(len(AGE_BANDS) - 1)}
+_AGE_BAND_LABELS.add(f"{AGE_BANDS[-1]}+")
+
+
+def _is_age_band_label(label) -> bool:
+    """True if `label` is exactly one of _age_band()'s possible outputs.
+
+    compare() uses this to detect a kind="age" dimension banded on one side
+    (numeric ages) but not the other (raw dates, which _dimension() never
+    bands - see _looks_like_dates()): `kind` alone can't tell the two apart,
+    since it's set from the column name and is identical either way."""
+    return str(label) in _AGE_BAND_LABELS
+
+
 def _skewness(values: list[float]):
     """Fisher–Pearson sample skewness; None if undefined."""
     n = len(values)

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import math
 
-from .profiler import _r
+from .profiler import _is_age_band_label, _r
 
 # ── Defaults (SPEC section 7) ───────────────────────────────────────────────
 PSI_EPSILON = 0.0001      # share floor so appeared/disappeared groups stay finite
@@ -43,7 +43,46 @@ def _drift_level(psi: float) -> str:
     return "none"
 
 
+def _age_banding_mismatch(dim_a: dict, dim_b: dict) -> bool:
+    """True if a kind="age" dimension was banded into numeric ranges on one
+    side but left as raw values (dates, most often) on the other. `kind` is
+    set from the column name and is identical on both sides regardless, so
+    it can't be used to detect this - only the actual group labels can."""
+    if dim_a["kind"] != "age" or dim_b["kind"] != "age":
+        return False
+    labels_a = [g["label"] for g in dim_a["groups"]]
+    labels_b = [g["label"] for g in dim_b["groups"]]
+    if not labels_a or not labels_b:
+        return False
+    return (all(_is_age_band_label(l) for l in labels_a)
+            != all(_is_age_band_label(l) for l in labels_b))
+
+
 def _compare_dimension(dim_a: dict, dim_b: dict) -> dict:
+    kind_mismatch = dim_a["kind"] != dim_b["kind"] or _age_banding_mismatch(dim_a, dim_b)
+    if kind_mismatch:
+        # A dimension auto-detected to different kinds in A vs B (e.g. one
+        # side is date-like, the other plain numeric) labels its groups on
+        # totally different schemes - every label looks "appeared" on one
+        # side and "disappeared" on the other, producing a PSI many times
+        # past the significant threshold that has nothing to do with the
+        # underlying population actually changing. Skip the comparison
+        # rather than report a number that looks alarming but isn't real.
+        return {
+            "name": dim_a["name"],
+            "kind": dim_a["kind"],
+            "kind_a": dim_a["kind"],
+            "kind_b": dim_b["kind"],
+            "kind_mismatch": True,
+            "dimension_score_a": dim_a["dimension_score"],
+            "dimension_score_b": dim_b["dimension_score"],
+            "dimension_score_delta": dim_b["dimension_score"] - dim_a["dimension_score"],
+            "psi": 0.0,
+            "tvd": 0.0,
+            "drift_level": "none",
+            "groups": [],
+        }
+
     sa = _share_map(dim_a)
     sb = _share_map(dim_b)
     labels = set(sa) | set(sb)
@@ -75,6 +114,9 @@ def _compare_dimension(dim_a: dict, dim_b: dict) -> dict:
     return {
         "name": dim_a["name"],
         "kind": dim_a["kind"],
+        "kind_a": dim_a["kind"],
+        "kind_b": dim_b["kind"],
+        "kind_mismatch": False,
         "dimension_score_a": dim_a["dimension_score"],
         "dimension_score_b": dim_b["dimension_score"],
         "dimension_score_delta": dim_b["dimension_score"] - dim_a["dimension_score"],
@@ -95,6 +137,20 @@ def _build_flags(result_a: dict, result_b: dict, score_delta: int,
             f"({result_a['overall_score']} → {result_b['overall_score']})"
         )
     for cd in dimensions:
+        if cd["kind_mismatch"]:
+            if cd["kind_a"] != cd["kind_b"]:
+                flags.append(
+                    f"{cd['name']}: detected as different kinds in {name_a} "
+                    f"({cd['kind_a']}) and {name_b} ({cd['kind_b']}) - drift "
+                    f"comparison skipped"
+                )
+            else:
+                flags.append(
+                    f"{cd['name']}: age values are banded (e.g. \"18-30\") in "
+                    f"one dataset but left raw in the other - drift "
+                    f"comparison skipped"
+                )
+            continue
         if cd["drift_level"] != "none":
             flags.append(
                 f"{cd['name']}: {cd['drift_level']} representation drift "

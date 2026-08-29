@@ -164,6 +164,41 @@ def test_python_js_xlsx_parity():
     assert javascript_result == python_result
 
 
+def test_python_js_compare_parity_age_banding_mismatch(tmp_path):
+    """The age-banding-mismatch guard (#318) agrees between engines too -
+    `kind` alone can't detect it (it's set from the column name and is
+    identical on both sides), so this exercises isAgeBandLabel()'s port of
+    _is_age_band_label() directly, not just the already-covered common path.
+    """
+    path_a = tmp_path / "a.csv"
+    path_b = tmp_path / "b.csv"
+    path_a.write_text("DOB\n" + "\n".join(["15/05/1980"] * 50 + ["20/06/1985"] * 50))
+    path_b.write_text("DOB\n" + "\n".join(["18"] * 50 + ["35"] * 50))
+
+    python_result = compare(
+        profile(pd.read_csv(path_a)), profile(pd.read_csv(path_b)), "a.csv", "b.csv"
+    )
+
+    completed = subprocess.run(
+        ["node", "scripts/engine-js.js", "compare", str(path_a), str(path_b)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    javascript_result = json.loads(completed.stdout)
+
+    python_result = dict(python_result)
+    javascript_result = dict(javascript_result)
+    python_result.pop("flags", None)
+    javascript_result.pop("flags", None)
+
+    assert javascript_result == python_result
+    dim = python_result["dimensions"][0]
+    assert dim["kind_mismatch"] is True
+    assert dim["kind_a"] == dim["kind_b"] == "age"
+
+
 @pytest.mark.parametrize("csv_name", list(CSV_PATHS))
 def test_python_js_compare_parity(csv_name):
     """faircode.compare() and the JS engine's compare() should agree too (#111).

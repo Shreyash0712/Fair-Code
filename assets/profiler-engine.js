@@ -408,6 +408,22 @@
     return AGE_BANDS[AGE_BANDS.length - 1] + '+';
   }
 
+  var AGE_BAND_LABELS = {};
+  (function () {
+    for (var i = 0; i < AGE_BANDS.length - 1; i++) {
+      AGE_BAND_LABELS[AGE_BANDS[i] + '-' + AGE_BANDS[i + 1]] = true;
+    }
+    AGE_BAND_LABELS[AGE_BANDS[AGE_BANDS.length - 1] + '+'] = true;
+  })();
+
+  // compare() uses this to detect a kind="age" dimension banded on one side
+  // (numeric ages) but not the other (raw dates, which the profiler never
+  // bands - see looksLikeDates()): `kind` alone can't tell the two apart,
+  // since it's set from the column name and is identical either way.
+  function isAgeBandLabel(label) {
+    return !!AGE_BAND_LABELS[String(label)];
+  }
+
   function looksLikeDates(rows, col) {
     var sample = [], i;
     for (i = 0; i < rows.length && sample.length < 50; i++) {
@@ -773,7 +789,30 @@
     return 'none';
   }
 
+  function ageBandingMismatch(dimA, dimB) {
+    if (dimA.kind !== 'age' || dimB.kind !== 'age') return false;
+    var labelsA = dimA.groups.map(function (g) { return g.label; });
+    var labelsB = dimB.groups.map(function (g) { return g.label; });
+    if (!labelsA.length || !labelsB.length) return false;
+    var bandedA = labelsA.every(isAgeBandLabel);
+    var bandedB = labelsB.every(isAgeBandLabel);
+    return bandedA !== bandedB;
+  }
+
   function compareDimension(dimA, dimB) {
+    if (dimA.kind !== dimB.kind || ageBandingMismatch(dimA, dimB)) {
+      // See faircode/compare.py's _compare_dimension() for why a kind
+      // mismatch skips the comparison instead of reporting a PSI that
+      // looks alarming but isn't real.
+      return {
+        name: dimA.name, kind: dimA.kind,
+        kind_a: dimA.kind, kind_b: dimB.kind, kind_mismatch: true,
+        dimension_score_a: dimA.dimension_score,
+        dimension_score_b: dimB.dimension_score,
+        dimension_score_delta: dimB.dimension_score - dimA.dimension_score,
+        psi: 0, tvd: 0, drift_level: 'none', groups: []
+      };
+    }
     var sa = shareMap(dimA), sb = shareMap(dimB);
     var labels = {};
     Object.keys(sa).forEach(function (l) { labels[l] = 1; });
@@ -798,6 +837,7 @@
 
     return {
       name: dimA.name, kind: dimA.kind,
+      kind_a: dimA.kind, kind_b: dimB.kind, kind_mismatch: false,
       dimension_score_a: dimA.dimension_score,
       dimension_score_b: dimB.dimension_score,
       dimension_score_delta: dimB.dimension_score - dimA.dimension_score,
@@ -830,6 +870,18 @@
                  ' points (' + resultA.overall_score + ' → ' + resultB.overall_score + ')');
     }
     dimensions.forEach(function (cd) {
+      if (cd.kind_mismatch) {
+        if (cd.kind_a !== cd.kind_b) {
+          flags.push(cd.name + ': detected as different kinds in ' + nameA +
+                     ' (' + cd.kind_a + ') and ' + nameB + ' (' + cd.kind_b +
+                     ') - drift comparison skipped');
+        } else {
+          flags.push(cd.name + ': age values are banded (e.g. "18-30") in ' +
+                     'one dataset but left raw in the other - drift ' +
+                     'comparison skipped');
+        }
+        return;
+      }
       if (cd.drift_level !== 'none') {
         flags.push(cd.name + ': ' + cd.drift_level +
                    ' representation drift (PSI ' + cd.psi.toFixed(2) + ')');

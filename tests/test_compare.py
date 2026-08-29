@@ -99,6 +99,38 @@ def test_groups_ordered_by_shift_magnitude():
     assert deltas == sorted(deltas, reverse=True)
 
 
+# ── Age-banding mismatch (#318) ─────────────────────────────────────────────
+def test_age_banding_mismatch_skips_drift_instead_of_reporting_100_percent():
+    # A: raw birthdates (never banded, per _looks_like_dates()). B: numeric
+    # ages (banded into "18-30"/"30-45"). `kind` is "age" on both sides -
+    # set from the column name, not the values - so it alone can't catch
+    # this; before the fix, every label showed as appeared/disappeared and
+    # PSI came out far past the "significant" threshold for no real reason.
+    df_a = pd.DataFrame({"DOB": ["15/05/1980"] * 50 + ["20/06/1985"] * 50})
+    df_b = pd.DataFrame({"DOB": [18] * 50 + [35] * 50})
+    cmp = compare(profile(df_a), profile(df_b))
+    dim = _find(cmp["dimensions"], "DOB")
+
+    assert dim["kind_mismatch"] is True
+    assert dim["kind_a"] == dim["kind_b"] == "age"
+    assert dim["psi"] == 0.0
+    assert dim["drift_level"] == "none"
+    assert dim["groups"] == []
+    assert any("banded" in f and "DOB" in f for f in cmp["flags"])
+
+
+def test_matching_age_banding_still_compares_normally():
+    # Same-shape ages on both sides (both banded) must not be treated as a
+    # mismatch - only an asymmetry between the two sides should skip it.
+    df_a = pd.DataFrame({"age": [20] * 50 + [40] * 50})
+    df_b = pd.DataFrame({"age": [20] * 30 + [40] * 70})
+    cmp = compare(profile(df_a), profile(df_b))
+    dim = _find(cmp["dimensions"], "age")
+
+    assert dim["kind_mismatch"] is False
+    assert dim["groups"]
+
+
 # ── Score-drop flag ───────────────────────────────────────────────────────────
 def test_overall_score_drop_is_flagged():
     a = pd.DataFrame({"sex": ["M", "F"] * 100})            # balanced -> high score
