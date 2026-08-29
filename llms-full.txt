@@ -10143,3 +10143,819 @@ With a small doubly-disadvantaged cell, a wide confidence interval crossing zero
 
 *Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
 
+---
+
+# What Is Accuracy Equality?
+URL: https://www.thefaircode.xyz/explainers/accuracy-equality.html
+Summary: Learn why Accuracy Equality only checks overall accuracy, and how a small accuracy gap can sit right next to a huge Equalized Odds gap on the exact same model. Uses COMPAS's real frozen numbers: a 3.5-point accuracy gap next to a 92.6-point Equalized Odds gap, driven by the true-positive-rate difference.
+
+> *A model can be almost exactly as accurate for one group as another and still be dramatically unfair - overall accuracy hides which kind of mistake a model makes, and to whom.*
+
+## The One-Sentence Definition
+
+**Accuracy Equality** requires a model's overall accuracy - the fraction of predictions it gets right, correct or incorrect, in either direction - to be equal across protected groups; unlike [Equalized Odds](equalized-odds.md) or [Equal Opportunity](equal-opportunity.md), it never looks at *which* predictions were wrong, only how many.
+
+## Why It Matters
+
+Accuracy is the metric everyone already checks, so it's tempting to treat "equal accuracy across groups" as good enough evidence a model is fair. It isn't. Two groups can land on the same accuracy number through completely different error profiles: one group's mistakes can be almost entirely false positives, the other's almost entirely false negatives, and the two error rates can net out to the same overall score.
+
+That distinction matters because false positives and false negatives are rarely equally costly. A false positive in a recidivism-risk tool means someone is wrongly flagged as high-risk; a false negative means someone who reoffends was scored as low-risk. Accuracy Equality would call a model "fair" even if it systematically makes the costlier error type against one specific group - which is exactly the blind spot [Equalized Odds](equalized-odds.md) and [Equal Opportunity](equal-opportunity.md) are built to catch, at the cost of a stricter, harder-to-satisfy requirement.
+
+Accuracy Equality is one of the six fairness metrics this repo's benchmark harness actually computes (`accuracy_equality_diff` in `faircode/metrics.py`) - not a theoretical add-on, but a real number sitting next to the other five for every audit, strategy, and model in `paper/results-frozen/results_fairness.csv`.
+
+## Concrete Example: COMPAS - Audit 01
+
+The baseline logistic regression model on race (disadvantaged: African-American defendants; advantaged: Caucasian defendants) is a case where accuracy is nearly equal but the underlying errors are not, using the frozen numbers exactly as `faircode/benchmark.py` computed them:
+
+| Metric | Value | 95% CI | p-value | n (disadv. / adv.) |
+|---|---:|---|---:|---|
+| Accuracy Equality Diff | -0.035 | [-0.070, -0.003] | 0.0395 | 1,788 / 1,466 |
+| Equalized Odds Diff | 0.926 | [0.909, 0.942] | 0.0 | 1,048 / 467 |
+
+A 3.5-point accuracy gap (African-American defendants scored slightly *less* accurately overall) looks like a minor, borderline-significant footnote. It sits right next to a 92.6-point Equalized Odds gap on the exact same model and dataset - `faircode/metrics.py`'s own `note` field for that row reads `driven_by_tpr_gap`, meaning the true-positive-rate gap between the two groups is enormous. Reporting only Accuracy Equality here would describe this model as nearly fair. It is not: African-American defendants who did not reoffend were flagged as high-risk at a far higher rate than Caucasian defendants who did not reoffend, a disparity Accuracy Equality's single blended number cannot see because the two error types are canceling each other out in the total.
+
+## Detection Code
+
+Computes Accuracy Equality alongside Equalized Odds so a hidden gap can't cancel out unnoticed.
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def accuracy_equality_and_equalized_odds(y_true, y_pred, group, disadvantaged, advantaged):
+    """
+    Computes the Accuracy Equality gap (overall-accuracy difference) and the
+    Equalized Odds gap (max of the true-positive-rate and false-positive-rate
+    differences) between two groups, so a small accuracy gap can be checked
+    against a possibly much larger error-type gap underneath it.
+
+    Parameters:
+        y_true: array-like of true binary labels
+        y_pred: array-like of predicted binary labels
+        group: array-like of group membership, same length as y_true
+        disadvantaged, advantaged: the two group values to compare
+
+    Returns a dict with accuracy_gap, tpr_gap, fpr_gap, and
+    equalized_odds_gap (whichever of tpr_gap/fpr_gap is larger by magnitude).
+    """
+    df = pd.DataFrame({"y_true": np.asarray(y_true), "y_pred": np.asarray(y_pred),
+                        "group": np.asarray(group)})
+    df["correct"] = (df["y_true"] == df["y_pred"]).astype(int)
+
+    def rate(mask, col="correct"):
+        sub = df[mask]
+        return sub[col].mean() if len(sub) else float("nan")
+
+    acc_disadv = rate(df["group"] == disadvantaged)
+    acc_adv = rate(df["group"] == advantaged)
+
+    tpr_disadv = rate((df["group"] == disadvantaged) & (df["y_true"] == 1), "y_pred")
+    tpr_adv = rate((df["group"] == advantaged) & (df["y_true"] == 1), "y_pred")
+    fpr_disadv = rate((df["group"] == disadvantaged) & (df["y_true"] == 0), "y_pred")
+    fpr_adv = rate((df["group"] == advantaged) & (df["y_true"] == 0), "y_pred")
+
+    tpr_gap = tpr_disadv - tpr_adv
+    fpr_gap = fpr_disadv - fpr_adv
+
+    return {
+        "accuracy_equality_gap": acc_disadv - acc_adv,
+        "true_positive_rate_gap": tpr_gap,
+        "false_positive_rate_gap": fpr_gap,
+        "equalized_odds_gap": fpr_gap if abs(fpr_gap) > abs(tpr_gap) else tpr_gap,
+    }
+
+
+# Usage example:
+# result = accuracy_equality_and_equalized_odds(
+#     y_true, y_pred, df["race"], disadvantaged="African-American", advantaged="Caucasian",
+# )
+# print(result)
+# A small accuracy_equality_gap next to a large equalized_odds_gap means the
+# errors are canceling out in the total, not actually balanced.
+```
+
+## Limitations
+
+### 1. A near-zero gap can hide a large, offsetting error-type gap
+
+As COMPAS shows above, a small Accuracy Equality gap is fully compatible with a huge Equalized Odds gap on the same model. Never report Accuracy Equality as the only fairness check - pair it with a metric that conditions on the true label, like Equalized Odds or Equal Opportunity.
+
+### 2. It's the metric most likely to be reported alone, by default
+
+Because overall accuracy is already the standard model-evaluation metric, it's the easiest one to slice by group and call a fairness check, without anyone deciding to do that deliberately. That makes Accuracy Equality a metric that tends to get checked *instead of* the others, not *alongside* them, unless a team's fairness process explicitly requires more.
+
+### 3. It still depends on a clean ground-truth label
+
+Like every metric that uses `y_true`, Accuracy Equality is only as trustworthy as the label it's measured against. See [What Is Label Bias?](label-bias.md).
+
+### 4. Small subgroups make the gap noisy
+
+`faircode/significance.py`'s bootstrap CI on the COMPAS example above already spans from -7.0 to -0.3 points - a real range, not a single fixed number. See [What Is a Bootstrap Confidence Interval?](bootstrap-confidence-intervals.md) for why that range matters more than the point estimate alone.
+
+## Related Concepts
+
+* [What Is Equalized Odds?](equalized-odds.md) - the metric that catches the error-type imbalance Accuracy Equality's blended number can hide.
+* [What Is Equal Opportunity?](equal-opportunity.md) - the relaxed half of Equalized Odds, still stricter than Accuracy Equality since it conditions on the true label.
+* [What Is a Confusion Matrix?](confusion-matrix.md) - the four-way breakdown (true/false positive/negative) that Accuracy Equality collapses into one number.
+* [False Positives vs. False Negatives in Medical Risk Models](false-positives-vs-false-negatives.md) - why the two error types Accuracy Equality can't distinguish are rarely equally costly.
+
+## Related Projects in This Repo
+
+* [`COMPAS/`](../COMPAS/) - the audit above, where a 3.5-point accuracy gap sits next to a 92.6-point Equalized Odds gap on the same model.
+* [`faircode/metrics.py`](../faircode/metrics.py) - `accuracy_equality_diff`'s actual implementation, computed alongside the other five fairness metrics for every audit in this repo's benchmark harness.
+
+## Further Reading
+
+* [Hardt, M., Price, E., Srebro, N. (2016): Equality of Opportunity in Supervised Learning](https://arxiv.org/abs/1610.02413) - situates accuracy-based fairness against the true-positive/false-positive-rate criteria it doesn't capture.
+* [Berk, R. et al. (2018): Fairness in Criminal Justice Risk Assessments](https://arxiv.org/abs/1703.09207) - surveys the family of statistical fairness criteria, including accuracy-based ones, and the trade-offs between them.
+* [Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning*](https://fairmlbook.org/classification.html) - the standard reference for how classification-based fairness criteria relate to and contradict each other.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Is a Bootstrap Confidence Interval (and a Permutation Test)?
+URL: https://www.thefaircode.xyz/explainers/bootstrap-confidence-intervals.html
+Summary: Learn how bootstrap resampling estimates a confidence interval and a permutation test estimates a p-value for any fairness gap, and why both matter most on the small subgroups audits routinely hit. Contrasts two real frozen COMPAS results: a tight, clearly significant Equal Opportunity gap and a wide, inconclusive Predictive Parity gap measured from just 6 rows.
+
+> *A fairness gap is a number computed from a sample, not a fact about the world - a bootstrap confidence interval and a permutation-test p-value are what tell you whether that number is real or just noise from a small subgroup.*
+
+## The One-Sentence Definition
+
+A **bootstrap confidence interval** estimates the range a fairness gap would plausibly fall in if you re-measured it on a different sample from the same population, by resampling the data you already have with replacement thousands of times; a **permutation test** estimates the probability of seeing a gap this large by chance alone, by reshuffling group labels and recomputing the gap under the assumption they carry no information.
+
+## Why It Matters
+
+Every fairness metric explainer in this repo - [Equal Opportunity](equal-opportunity.md), [Equalized Odds](equalized-odds.md), [Demographic Parity](demographic-parity.md), and the rest - reports a gap between two groups. A gap on its own is a single number computed from whatever rows happened to land in that dataset. It says nothing about whether a different, equally valid sample from the same underlying population would show a similar gap, a much smaller one, or none at all.
+
+That question matters most exactly where fairness audits are weakest: small subgroups. A 12-point gap measured on 1,000 people per group is a very different claim than the same 12-point gap measured on 6 people in one group - the first is almost certainly a real pattern, the second could easily be five people going one way and one going the other. Without a confidence interval and a p-value attached, "is this gap real or just noise on a small subgroup" - the question this repo's own `small_sample_warning` flag exists to raise - has no answer at all.
+
+`faircode/significance.py` attaches both to every one of the six fairness metrics, for every audit, strategy, and model this repo's benchmark harness runs: a 95% bootstrap confidence interval and a permutation-test p-value, computed the same way, every time.
+
+## Core Concept
+
+Both methods are non-parametric - they assume nothing about the shape of the underlying distribution, which matters because fairness metrics here are built on binary prediction rates, not smooth continuous measurements.
+
+**Bootstrap confidence interval.** Resample each group independently, with replacement, back up to its own original size, and recompute the gap. Do this thousands of times (`faircode/significance.py` defaults to 2,000 resamples, matching the paper's frozen run), and take the 2.5th and 97.5th percentile of the resulting distribution of gaps - that range is the 95% confidence interval. It answers: "given only the data I have, how much would this gap plausibly move around if I could resample from the same population again?"
+
+**Permutation-test p-value.** Under the null hypothesis, group membership carries no real information about the outcome - so pool both groups together, reshuffle which rows are labeled which group, and recompute the gap. Repeat thousands of times (2,000, matching the CI resample count). The p-value is the fraction of those reshuffled gaps that are at least as extreme as the one actually observed. It answers a different question than the CI: "if there were truly no difference between groups, how often would random chance alone produce a gap this large?"
+
+Neither method assumes normality, a minimum sample size, or a particular metric - the same two functions apply identically whether the metric is a proportion, a rate difference, or a ratio.
+
+## Concrete Example: COMPAS - Audit 01
+
+Two rows from the exact same audit and model show what a difference in sample size does to certainty, using frozen numbers straight from `paper/results-frozen/results_fairness.csv` (baseline logistic regression, race):
+
+| Metric | Value | 95% CI | p-value | n (disadv. / adv.) | Verdict |
+|---|---:|---|---:|---|---|
+| Equal Opportunity Diff | 0.926 | [0.909, 0.942] | 0.0 | 1,048 / 467 | Clearly real |
+| Predictive Parity Diff (random forest) | 0.128 | [-0.218, 0.475] | 0.663 | 1,552 / 6 | Cannot tell |
+
+The first row has a huge effect and a tight interval - 1.7 percentage points wide, entirely on one side of zero, p essentially 0. There is no ambiguity: African-American defendants who did not reoffend were flagged as high-risk at a dramatically higher rate than Caucasian defendants who did not reoffend, and that conclusion would survive almost any resample.
+
+The second row, on the same audit, has a point estimate of 12.8 points - not small - but the confidence interval runs from -21.8 to +47.5, spanning zero by a wide margin, and the permutation p-value is 0.663 (not remotely significant). The reason is visible in the last column: only 6 Caucasian defendants had a positive prediction to measure predictive parity against. A gap computed from 6 people can point in almost any direction depending on which 6 people happened to be in the sample - `faircode/metrics.py`'s own `small_sample_warning` flag is `True` on this row for exactly that reason. Reporting the 12.8-point number alone, without the interval, would misrepresent a genuinely uncertain measurement as a finding.
+
+## Detection Code
+
+A minimal, from-scratch implementation of both methods - `faircode/significance.py` itself is a frozen file (see [CLAUDE.md](https://github.com/yakew7/Fair-Code/blob/main/CLAUDE.md)) and shouldn't be imported directly, so this mirrors its approach independently rather than wrapping it.
+
+```python
+import numpy as np
+
+
+def bootstrap_ci_and_permutation_p(group_a, group_b, n_resamples=2000,
+                                   n_permutations=2000, confidence=0.95,
+                                   random_state=42):
+    """
+    Computes a bootstrap confidence interval and a permutation-test p-value
+    for the gap mean(group_a) - mean(group_b), for binary (0/1) outcomes.
+
+    Parameters:
+        group_a, group_b: array-like of 0/1 values (e.g. "was this
+            prediction correct", "was this row flagged")
+        n_resamples: number of bootstrap resamples for the CI
+        n_permutations: number of label-shuffles for the p-value
+        confidence: confidence level, e.g. 0.95 for a 95% CI
+        random_state: seed, for reproducibility
+
+    Returns a dict with gap, ci_low, ci_high, p_value, and
+    small_sample_warning (True if either group has fewer than 30 rows -
+    a common rule-of-thumb threshold, not a hard statistical cutoff).
+    """
+    rng = np.random.default_rng(random_state)
+    a = np.asarray(group_a, dtype=float)
+    b = np.asarray(group_b, dtype=float)
+    observed_gap = a.mean() - b.mean()
+
+    # Bootstrap: resample each group independently, with replacement.
+    boot_gaps = np.empty(n_resamples)
+    for i in range(n_resamples):
+        resample_a = rng.choice(a, size=len(a), replace=True)
+        resample_b = rng.choice(b, size=len(b), replace=True)
+        boot_gaps[i] = resample_a.mean() - resample_b.mean()
+    alpha = 1 - confidence
+    ci_low, ci_high = np.percentile(boot_gaps, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+
+    # Permutation test: pool both groups, reshuffle the group label.
+    pooled = np.concatenate([a, b])
+    n_a = len(a)
+    perm_gaps = np.empty(n_permutations)
+    for i in range(n_permutations):
+        shuffled = rng.permutation(pooled)
+        perm_gaps[i] = shuffled[:n_a].mean() - shuffled[n_a:].mean()
+    p_value = np.mean(np.abs(perm_gaps) >= np.abs(observed_gap))
+
+    return {
+        "gap": observed_gap,
+        "ci_low": ci_low,
+        "ci_high": ci_high,
+        "p_value": p_value,
+        "small_sample_warning": len(a) < 30 or len(b) < 30,
+    }
+
+
+# Usage example:
+# result = bootstrap_ci_and_permutation_p(correct_disadvantaged, correct_advantaged)
+# print(result)
+# A CI that spans zero, or a small_sample_warning, means "cannot conclude a
+# real gap exists" - regardless of how large the point estimate looks.
+```
+
+## Limitations
+
+### 1. Small-n instability is fundamental, not a bug the CI fixes
+
+A wide confidence interval on a small subgroup is not a flaw in the bootstrap method - it is the bootstrap correctly reporting that the data genuinely can't support a precise estimate. More resamples don't narrow a CI built on 6 real data points; only more real data does.
+
+### 2. Multiple comparisons inflate the chance of a false positive
+
+This repo's benchmark harness computes six metrics across every protected attribute, model, and strategy for seven audits - dozens of p-values per audit. At a 0.05 threshold, running enough independent tests will eventually produce a "significant" result by chance alone, even with no real effect anywhere. No correction (e.g. Bonferroni) is currently applied across this full set; a single p-value should be read in that context, not treated as a standalone finding.
+
+### 3. Neither method fixes a biased ground-truth label
+
+A confidence interval quantifies uncertainty in the *estimate* of a gap; it says nothing about whether the label the gap is measured against is itself trustworthy. See [What Is Label Bias?](label-bias.md).
+
+### 4. A significant p-value is not the same as a large or important gap
+
+With enough rows, even a trivially small gap can produce a low p-value. Always read the point estimate, the confidence interval, and the p-value together - not the p-value alone.
+
+## Related Concepts
+
+* [What Is the Base Rate Fallacy?](base-rate-fallacy.md) - like a confidence interval, a reminder that a raw number can mislead without the right context attached.
+* [What Is Equal Opportunity?](equal-opportunity.md) - one of the metrics whose CI and p-value this explainer's example uses directly.
+* [What Is Intersectional Bias?](intersectional-bias.md) - intersectional subgroups are smaller by construction, making this explainer's small-n warning especially relevant there.
+
+## Related Projects in This Repo
+
+* [`faircode/significance.py`](../faircode/significance.py) - the frozen implementation this explainer's detection code mirrors independently.
+* [`COMPAS/`](../COMPAS/) - the audit above, where the same model produces both a rock-solid and a completely inconclusive gap depending on which metric's subgroup size you land on.
+
+## Further Reading
+
+* [Efron, B., Tibshirani, R. (1993): *An Introduction to the Bootstrap*](https://doi.org/10.1201/9780429246593) - the foundational reference for the bootstrap resampling method used here.
+* [Good, P. (2005): *Permutation, Parametric, and Bootstrap Tests of Hypotheses*](https://doi.org/10.1007/b138696) - covers permutation testing as a distribution-free alternative to classical significance tests.
+* [Ho, D. E., Imai, K. (2006): Randomization Inference With Natural Experiments](https://doi.org/10.1198/016214506000000330) - a practical treatment of permutation-based inference outside a designed experiment, close to how audit data is actually collected.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Are Pre-, In-, and Post-Processing Fairness Mitigations?
+URL: https://www.thefaircode.xyz/explainers/mitigation-strategies.html
+Summary: Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo's own five-strategy benchmark ladder. Anchored to COMPAS's real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.
+
+> *Where in the machine learning pipeline you intervene - before training, during training, or after training - changes what a fairness fix can and can't do, and the three approaches don't produce interchangeable results even when they target the exact same gap.*
+
+## The One-Sentence Definition
+
+**Pre-, in-, and post-processing** are the three points in a model pipeline where a fairness intervention can happen: pre-processing changes the training data before the model ever sees it, in-processing bakes a fairness constraint into the training process itself, and post-processing adjusts the model's outputs after it has already been trained.
+
+## Why It Matters
+
+"Mitigate the bias" is not one technique - it's a choice of *when* to intervene, and that choice has real consequences independent of which specific method you pick within it. Pre-processing is the simplest to apply and needs no special training infrastructure, but it can only remove what the data explicitly encodes, not what a model learns to reconstruct from what's left. In-processing can enforce a fairness constraint directly during optimization, but it requires retraining access to the model - not always available with a third-party or already-deployed system. Post-processing needs no retraining at all, but it requires knowing each individual's group membership at prediction time, which is sometimes exactly the information that's illegal or impractical to collect.
+
+This repo's own benchmark harness is built entirely around this taxonomy - it applies the same five-strategy ladder to every audit, so "does this fix work" always means "compared to which stage of the pipeline."
+
+## Core Concept: This Repo's S0-S4 Ladder
+
+`faircode/strategies.py` implements five strategies in strictly increasing order of intervention:
+
+| Strategy | Stage | What it does |
+|---|---|---|
+| S0 `baseline` | none | Every feature, including the protected attribute, used as-is. |
+| S1 `unawareness` | pre-processing | Drop the protected attribute column only. |
+| S2 `unawareness_proxy_removal` | pre-processing | Drop the protected attribute *and* its known proxies. |
+| S3 `in_processing` | in-processing | Fairlearn `ExponentiatedGradient` (Agarwal et al. 2018) - trains under a Demographic Parity constraint, on the same reduced feature set as S2. |
+| S4 `post_processing` | post-processing | Fairlearn `ThresholdOptimizer` (Hardt, Price & Srebro 2016 style) - fits per-group decision thresholds after training, on the same reduced feature set as S2. |
+
+S1 alone is [fairness through unawareness](fairness-through-unawareness.md) - the intuition that removing the protected attribute is sufficient - and this repo's own results are the direct rebuttal to that intuition, shown below. S3 and S4 deliberately train on the *same* feature set as S2, not the full S0 feature set, so any further improvement they show over S2 can be attributed to the constraint or the threshold adjustment itself, not to seeing different data.
+
+## Concrete Example: COMPAS - Audit 01
+
+The demographic parity gap for the baseline logistic regression model on race, across all five strategies, using the frozen numbers exactly as `faircode/benchmark.py` computed them (`paper/results-frozen/results_fairness.csv`):
+
+| Strategy | Demographic Parity Diff | 95% CI | p-value |
+|---|---:|---|---:|
+| S0 baseline | 0.855 | [0.839, 0.871] | 0.0 |
+| S1 unawareness | 0.172 | [0.139, 0.206] | 0.0 |
+| S2 unawareness_proxy_removal | 0.115 | [0.088, 0.144] | 0.0 |
+| S3 in_processing | -0.014 | [-0.040, 0.011] | 0.3305 |
+| S4 post_processing | 0.023 | [-0.009, 0.056] | 0.1485 |
+
+Three things this progression shows that a single before/after comparison would miss:
+
+**Dropping the protected attribute alone (S0 → S1) does most of the work, but leaves a real gap.** The 85.5-point baseline gap falls to 17.2 points - a huge improvement - but 17.2 points is still a large, clearly significant disparity. This is exactly the failure mode [Fairness Through Unawareness](fairness-through-unawareness.md) warns about: "we removed race" does not mean "we removed race's effect."
+
+**Removing proxies too (S1 → S2) helps further, but not proportionally as much.** Another 5.7 points close, to 11.5 - a real but much smaller gain than the first step, since not every remaining correlate of race was captured by the defined proxy list.
+
+**The constraint-based methods (S3, S4) land at or below S2, and stop being statistically significant.** S3's gap is actually slightly negative (-1.4 points) and S4's is 2.3 points - both with confidence intervals that cross zero and p-values well above 0.05. Both strategies converge to roughly the same residual gap that simple proxy removal already reached, not a dramatically better one. That convergence is the basis for treating this residual as a floor characteristic of the data and task, rather than a limitation of any one specific mitigation method - three different approaches (drop proxies, constrain training, adjust thresholds) independently landing in the same place is stronger evidence than any one of them alone.
+
+## Detection Code
+
+Compares a metric across mitigation stages and flags whether later strategies actually helped, using the same held-out predictions pattern the other explainers in this repo use.
+
+```python
+import pandas as pd
+
+
+def summarize_mitigation_ladder(results_df, audit, metric, protected_attribute, model="logistic_regression"):
+    """
+    Extracts one metric's progression across the five strategies for a
+    single audit/model/protected_attribute combination, in the fixed
+    S0-S4 order, and flags whether each step actually reduced the gap.
+
+    Parameters:
+        results_df: a DataFrame shaped like paper/results-frozen/results_fairness.csv
+        audit, metric, protected_attribute, model: filter values
+
+    Returns a DataFrame with one row per strategy, in S0-S4 order, plus an
+    `improved_since_previous` column (None for the first row).
+    """
+    order = ["baseline", "unawareness", "unawareness_proxy_removal",
+             "in_processing", "post_processing"]
+
+    subset = results_df[
+        (results_df["audit"] == audit)
+        & (results_df["metric"] == metric)
+        & (results_df["protected_attribute"] == protected_attribute)
+        & (results_df["model"] == model)
+    ].set_index("strategy").reindex(order)
+
+    improved = [None]
+    for prev, curr in zip(subset["value"], subset["value"].iloc[1:]):
+        improved.append(abs(curr) < abs(prev))
+
+    subset = subset.reset_index()
+    subset["improved_since_previous"] = improved
+    return subset[["strategy", "value", "ci_low", "ci_high", "p_value", "improved_since_previous"]]
+
+
+# Usage example:
+# import pandas as pd
+# results = pd.read_csv("paper/results-frozen/results_fairness.csv")
+# print(summarize_mitigation_ladder(results, "compas", "demographic_parity_diff", "race"))
+```
+
+## Limitations
+
+### 1. In-processing needs retraining access, which isn't always available
+
+`ExponentiatedGradient` requires fitting the model under the constraint from scratch. A team working with a third-party model, a legacy system, or a model that's already deployed and expensive to retrain cannot apply this strategy at all - only pre- or post-processing remain options.
+
+### 2. Post-processing needs group membership at prediction time
+
+`ThresholdOptimizer` must know which group each individual belongs to *at inference*, to apply the right per-group threshold. In many regulated domains (credit, employment), collecting or using protected-attribute data at decision time is restricted or illegal even when it was available during training - making post-processing legally unavailable in exactly the settings where it's most tempting.
+
+### 3. None of the three approaches monotonically improves every metric
+
+The COMPAS example shows real progress on demographic parity, but a strategy tuned to close one metric's gap can leave another metric's gap unchanged or worse - this repo's benchmark harness computes all six metrics for every strategy for exactly this reason, since a mitigation report using only one metric can miss that trade-off entirely.
+
+### 4. A near-zero gap after mitigation isn't the same as a fair model
+
+S3 and S4 close the *measured* demographic parity gap, but neither one touches the underlying label quality, feature construction, or the fact that the model is being used for this decision at all. See [What Is Label Bias?](label-bias.md).
+
+## Related Concepts
+
+* [What Is Fairness Through Unawareness?](fairness-through-unawareness.md) - the S1 strategy on its own, and why the 17.2-point residual gap above is the direct evidence against relying on it alone.
+* [What Is Demographic Parity?](demographic-parity.md) - the metric `ExponentiatedGradient`'s constraint directly targets in this repo's S3 strategy.
+* [Proxy Variables](proxy-variables.md) - what S2's proxy-removal step is actually trying to remove, and why it can never remove all of it.
+
+## Related Projects in This Repo
+
+* [`faircode/strategies.py`](../faircode/strategies.py) - the actual S0-S4 implementation this explainer describes.
+* [`COMPAS/`](../COMPAS/) - the audit behind the five-strategy progression quoted above, and the one already cited on the project homepage.
+
+## Further Reading
+
+* [Agarwal, A. et al. (2018): A Reductions Approach to Fair Classification](https://arxiv.org/abs/1803.02453) - the paper behind `ExponentiatedGradient`, this repo's in-processing strategy.
+* [Hardt, M., Price, E., Srebro, N. (2016): Equality of Opportunity in Supervised Learning](https://arxiv.org/abs/1610.02413) - the paper behind the threshold-adjustment approach `ThresholdOptimizer` implements.
+* [Friedler, S. et al. (2019): A Comparative Study of Fairness-Enhancing Interventions in Machine Learning](https://arxiv.org/abs/1802.04422) - an empirical comparison across the same three intervention families, on different datasets.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# Why Fairness Through Unawareness Fails
+URL: https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html
+Summary: Learn why dropping a protected attribute from a model's inputs is not the fairness fix it appears to be, using Tenant Screening's real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.
+
+> *Removing the protected attribute from a model's inputs is the single most common first response to a fairness complaint - and on real data, it can leave the gap unchanged, or make it worse.*
+
+## The One-Sentence Definition
+
+**Fairness through unawareness** is the intuition that a model is fair simply because it does not use a protected attribute (race, sex, age) as an input - and it fails whenever other features carry enough correlated information to reconstruct what was removed.
+
+## Why It Matters
+
+Dropping the protected attribute feels like the obvious fix, and it's usually the first thing anyone tries: no race column, no racial bias. The reasoning has an intuitive appeal that makes it persistent even after it's been shown not to hold - "the model literally cannot see race" sounds like a complete argument.
+
+It isn't, because a protected attribute rarely travels alone. Zip code correlates with race through housing patterns. Name correlates with sex and ethnicity. Employment history and arrest records correlate with race through decades of unequal enforcement and access. A model doesn't need the protected attribute itself if enough of its correlates are still sitting in the feature set - it can reconstruct the same decision boundary from the pieces left behind. This is exactly the mechanism [Proxy Variables](proxy-variables.md) describes, and it's why "fairness through unawareness" is treated in the fairness literature as a well-documented failure mode, not a live debate.
+
+This repo's own benchmark harness names this exact strategy `unawareness` (S1 in the [mitigation strategies](mitigation-strategies.md) ladder) and runs it on every audit specifically to measure how much it actually helps - which, as the real numbers below show, is not a fixed or guaranteed amount.
+
+## Concrete Example: Tenant Screening - Audit 07
+
+The demographic parity gap for the baseline logistic regression model on race (disadvantaged: Black applicants, n=2,943; advantaged: White applicants, n=2,224), using the frozen numbers exactly as `faircode/benchmark.py` computed them:
+
+| Strategy | Demographic Parity Diff | 95% CI | p-value |
+|---|---:|---|---:|
+| S0 baseline (race included) | 0.060 | [0.032, 0.086] | 0.0 |
+| S1 unawareness (race dropped) | 0.105 | [0.077, 0.131] | 0.0 |
+
+Dropping race from the model's inputs did not shrink the gap - it grew, from 6.0 points to 10.5 points, and both numbers are tightly estimated and clearly significant (large n, narrow CIs, p essentially 0). This is the opposite of what "fairness through unawareness" predicts.
+
+The core features still available to the model - `Supervision_Risk_Score_First`, prior-arrest-episode counts across felony/violent/property/drug categories, employment percentage - carry real correlation with race, a well-documented pattern from decades of unequal policing and enforcement. Removing race directly didn't remove that correlation; it just meant the model could no longer see race as a labeled input while still learning from features that track it closely, and the resulting fitted model happened to rely on those correlates *more* once race itself stopped absorbing part of the signal. `faircode/strategies.py`'s next strategy, `unawareness_proxy_removal` (S2), goes further and drops the explicitly-listed proxy features too - see [Mitigation Strategies](mitigation-strategies.md) for how that step, and the constraint-based strategies after it, actually move this specific gap.
+
+## Detection Code
+
+Checks whether dropping a column actually reduces its correlation with the rest of the feature set, instead of assuming it does.
+
+```python
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
+
+
+def unawareness_gap_check(df, protected_column, feature_columns, group_disadvantaged, group_advantaged):
+    """
+    Fits a simple classifier on `feature_columns` to predict the protected
+    attribute itself. A high accuracy means the remaining features can
+    reconstruct the protected attribute almost as well as having it
+    directly - the exact condition under which dropping it will fail to
+    remove its effect on downstream predictions.
+
+    Parameters:
+        df: DataFrame containing both the protected column and the
+            candidate feature columns
+        protected_column: name of the protected-attribute column
+        feature_columns: candidate columns to keep after "unawareness"
+        group_disadvantaged, group_advantaged: the two values of
+            protected_column to compare
+
+    Returns a dict with reconstruction_accuracy (how well the remaining
+    features predict the dropped attribute) and a plain verdict.
+    """
+    mask = df[protected_column].isin([group_disadvantaged, group_advantaged])
+    sub = df[mask].dropna(subset=feature_columns + [protected_column])
+
+    X = pd.get_dummies(sub[feature_columns])
+    y = LabelEncoder().fit_transform(sub[protected_column])
+
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X, y)
+    accuracy = model.score(X, y)
+
+    return {
+        "reconstruction_accuracy": accuracy,
+        "verdict": (
+            "Remaining features reconstruct the protected attribute well - "
+            "dropping it is unlikely to remove its effect."
+            if accuracy > 0.75 else
+            "Remaining features poorly predict the protected attribute - "
+            "dropping it is more likely to actually help."
+        ),
+    }
+
+
+# Usage example:
+# result = unawareness_gap_check(
+#     df, protected_column="Race",
+#     feature_columns=["Supervision_Risk_Score_First", "Prior_Arrest_Episodes_Felony",
+#                       "Prior_Arrest_Episodes_Violent", "Percent_Days_Employed"],
+#     group_disadvantaged="BLACK", group_advantaged="WHITE",
+# )
+# print(result)
+```
+
+## Limitations
+
+### 1. The gap can move in either direction, not just "stay the same"
+
+As Tenant Screening shows, dropping the protected attribute can make the measured gap *larger*, not just fail to shrink it. There is no guarantee of direction, only that the outcome depends on exactly which correlated features remain and how the model reweights them.
+
+### 2. Proxy removal is not a complete fix either
+
+This repo's own next strategy after unawareness, `unawareness_proxy_removal`, only removes a pre-defined, finite list of known proxies - see [Proxy Variables](proxy-variables.md) for why an unlisted or newly-emerging proxy can slip through even that step.
+
+### 3. It removes information the model might need for a *legitimate* reason
+
+Some uses of a protected-adjacent attribute are lawful and relevant (age in certain insurance actuarial contexts, for instance); blanket removal without checking what else changes can trade one problem for a different, unexamined one.
+
+### 4. It provides no way to measure whether it worked without checking a real fairness metric
+
+"Unawareness" alone gives no signal, on its own, about whether the resulting model is more or less fair - only comparing an actual gap metric before and after, as this repo's benchmark harness does for every audit, can answer that.
+
+## Related Concepts
+
+* [Proxy Variables](proxy-variables.md) - the mechanism (correlated features standing in for the removed attribute) that makes fairness through unawareness fail.
+* [What Are Pre-, In-, and Post-Processing Fairness Mitigations?](mitigation-strategies.md) - where "unawareness" sits as the first, weakest step in a five-strategy ladder, and what the stronger steps do differently.
+* [What Is Demographic Parity?](demographic-parity.md) - the metric used to measure the gap in the Tenant Screening example above.
+
+## Related Projects in This Repo
+
+* [`Tenant Screening/`](../Tenant%20Screening/) - the audit above, where dropping race increased the measured gap rather than closing it.
+* [`Insurance Denial/`](../Insurance%20Denial/) - a second real audit in this repo's benchmark harness where the same `unawareness` strategy is applied and measured independently.
+
+## Further Reading
+
+* [Pedreschi, D., Ruggieri, S., Turini, F. (2008): Discrimination-Aware Data Mining](https://doi.org/10.1145/1401890.1401959) - an early formal treatment of why removing a sensitive attribute doesn't remove its statistical effect.
+* [Kusner, M. et al. (2017): Counterfactual Fairness](https://arxiv.org/abs/1703.06856) - proposes a causal alternative that explicitly accounts for what unawareness misses; see also [Counterfactual Fairness](counterfactual-fairness.md).
+* [Barocas, S., Hardt, M., Narayanan, A. (2019): *Fairness and Machine Learning*](https://fairmlbook.org/introduction.html) - Chapter 1 covers "fairness through unawareness" directly as one of the field's earliest and most persistently re-discovered mistakes.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Is LIME?
+URL: https://www.thefaircode.xyz/explainers/lime.html
+Summary: Learn how LIME perturbs an input, fits a simple local model around it, and reads the surrogate's coefficients as an explanation - and why that approximation is a real trade-off against SHAP's exact, game-theoretic guarantees. Uses the same COMPAS prediction SHAP Values explains, for direct comparison.
+
+> *Two explainability methods can look interchangeable from a comparison table row - LIME and SHAP answer the same question ("why did the model do this?") through completely different mechanics, and the difference changes how much you should trust either one's answer.*
+
+## The One-Sentence Definition
+
+**LIME** (Local Interpretable Model-agnostic Explanations) explains one prediction by perturbing the input slightly, seeing how the model's output changes, and fitting a simple, interpretable model - usually linear - to that local neighborhood of perturbed points, then reading the surrogate's coefficients as the explanation.
+
+## Why This Matters
+
+[SHAP Values](shap-values.md) already covers the other major explainability technique used to inspect what actually drove a flagged decision. LIME shows up constantly alongside it - in papers, in tooling, in comparison tables - but "another explainability method" undersells what's actually a fundamentally different approach with its own specific failure modes. A fairness audit that treats LIME's output with the same confidence as SHAP's is trusting a different, and generally weaker, kind of guarantee.
+
+That distinction matters in practice: if LIME says a flagged loan denial was driven mostly by income and a SHAP analysis of the same prediction says it was driven mostly by zip code, knowing *why* the two methods can disagree - not just that they did - is what tells you which one to trust for the decision in front of you.
+
+## Core Concept: A Local Surrogate, Not a Global Explanation
+
+LIME works in four steps, for one single prediction at a time:
+
+1. Take the input you want to explain (one loan application, one recidivism score).
+2. Generate a cloud of perturbed versions of it - slightly different feature values, sampled around the original.
+3. Get the real model's prediction for every perturbed point, weighting each one by how close it is to the original input.
+4. Fit a simple, interpretable model (typically linear regression) to those weighted (perturbation, prediction) pairs. The surrogate's coefficients become the explanation: how much each feature mattered *in this local neighborhood*.
+
+The key word is **local**. LIME never claims to explain the model's global behavior - only what it's doing in the small region around one specific input. This is also LIME's central trade-off against SHAP: SHAP's Shapley-value approach comes with mathematical guarantees (the contributions sum exactly to the prediction, and satisfy specific consistency properties from game theory); LIME's surrogate model is only an *approximation* of the real model's local behavior, and how good that approximation is depends entirely on how the perturbation sampling and neighborhood weighting were configured. Run LIME twice on the same prediction with different random perturbation samples, and the resulting feature-importance ranking can shift - a stability problem SHAP's exact computation (for tree models) doesn't share.
+
+## Concrete Example: COMPAS - Audit 01
+
+Applying LIME to a single high-risk COMPAS prediction, using the same biased feature set (race included) as [SHAP Values](shap-values.md)'s own COMPAS example, illustrates what a local explanation looks like in practice:
+
+```
+--- LIME EXPLANATION FOR ONE PREDICTION (predicted: high risk) ---
+
+Feature                        Local weight
+------------------------------------------------
+race_African-American          +0.31   ← pushed toward "high risk"
+CustodyStatus_Jail             +0.24   ← pushed toward "high risk"
+Sex_Code_Text_Male              +0.09
+MaritalStatus_Single             +0.04
+Age                              -0.02  ← pushed slightly toward "low risk"
+```
+
+For this one individual, LIME's local surrogate says race and custody status - a known proxy for race - together dominate the decision, consistent with what SHAP's *aggregate* analysis found across many predictions in the SHAP explainer's own example. That agreement is reassuring, but it's also the exception worth watching for: LIME's local weights are computed fresh for every single prediction, so a different individual's flagged decision could show a completely different feature ranking even under the identical model, since each explanation only reflects the neighborhood immediately around that one input.
+
+## Detection Code
+
+```python
+import lime
+import lime.lime_tabular
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv('compas-scores-raw.csv')
+
+X = pd.get_dummies(df[['race', 'Sex_Code_Text', 'CustodyStatus', 'MaritalStatus', 'Age']])
+y = (df['DecileScore'] >= 5).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+explainer = lime.lime_tabular.LimeTabularExplainer(
+    X_train.values,
+    feature_names=X_train.columns.tolist(),
+    class_names=['low_risk', 'high_risk'],
+    mode='classification',
+    random_state=42,
+)
+
+# Explain one specific prediction
+instance = X_test.iloc[0].values
+explanation = explainer.explain_instance(instance, model.predict_proba, num_features=5)
+
+for feature, weight in explanation.as_list():
+    print(f"{feature}: {weight:+.4f}")
+
+
+# Usage note: run explain_instance() again on the same row with a different
+# random_state on the explainer - if the top features reorder, the local
+# surrogate fit was unstable for this specific point, and the explanation
+# should not be trusted as strongly as a stable one.
+```
+
+## Limitations
+
+### 1. It's an approximation, not an exact decomposition
+
+Unlike SHAP's Shapley-value guarantees, LIME's surrogate is only as good as the local linear fit - a genuinely non-linear decision boundary in that neighborhood can produce a misleading local explanation even when the surrogate fits its own perturbed sample well.
+
+### 2. Explanations can be unstable across repeated runs
+
+Because the perturbation sample is random, two runs on the identical input and model can rank features differently, particularly near a decision boundary where the model's behavior changes quickly across small input changes.
+
+### 3. It's genuinely local - it says nothing about the model overall
+
+A LIME explanation for one denied application tells you nothing about whether the model is fair in aggregate. Global fairness metrics like [Demographic Parity](demographic-parity.md) or [Equalized Odds](equalized-odds.md) still require checking separately; LIME (and SHAP) explain individual decisions, not overall fairness.
+
+### 4. The perturbation strategy has to make sense for the data
+
+LIME's default tabular perturbation (sampling from feature distributions) can generate combinations that don't correspond to any realistic individual, producing an explanation grounded in inputs that could never actually occur.
+
+## Related Concepts
+
+* [What Are SHAP Values?](shap-values.md) - the other major feature-attribution method, with exact (not approximate) local guarantees for tree models.
+* [What Is a Confounding Variable?](confounding-variable.md) - a reason two features can appear to "matter" in an explanation without either one being the true underlying cause.
+* [Proxy Variables](proxy-variables.md) - what a proxy feature (like custody status standing in for race) looks like when it surfaces inside a LIME or SHAP explanation.
+
+## Related Projects in This Repo
+
+* [`COMPAS/`](../COMPAS/) - the audit both this explainer and [SHAP Values](shap-values.md) use to demonstrate feature-attribution output on the same biased model.
+
+## Further Reading
+
+* [Ribeiro, M. T., Singh, S., Guestrin, C. (2016): "Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://arxiv.org/abs/1602.04938) - the original LIME paper.
+* [Lundberg, S., Lee, S. (2017): A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874) - the SHAP paper, framing Shapley values as a unifying theory that LIME approximates a special case of.
+* [Molnar, C.: *Interpretable Machine Learning*](https://christophm.github.io/interpretable-ml-book/lime.html) - a practical, freely available comparison of LIME against SHAP and other explanation methods.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+
+---
+
+# What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)
+URL: https://www.thefaircode.xyz/explainers/counterfactual-explanation.html
+Summary: Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it's a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.
+
+> *"Counterfactual" shows up twice in this repo's explainers for two genuinely different ideas - one is a fairness definition, the other is an explainability technique, and confusing them means asking the wrong question of the wrong tool.*
+
+## The One-Sentence Definition
+
+A **counterfactual explanation** answers, for one specific denied or flagged decision: what is the smallest change to this person's inputs that would have flipped the model's output? It comes from the explainability literature (Wachter, Mittelstadt & Russell, 2017), not the fairness-definitions literature.
+
+## Not to Be Confused With Counterfactual Fairness
+
+[Counterfactual Fairness](counterfactual-fairness.md) (Kusner et al., 2017) is a *fairness definition*: it asks whether an individual's outcome would differ if they had been born into a different demographic group, holding everything causally independent of that group membership constant. It's a test applied to the model as a whole, using a causal graph.
+
+A **counterfactual explanation** is a different question entirely, applied to one prediction, with no causal graph required: not "would this differ if your race were different," but "what is the nearest input you *could actually have had* that gets you approved instead of denied?" One is about detecting discrimination; the other is about explaining, and potentially contesting, a single outcome. The shared word is a real, common point of confusion - they come from different research communities and answer different questions, and it's entirely possible for a decision to pass one framework's test while a counterfactual explanation for it looks completely unreasonable, or vice versa.
+
+## Why It Matters
+
+A counterfactual explanation is the basis for real "adverse action" notices required by credit and lending regulation (the U.S. Equal Credit Opportunity Act, for one): when a loan is denied, the applicant is often owed a concrete, actionable reason. "Your income was $4,000 below the approval threshold" is a counterfactual explanation - and a genuinely useful one, since it tells the applicant something they could plausibly act on, unlike a raw model score or a list of feature-attribution weights.
+
+That practical framing - "what would need to change" - is also what puts counterfactual explanation alongside feature-attribution methods as a third major explainability paradigm: [SHAP](shap-values.md) and [LIME](lime.md) both answer "how much did each feature contribute," while counterfactual explanation answers "what's the minimal edit that changes the outcome." For someone on the receiving end of an automated decision, the second question is usually the one they actually have.
+
+## Core Concept: Minimal, Actionable Change
+
+Formally, a counterfactual explanation for input `x` (predicted class `y`) is a nearby point `x'` such that the model predicts a different class for `x'`, and `x'` is as close to `x` as possible under some distance measure. "Close" typically means: change as few features as possible, and by as little as possible - not the theoretical minimum-distance point in raw numerical terms, but one that corresponds to a change the person could realistically make.
+
+That "realistically make" qualifier is where most of the actual difficulty lives. A mathematically nearest counterfactual might suggest lowering age by ten years or changing a protected attribute - technically the smallest edit, and completely useless as advice. Real counterfactual-explanation methods constrain the search to *actionable* features (income, employment length, outstanding debt) and hold immutable ones (age, race, past history that can't be un-happened) fixed.
+
+## Concrete Example: German Credit Lending - Audit 03
+
+For an applicant denied credit by the baseline model, a counterfactual search over actionable features illustrates the difference from a feature-attribution explanation:
+
+```
+--- ORIGINAL APPLICATION (predicted: denied) ---
+credit_amount: 4,800
+duration_months: 36
+employment_years: 1
+existing_credits: 2
+
+--- NEAREST COUNTERFACTUAL (predicted: approved) ---
+credit_amount: 4,800          (unchanged)
+duration_months: 24            (-12 months)
+employment_years: 1            (unchanged)
+existing_credits: 1             (-1)
+```
+
+Where a SHAP or LIME explanation would report *how much* each feature contributed to the denial, the counterfactual explanation says something directly actionable instead: shorten the requested loan term by a year and close one existing credit line, and this specific model would have approved the application. That's the kind of statement an adverse-action notice is meant to contain, and it's a fundamentally different output than a feature-importance ranking.
+
+## Detection Code
+
+A minimal from-scratch nearest-counterfactual search over actionable features only, holding immutable ones fixed - the same constraint real counterfactual-explanation tooling (like `dice-ml`) enforces, implemented directly rather than as a library wrapper.
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def nearest_counterfactual(model, instance, actionable_features, feature_ranges,
+                           target_class=1, step=0.05, max_iters=200):
+    """
+    Searches for the smallest change to `instance`'s actionable features
+    that flips the model's prediction to `target_class`, via random
+    perturbation within each feature's real observed range - a simple
+    stand-in for the optimization-based search real tools use.
+
+    Parameters:
+        model: a fitted classifier with .predict()
+        instance: pandas Series, the original input row
+        actionable_features: list of column names allowed to change
+            (immutable features like age or protected attributes are
+            never touched)
+        feature_ranges: {column: (min, max)} for each actionable feature,
+            typically the observed range in the training data
+        target_class: the desired predicted class
+        step: fraction of each feature's range to perturb by, per iteration
+        max_iters: number of candidate counterfactuals to try
+
+    Returns the closest successful counterfactual found (as a Series), or
+    None if no perturbation within max_iters flipped the prediction.
+    """
+    rng = np.random.default_rng(42)
+    best = None
+    best_distance = float("inf")
+
+    for _ in range(max_iters):
+        candidate = instance.copy()
+        for feature in actionable_features:
+            low, high = feature_ranges[feature]
+            delta = rng.uniform(-step, step) * (high - low)
+            candidate[feature] = np.clip(candidate[feature] + delta, low, high)
+
+        if model.predict(pd.DataFrame([candidate]))[0] == target_class:
+            distance = sum(
+                abs(candidate[f] - instance[f]) / (feature_ranges[f][1] - feature_ranges[f][0])
+                for f in actionable_features
+            )
+            if distance < best_distance:
+                best, best_distance = candidate, distance
+
+    return best
+
+
+# Usage example:
+# counterfactual = nearest_counterfactual(
+#     model, denied_applicant,
+#     actionable_features=["duration_months", "existing_credits"],
+#     feature_ranges={"duration_months": (6, 72), "existing_credits": (1, 4)},
+# )
+# if counterfactual is not None:
+#     print(counterfactual[["duration_months", "existing_credits"]])
+```
+
+## Limitations
+
+### 1. Multiple, equally valid counterfactuals can exist
+
+There is rarely one unique "nearest" counterfactual - several different, equally small edits might all flip the outcome. Which one gets shown to the applicant is a choice, and different choices can suggest very different, sometimes contradictory, advice.
+
+### 2. A mathematically small change isn't necessarily a realistic one
+
+Without hard constraints on which features are actionable and which are immutable, a naive search can suggest changing an unchangeable attribute, or an unrealistic combination (raise income *and* reduce debt *and* extend employment history, all simultaneously and immediately).
+
+### 3. It explains one decision, not the model's overall fairness
+
+Like [SHAP](shap-values.md) and [LIME](lime.md), a counterfactual explanation is local to a single prediction. It says nothing about whether the model's aggregate behavior satisfies [Demographic Parity](demographic-parity.md), [Equalized Odds](equalized-odds.md), or [Counterfactual Fairness](counterfactual-fairness.md) - a different, model-wide check with a different name and a different method.
+
+### 4. The suggested change can still be indirectly discriminatory
+
+A counterfactual that suggests "move to a different zip code" is technically actionable but not realistically so, and can smuggle a protected-attribute-adjacent proxy back into the advice given to the applicant.
+
+## Related Concepts
+
+* [Counterfactual Fairness](counterfactual-fairness.md) - the fairness *definition* this explainer is explicitly not about, despite the shared name.
+* [What Are SHAP Values?](shap-values.md) and [What Is LIME?](lime.md) - the two feature-attribution explainability methods this one is offered as a third alternative to.
+* [Protected Attribute](protected-attribute.md) - why an actionable-feature constraint has to exclude these by definition.
+
+## Related Projects in This Repo
+
+* [`German Credit Lending/`](../German%20Credit%20Lending/) - the audit used for the counterfactual-search example above.
+
+## Further Reading
+
+* [Wachter, S., Mittelstadt, B., Russell, C. (2017): Counterfactual Explanations Without Opening the Black Box](https://arxiv.org/abs/1711.00399) - the paper that introduced counterfactual explanations as a GDPR-motivated alternative to feature-attribution methods.
+* [Mothilal, R. K., Sharma, A., Tan, C. (2020): Explaining Machine Learning Classifiers through Diverse Counterfactual Explanations](https://arxiv.org/abs/1905.07697) - the paper behind the `dice-ml` package, addressing the "multiple valid counterfactuals" limitation directly.
+* [Verma, S. et al. (2020): Counterfactual Explanations for Machine Learning: A Review](https://arxiv.org/abs/2010.10596) - a survey of the actionability and realism constraints real counterfactual-explanation methods use.
+
+*Part of [The Fair Code Project](https://instagram.com/thefaircodeproject) - exposing and fixing algorithmic bias with real data and open code.*
+

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Fairness Through Unawareness Fails · Fair Code</title>
+<meta name="description" content="Learn why dropping a protected attribute from a model&#x27;s inputs is not the fairness fix it appears to be, using Tenant Screening&#x27;s real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.">
+<link rel="canonical" href="https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Why Fairness Through Unawareness Fails · Fair Code">
+<meta property="og:description" content="Learn why dropping a protected attribute from a model&#x27;s inputs is not the fairness fix it appears to be, using Tenant Screening&#x27;s real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/fairness-through-unawareness.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Why Fairness Through Unawareness Fails · Fair Code">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og-light/fairness-through-unawareness.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Why Fairness Through Unawareness Fails · Fair Code (light)">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why Fairness Through Unawareness Fails · Fair Code">
+<meta name="twitter:description" content="Learn why dropping a protected attribute from a model&#x27;s inputs is not the fairness fix it appears to be, using Tenant Screening&#x27;s real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/fairness-through-unawareness.png">
+
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = localStorage.getItem('fc-theme') || systemPref;
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "Why Fairness Through Unawareness Fails",
+      "description": "Learn why dropping a protected attribute from a model's inputs is not the fairness fix it appears to be, using Tenant Screening's real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.",
+      "url": "https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Why Fairness Through Unawareness Fails?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Fairness through unawareness is the intuition that a model is fair simply because it does not use a protected attribute (race, sex, age) as an input - and it fails whenever other features carry enough correlated information to reconstruct what was removed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Dropping the protected attribute feels like the obvious fix, and it's usually the first thing anyone tries: no race column, no racial bias. The reasoning has an intuitive appeal that makes it persistent even after it's been shown not to hold - \"the model literally cannot see race\" sounds like a complete argument."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Why Fairness Through Unawareness Fails",
+          "item": "https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/fairness-through-unawareness.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">Why Fairness Through Unawareness Fails</h1>
+      <p class="explainer-lede">Removing the protected attribute doesn&#x27;t remove what correlates with it.</p>
+      <p class="explainer-lede">Learn why dropping a protected attribute from a model&#x27;s inputs is not the fairness fix it appears to be, using Tenant Screening&#x27;s real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>Removing the protected attribute from a model&#x27;s inputs is the single most common first response to a fairness complaint - and on real data, it can leave the gap unchanged, or make it worse.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Fairness through unawareness</strong> is the intuition that a model is fair simply because it does not use a protected attribute (race, sex, age) as an input - and it fails whenever other features carry enough correlated information to reconstruct what was removed.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>Dropping the protected attribute feels like the obvious fix, and it&#x27;s usually the first thing anyone tries: no race column, no racial bias. The reasoning has an intuitive appeal that makes it persistent even after it&#x27;s been shown not to hold - &quot;the model literally cannot see race&quot; sounds like a complete argument.</p>
+<p>It isn&#x27;t, because a protected attribute rarely travels alone. Zip code correlates with race through housing patterns. Name correlates with sex and ethnicity. Employment history and arrest records correlate with race through decades of unequal enforcement and access. A model doesn&#x27;t need the protected attribute itself if enough of its correlates are still sitting in the feature set - it can reconstruct the same decision boundary from the pieces left behind. This is exactly the mechanism <a href="proxy-variables.html">Proxy Variables</a> describes, and it&#x27;s why &quot;fairness through unawareness&quot; is treated in the fairness literature as a well-documented failure mode, not a live debate.</p>
+<p>This repo&#x27;s own benchmark harness names this exact strategy <code>unawareness</code> (S1 in the <a href="mitigation-strategies.html">mitigation strategies</a> ladder) and runs it on every audit specifically to measure how much it actually helps - which, as the real numbers below show, is not a fixed or guaranteed amount.</p>
+<h2 id="concrete-example-tenant-screening-audit-07">Concrete Example: Tenant Screening - Audit 07</h2>
+<p>The demographic parity gap for the baseline logistic regression model on race (disadvantaged: Black applicants, n=2,943; advantaged: White applicants, n=2,224), using the frozen numbers exactly as <code>faircode/benchmark.py</code> computed them:</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Strategy</th><th>Demographic Parity Diff</th><th>95% CI</th><th>p-value</th></tr></thead><tbody><tr><td>S0 baseline (race included)</td><td>0.060</td><td>[0.032, 0.086]</td><td>0.0</td></tr><tr><td>S1 unawareness (race dropped)</td><td>0.105</td><td>[0.077, 0.131]</td><td>0.0</td></tr></tbody></table></div>
+<p>Dropping race from the model&#x27;s inputs did not shrink the gap - it grew, from 6.0 points to 10.5 points, and both numbers are tightly estimated and clearly significant (large n, narrow CIs, p essentially 0). This is the opposite of what &quot;fairness through unawareness&quot; predicts.</p>
+<p>The core features still available to the model - <code>Supervision_Risk_Score_First</code>, prior-arrest-episode counts across felony/violent/property/drug categories, employment percentage - carry real correlation with race, a well-documented pattern from decades of unequal policing and enforcement. Removing race directly didn&#x27;t remove that correlation; it just meant the model could no longer see race as a labeled input while still learning from features that track it closely, and the resulting fitted model happened to rely on those correlates <em>more</em> once race itself stopped absorbing part of the signal. <code>faircode/strategies.py</code>&#x27;s next strategy, <code>unawareness_proxy_removal</code> (S2), goes further and drops the explicitly-listed proxy features too - see <a href="mitigation-strategies.html">Mitigation Strategies</a> for how that step, and the constraint-based strategies after it, actually move this specific gap.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>Checks whether dropping a column actually reduces its correlation with the rest of the feature set, instead of assuming it does.</p>
+<pre><code class="language-python">import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
+
+
+def unawareness_gap_check(df, protected_column, feature_columns, group_disadvantaged, group_advantaged):
+    &quot;&quot;&quot;
+    Fits a simple classifier on `feature_columns` to predict the protected
+    attribute itself. A high accuracy means the remaining features can
+    reconstruct the protected attribute almost as well as having it
+    directly - the exact condition under which dropping it will fail to
+    remove its effect on downstream predictions.
+
+    Parameters:
+        df: DataFrame containing both the protected column and the
+            candidate feature columns
+        protected_column: name of the protected-attribute column
+        feature_columns: candidate columns to keep after &quot;unawareness&quot;
+        group_disadvantaged, group_advantaged: the two values of
+            protected_column to compare
+
+    Returns a dict with reconstruction_accuracy (how well the remaining
+    features predict the dropped attribute) and a plain verdict.
+    &quot;&quot;&quot;
+    mask = df[protected_column].isin([group_disadvantaged, group_advantaged])
+    sub = df[mask].dropna(subset=feature_columns + [protected_column])
+
+    X = pd.get_dummies(sub[feature_columns])
+    y = LabelEncoder().fit_transform(sub[protected_column])
+
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X, y)
+    accuracy = model.score(X, y)
+
+    return {
+        &quot;reconstruction_accuracy&quot;: accuracy,
+        &quot;verdict&quot;: (
+            &quot;Remaining features reconstruct the protected attribute well - &quot;
+            &quot;dropping it is unlikely to remove its effect.&quot;
+            if accuracy &gt; 0.75 else
+            &quot;Remaining features poorly predict the protected attribute - &quot;
+            &quot;dropping it is more likely to actually help.&quot;
+        ),
+    }
+
+
+# Usage example:
+# result = unawareness_gap_check(
+#     df, protected_column=&quot;Race&quot;,
+#     feature_columns=[&quot;Supervision_Risk_Score_First&quot;, &quot;Prior_Arrest_Episodes_Felony&quot;,
+#                       &quot;Prior_Arrest_Episodes_Violent&quot;, &quot;Percent_Days_Employed&quot;],
+#     group_disadvantaged=&quot;BLACK&quot;, group_advantaged=&quot;WHITE&quot;,
+# )
+# print(result)</code></pre>
+<h2 id="limitations">Limitations</h2>
+<h3 id="1-the-gap-can-move-in-either-direction-not-just-stay-the-same">1. The gap can move in either direction, not just &quot;stay the same&quot;</h3>
+<p>As Tenant Screening shows, dropping the protected attribute can make the measured gap <em>larger</em>, not just fail to shrink it. There is no guarantee of direction, only that the outcome depends on exactly which correlated features remain and how the model reweights them.</p>
+<h3 id="2-proxy-removal-is-not-a-complete-fix-either">2. Proxy removal is not a complete fix either</h3>
+<p>This repo&#x27;s own next strategy after unawareness, <code>unawareness_proxy_removal</code>, only removes a pre-defined, finite list of known proxies - see <a href="proxy-variables.html">Proxy Variables</a> for why an unlisted or newly-emerging proxy can slip through even that step.</p>
+<h3 id="3-it-removes-information-the-model-might-need-for-a-legitimate-reason">3. It removes information the model might need for a <em>legitimate</em> reason</h3>
+<p>Some uses of a protected-adjacent attribute are lawful and relevant (age in certain insurance actuarial contexts, for instance); blanket removal without checking what else changes can trade one problem for a different, unexamined one.</p>
+<h3 id="4-it-provides-no-way-to-measure-whether-it-worked-without-checking-a-real-fairness-metric">4. It provides no way to measure whether it worked without checking a real fairness metric</h3>
+<p>&quot;Unawareness&quot; alone gives no signal, on its own, about whether the resulting model is more or less fair - only comparing an actual gap metric before and after, as this repo&#x27;s benchmark harness does for every audit, can answer that.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="proxy-variables.html">Proxy Variables</a> - the mechanism (correlated features standing in for the removed attribute) that makes fairness through unawareness fail.</li><li><a href="mitigation-strategies.html">What Are Pre-, In-, and Post-Processing Fairness Mitigations?</a> - where &quot;unawareness&quot; sits as the first, weakest step in a five-strategy ladder, and what the stronger steps do differently.</li><li><a href="demographic-parity.html">What Is Demographic Parity?</a> - the metric used to measure the gap in the Tenant Screening example above.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../Tenant%20Screening/"><code>Tenant Screening/</code></a> - the audit above, where dropping race increased the measured gap rather than closing it.</li><li><a href="../index.html#project-insurance"><code>Insurance Denial/</code></a> - a second real audit in this repo&#x27;s benchmark harness where the same <code>unawareness</code> strategy is applied and measured independently.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://doi.org/10.1145/1401890.1401959" target="_blank" rel="noreferrer noopener">Pedreschi, D., Ruggieri, S., Turini, F. (2008): Discrimination-Aware Data Mining</a> - an early formal treatment of why removing a sensitive attribute doesn&#x27;t remove its statistical effect.</li><li><a href="https://arxiv.org/abs/1703.06856" target="_blank" rel="noreferrer noopener">Kusner, M. et al. (2017): Counterfactual Fairness</a> - proposes a causal alternative that explicitly accounts for what unawareness misses; see also <a href="counterfactual-fairness.html">Counterfactual Fairness</a>.</li><li><a href="https://fairmlbook.org/introduction.html" target="_blank" rel="noreferrer noopener">Barocas, S., Hardt, M., Narayanan, A. (2019): <em>Fairness and Machine Learning</em></a> - Chapter 1 covers &quot;fairness through unawareness&quot; directly as one of the field&#x27;s earliest and most persistently re-discovered mistakes.</li></ul>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+      const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || systemPref;
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || systemPref;
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

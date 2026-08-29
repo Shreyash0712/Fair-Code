@@ -280,7 +280,13 @@ Fair-Code/
 │   ├── base-rate-fallacy.md
 │   ├── precision-recall-curve.md
 │   ├── equal-opportunity.md
-│   └── intersectional-bias.md
+│   ├── intersectional-bias.md
+│   ├── accuracy-equality.md
+│   ├── bootstrap-confidence-intervals.md
+│   ├── mitigation-strategies.md
+│   ├── fairness-through-unawareness.md
+│   ├── lime.md
+│   └── counterfactual-explanation.md
 │
 ├── .pre-commit-config.yaml              # em-dash/broken-links/ruff + build-explainers pre-push hooks
 ├── CHANGELOG.md
@@ -767,10 +773,10 @@ features = [
 
 ## Explainers
 
-47 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
+53 short, plain-language write-ups of individual fairness concepts, each with runnable detection code. The healthcare-focused ones are called out above in [Healthcare AI Bias Focus](#healthcare-ai-bias-focus).
 
 <details>
-<summary><strong>Show all 47 explainers →</strong></summary>
+<summary><strong>Show all 53 explainers →</strong></summary>
 
 | Explainer | What it covers |
 |-----------|----------------|
@@ -821,6 +827,12 @@ features = [
 | [What Is a Precision-Recall Curve?](explainers/precision-recall-curve.md) | Why ROC/AUC looks fine while precision collapses under the class imbalance most fairness audits actually live in |
 | [What Is Equal Opportunity (and How It Differs From Equalized Odds)?](explainers/equal-opportunity.md) | Why passing the true-positive-rate check doesn't mean passing the false-positive-rate one |
 | [What Is Intersectional Bias?](explainers/intersectional-bias.md) | Why checking one protected attribute at a time can hide harm concentrated at the intersection |
+| [What Is Accuracy Equality?](explainers/accuracy-equality.md) | Equal accuracy across groups can hide two completely different, offsetting error profiles |
+| [What Is a Bootstrap Confidence Interval (and a Permutation Test)?](explainers/bootstrap-confidence-intervals.md) | A fairness gap without an interval attached is a number, not a finding |
+| [What Are Pre-, In-, and Post-Processing Fairness Mitigations?](explainers/mitigation-strategies.md) | Where in the pipeline you intervene changes what a fairness fix can and can't do |
+| [Why Fairness Through Unawareness Fails](explainers/fairness-through-unawareness.md) | Removing the protected attribute doesn't remove what correlates with it |
+| [What Is LIME?](explainers/lime.md) | A local, approximate surrogate model - the other major way to explain one prediction |
+| [What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)](explainers/counterfactual-explanation.md) | One asks what changed the outcome. The other asks whether the outcome should have changed at all |
 
 </details>
 

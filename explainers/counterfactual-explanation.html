@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness) · Fair Code</title>
+<meta name="description" content="Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it&#x27;s a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.">
+<link rel="canonical" href="https://www.thefaircode.xyz/explainers/counterfactual-explanation.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness) · Fair Code">
+<meta property="og:description" content="Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it&#x27;s a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.thefaircode.xyz/explainers/counterfactual-explanation.html">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/counterfactual-explanation.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness) · Fair Code">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og-light/counterfactual-explanation.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness) · Fair Code (light)">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness) · Fair Code">
+<meta name="twitter:description" content="Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it&#x27;s a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/counterfactual-explanation.png">
+
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = localStorage.getItem('fc-theme') || systemPref;
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)",
+      "description": "Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it's a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.",
+      "url": "https://www.thefaircode.xyz/explainers/counterfactual-explanation.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/counterfactual-explanation.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A counterfactual explanation answers, for one specific denied or flagged decision: what is the smallest change to this person's inputs that would have flipped the model's output? It comes from the explainability literature (Wachter, Mittelstadt & Russell, 2017), not the fairness-definitions literature."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A counterfactual explanation is the basis for real \"adverse action\" notices required by credit and lending regulation (the U.S. Equal Credit Opportunity Act, for one): when a loan is denied, the applicant is often owed a concrete, actionable reason. \"Your income was $4,000 below the approval threshold\" is a counterfactual explanation - and a genuinely useful one, since it tells the applicant something they could plausibly act on, unlike a raw model score or a list of feature-attribution weights."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)",
+          "item": "https://www.thefaircode.xyz/explainers/counterfactual-explanation.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/counterfactual-explanation.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)</h1>
+      <p class="explainer-lede">One asks what changed the outcome. The other asks whether the outcome should have changed at all.</p>
+      <p class="explainer-lede">Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it&#x27;s a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>&quot;Counterfactual&quot; shows up twice in this repo&#x27;s explainers for two genuinely different ideas - one is a fairness definition, the other is an explainability technique, and confusing them means asking the wrong question of the wrong tool.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p>A <strong>counterfactual explanation</strong> answers, for one specific denied or flagged decision: what is the smallest change to this person&#x27;s inputs that would have flipped the model&#x27;s output? It comes from the explainability literature (Wachter, Mittelstadt &amp; Russell, 2017), not the fairness-definitions literature.</p>
+<h2 id="not-to-be-confused-with-counterfactual-fairness">Not to Be Confused With Counterfactual Fairness</h2>
+<p><a href="counterfactual-fairness.html">Counterfactual Fairness</a> (Kusner et al., 2017) is a <em>fairness definition</em>: it asks whether an individual&#x27;s outcome would differ if they had been born into a different demographic group, holding everything causally independent of that group membership constant. It&#x27;s a test applied to the model as a whole, using a causal graph.</p>
+<p>A <strong>counterfactual explanation</strong> is a different question entirely, applied to one prediction, with no causal graph required: not &quot;would this differ if your race were different,&quot; but &quot;what is the nearest input you <em>could actually have had</em> that gets you approved instead of denied?&quot; One is about detecting discrimination; the other is about explaining, and potentially contesting, a single outcome. The shared word is a real, common point of confusion - they come from different research communities and answer different questions, and it&#x27;s entirely possible for a decision to pass one framework&#x27;s test while a counterfactual explanation for it looks completely unreasonable, or vice versa.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>A counterfactual explanation is the basis for real &quot;adverse action&quot; notices required by credit and lending regulation (the U.S. Equal Credit Opportunity Act, for one): when a loan is denied, the applicant is often owed a concrete, actionable reason. &quot;Your income was $4,000 below the approval threshold&quot; is a counterfactual explanation - and a genuinely useful one, since it tells the applicant something they could plausibly act on, unlike a raw model score or a list of feature-attribution weights.</p>
+<p>That practical framing - &quot;what would need to change&quot; - is also what puts counterfactual explanation alongside feature-attribution methods as a third major explainability paradigm: <a href="shap-values.html">SHAP</a> and <a href="lime.html">LIME</a> both answer &quot;how much did each feature contribute,&quot; while counterfactual explanation answers &quot;what&#x27;s the minimal edit that changes the outcome.&quot; For someone on the receiving end of an automated decision, the second question is usually the one they actually have.</p>
+<h2 id="core-concept-minimal-actionable-change">Core Concept: Minimal, Actionable Change</h2>
+<p>Formally, a counterfactual explanation for input <code>x</code> (predicted class <code>y</code>) is a nearby point <code>x&#x27;</code> such that the model predicts a different class for <code>x&#x27;</code>, and <code>x&#x27;</code> is as close to <code>x</code> as possible under some distance measure. &quot;Close&quot; typically means: change as few features as possible, and by as little as possible - not the theoretical minimum-distance point in raw numerical terms, but one that corresponds to a change the person could realistically make.</p>
+<p>That &quot;realistically make&quot; qualifier is where most of the actual difficulty lives. A mathematically nearest counterfactual might suggest lowering age by ten years or changing a protected attribute - technically the smallest edit, and completely useless as advice. Real counterfactual-explanation methods constrain the search to <em>actionable</em> features (income, employment length, outstanding debt) and hold immutable ones (age, race, past history that can&#x27;t be un-happened) fixed.</p>
+<h2 id="concrete-example-german-credit-lending-audit-03">Concrete Example: German Credit Lending - Audit 03</h2>
+<p>For an applicant denied credit by the baseline model, a counterfactual search over actionable features illustrates the difference from a feature-attribution explanation:</p>
+<pre><code>--- ORIGINAL APPLICATION (predicted: denied) ---
+credit_amount: 4,800
+duration_months: 36
+employment_years: 1
+existing_credits: 2
+
+--- NEAREST COUNTERFACTUAL (predicted: approved) ---
+credit_amount: 4,800          (unchanged)
+duration_months: 24            (-12 months)
+employment_years: 1            (unchanged)
+existing_credits: 1             (-1)</code></pre>
+<p>Where a SHAP or LIME explanation would report <em>how much</em> each feature contributed to the denial, the counterfactual explanation says something directly actionable instead: shorten the requested loan term by a year and close one existing credit line, and this specific model would have approved the application. That&#x27;s the kind of statement an adverse-action notice is meant to contain, and it&#x27;s a fundamentally different output than a feature-importance ranking.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>A minimal from-scratch nearest-counterfactual search over actionable features only, holding immutable ones fixed - the same constraint real counterfactual-explanation tooling (like <code>dice-ml</code>) enforces, implemented directly rather than as a library wrapper.</p>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+
+
+def nearest_counterfactual(model, instance, actionable_features, feature_ranges,
+                           target_class=1, step=0.05, max_iters=200):
+    &quot;&quot;&quot;
+    Searches for the smallest change to `instance`&#x27;s actionable features
+    that flips the model&#x27;s prediction to `target_class`, via random
+    perturbation within each feature&#x27;s real observed range - a simple
+    stand-in for the optimization-based search real tools use.
+
+    Parameters:
+        model: a fitted classifier with .predict()
+        instance: pandas Series, the original input row
+        actionable_features: list of column names allowed to change
+            (immutable features like age or protected attributes are
+            never touched)
+        feature_ranges: {column: (min, max)} for each actionable feature,
+            typically the observed range in the training data
+        target_class: the desired predicted class
+        step: fraction of each feature&#x27;s range to perturb by, per iteration
+        max_iters: number of candidate counterfactuals to try
+
+    Returns the closest successful counterfactual found (as a Series), or
+    None if no perturbation within max_iters flipped the prediction.
+    &quot;&quot;&quot;
+    rng = np.random.default_rng(42)
+    best = None
+    best_distance = float(&quot;inf&quot;)
+
+    for _ in range(max_iters):
+        candidate = instance.copy()
+        for feature in actionable_features:
+            low, high = feature_ranges[feature]
+            delta = rng.uniform(-step, step) * (high - low)
+            candidate[feature] = np.clip(candidate[feature] + delta, low, high)
+
+        if model.predict(pd.DataFrame([candidate]))[0] == target_class:
+            distance = sum(
+                abs(candidate[f] - instance[f]) / (feature_ranges[f][1] - feature_ranges[f][0])
+                for f in actionable_features
+            )
+            if distance &lt; best_distance:
+                best, best_distance = candidate, distance
+
+    return best
+
+
+# Usage example:
+# counterfactual = nearest_counterfactual(
+#     model, denied_applicant,
+#     actionable_features=[&quot;duration_months&quot;, &quot;existing_credits&quot;],
+#     feature_ranges={&quot;duration_months&quot;: (6, 72), &quot;existing_credits&quot;: (1, 4)},
+# )
+# if counterfactual is not None:
+#     print(counterfactual[[&quot;duration_months&quot;, &quot;existing_credits&quot;]])</code></pre>
+<h2 id="limitations">Limitations</h2>
+<h3 id="1-multiple-equally-valid-counterfactuals-can-exist">1. Multiple, equally valid counterfactuals can exist</h3>
+<p>There is rarely one unique &quot;nearest&quot; counterfactual - several different, equally small edits might all flip the outcome. Which one gets shown to the applicant is a choice, and different choices can suggest very different, sometimes contradictory, advice.</p>
+<h3 id="2-a-mathematically-small-change-isn-t-necessarily-a-realistic-one">2. A mathematically small change isn&#x27;t necessarily a realistic one</h3>
+<p>Without hard constraints on which features are actionable and which are immutable, a naive search can suggest changing an unchangeable attribute, or an unrealistic combination (raise income <em>and</em> reduce debt <em>and</em> extend employment history, all simultaneously and immediately).</p>
+<h3 id="3-it-explains-one-decision-not-the-model-s-overall-fairness">3. It explains one decision, not the model&#x27;s overall fairness</h3>
+<p>Like <a href="shap-values.html">SHAP</a> and <a href="lime.html">LIME</a>, a counterfactual explanation is local to a single prediction. It says nothing about whether the model&#x27;s aggregate behavior satisfies <a href="demographic-parity.html">Demographic Parity</a>, <a href="equalized-odds.html">Equalized Odds</a>, or <a href="counterfactual-fairness.html">Counterfactual Fairness</a> - a different, model-wide check with a different name and a different method.</p>
+<h3 id="4-the-suggested-change-can-still-be-indirectly-discriminatory">4. The suggested change can still be indirectly discriminatory</h3>
+<p>A counterfactual that suggests &quot;move to a different zip code&quot; is technically actionable but not realistically so, and can smuggle a protected-attribute-adjacent proxy back into the advice given to the applicant.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="counterfactual-fairness.html">Counterfactual Fairness</a> - the fairness <em>definition</em> this explainer is explicitly not about, despite the shared name.</li><li><a href="shap-values.html">What Are SHAP Values?</a> and <a href="lime.html">What Is LIME?</a> - the two feature-attribution explainability methods this one is offered as a third alternative to.</li><li><a href="protected-attribute.html">Protected Attribute</a> - why an actionable-feature constraint has to exclude these by definition.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../index.html#project-credit"><code>German Credit Lending/</code></a> - the audit used for the counterfactual-search example above.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://arxiv.org/abs/1711.00399" target="_blank" rel="noreferrer noopener">Wachter, S., Mittelstadt, B., Russell, C. (2017): Counterfactual Explanations Without Opening the Black Box</a> - the paper that introduced counterfactual explanations as a GDPR-motivated alternative to feature-attribution methods.</li><li><a href="https://arxiv.org/abs/1905.07697" target="_blank" rel="noreferrer noopener">Mothilal, R. K., Sharma, A., Tan, C. (2020): Explaining Machine Learning Classifiers through Diverse Counterfactual Explanations</a> - the paper behind the <code>dice-ml</code> package, addressing the &quot;multiple valid counterfactuals&quot; limitation directly.</li><li><a href="https://arxiv.org/abs/2010.10596" target="_blank" rel="noreferrer noopener">Verma, S. et al. (2020): Counterfactual Explanations for Machine Learning: A Review</a> - a survey of the actionability and realism constraints real counterfactual-explanation methods use.</li></ul>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+      const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || systemPref;
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || systemPref;
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

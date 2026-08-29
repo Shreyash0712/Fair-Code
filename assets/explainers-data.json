@@ -327,6 +327,48 @@
     "subtitle": "Checking one protected attribute at a time can hide harm concentrated at the intersection.",
     "summary": "Learn why a fairness gap can be larger at the intersection of two protected attributes than either attribute's own single-axis check would predict - a compounding effect Crenshaw (1989) named intersectionality. Anchored to Benefits Denial's real, frozen superadditive gap for sex x national origin, with crosstab detection code and a pointer to the Open Dataset Profiler's own intersectional representation check.",
     "tags": ["metrics", "detection"]
+  },
+  {
+    "slug": "accuracy-equality",
+    "title": "What Is Accuracy Equality?",
+    "subtitle": "Equal accuracy across groups can hide two completely different, offsetting error profiles.",
+    "summary": "Learn why Accuracy Equality only checks overall accuracy, and how a small accuracy gap can sit right next to a huge Equalized Odds gap on the exact same model. Uses COMPAS's real frozen numbers: a 3.5-point accuracy gap next to a 92.6-point Equalized Odds gap, driven by the true-positive-rate difference.",
+    "tags": ["metrics"]
+  },
+  {
+    "slug": "bootstrap-confidence-intervals",
+    "title": "What Is a Bootstrap Confidence Interval (and a Permutation Test)?",
+    "subtitle": "A fairness gap without an interval attached is a number, not a finding.",
+    "summary": "Learn how bootstrap resampling estimates a confidence interval and a permutation test estimates a p-value for any fairness gap, and why both matter most on the small subgroups audits routinely hit. Contrasts two real frozen COMPAS results: a tight, clearly significant Equal Opportunity gap and a wide, inconclusive Predictive Parity gap measured from just 6 rows.",
+    "tags": ["metrics", "detection"]
+  },
+  {
+    "slug": "mitigation-strategies",
+    "title": "What Are Pre-, In-, and Post-Processing Fairness Mitigations?",
+    "subtitle": "Where in the pipeline you intervene changes what a fairness fix can and can't do.",
+    "summary": "Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo's own five-strategy benchmark ladder. Anchored to COMPAS's real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.",
+    "tags": ["metrics", "data"]
+  },
+  {
+    "slug": "fairness-through-unawareness",
+    "title": "Why Fairness Through Unawareness Fails",
+    "subtitle": "Removing the protected attribute doesn't remove what correlates with it.",
+    "summary": "Learn why dropping a protected attribute from a model's inputs is not the fairness fix it appears to be, using Tenant Screening's real frozen result: removing race from the model increased the demographic parity gap from 6.0 to 10.5 points, rather than closing it.",
+    "tags": ["data", "detection"]
+  },
+  {
+    "slug": "lime",
+    "title": "What Is LIME?",
+    "subtitle": "A local, approximate surrogate model - the other major way to explain one prediction.",
+    "summary": "Learn how LIME perturbs an input, fits a simple local model around it, and reads the surrogate's coefficients as an explanation - and why that approximation is a real trade-off against SHAP's exact, game-theoretic guarantees. Uses the same COMPAS prediction SHAP Values explains, for direct comparison.",
+    "tags": ["explainability"]
+  },
+  {
+    "slug": "counterfactual-explanation",
+    "title": "What Is a Counterfactual Explanation? (And How It Differs From Counterfactual Fairness)",
+    "subtitle": "One asks what changed the outcome. The other asks whether the outcome should have changed at all.",
+    "summary": "Learn what a counterfactual explanation is - the smallest input change that flips one specific decision - and why it's a different concept from Counterfactual Fairness despite the shared name. Covers the basis for real adverse-action notices in lending, with a from-scratch nearest-counterfactual search over German Credit Lending.",
+    "tags": ["explainability"]
   }
 ]
 

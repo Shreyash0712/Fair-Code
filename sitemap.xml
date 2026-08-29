@@ -196,4 +196,22 @@
     <loc>https://www.thefaircode.xyz/explainers/intersectional-bias.html</loc>
     <lastmod>2026-08-19</lastmod>
   </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/accuracy-equality.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/bootstrap-confidence-intervals.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/mitigation-strategies.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/fairness-through-unawareness.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/lime.html</loc>
+  </url>
+  <url>
+    <loc>https://www.thefaircode.xyz/explainers/counterfactual-explanation.html</loc>
+  </url>
 </urlset>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Are Pre-, In-, and Post-Processing Fairness Mitigations? · Fair Code</title>
+<meta name="description" content="Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo&#x27;s own five-strategy benchmark ladder. Anchored to COMPAS&#x27;s real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.">
+<link rel="canonical" href="https://www.thefaircode.xyz/explainers/mitigation-strategies.html">
+<meta name="author" content="Yash Kewlani">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:site_name" content="Fair Code">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="What Are Pre-, In-, and Post-Processing Fairness Mitigations? · Fair Code">
+<meta property="og:description" content="Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo&#x27;s own five-strategy benchmark ladder. Anchored to COMPAS&#x27;s real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.thefaircode.xyz/explainers/mitigation-strategies.html">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og/mitigation-strategies.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="What Are Pre-, In-, and Post-Processing Fairness Mitigations? · Fair Code">
+<meta property="og:image" content="https://www.thefaircode.xyz/assets/og-light/mitigation-strategies.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="What Are Pre-, In-, and Post-Processing Fairness Mitigations? · Fair Code (light)">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What Are Pre-, In-, and Post-Processing Fairness Mitigations? · Fair Code">
+<meta name="twitter:description" content="Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo&#x27;s own five-strategy benchmark ladder. Anchored to COMPAS&#x27;s real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.">
+<meta name="twitter:image" content="https://www.thefaircode.xyz/assets/og/mitigation-strategies.png">
+
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='32' y='18' width='13' height='64' fill='%2314171A'/><rect x='32' y='18' width='42' height='13' fill='%2314171A'/><rect x='32' y='44' width='36' height='13' fill='%234F7A5B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const saved = localStorage.getItem('fc-theme') || systemPref;
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+<link rel="stylesheet" href="../assets/explainers.css">
+<style>
+  :root {
+    --bg: #f4f1e8;
+    --surface: #ebe7d9;
+    --border: #d9d3c0;
+    --border2: #bdb59c;
+    --accent: #a63a22;
+    --accent3: #2f6b4f;
+    --text: #36321f;
+    --muted: #7d7459;
+    --white: #1d1910;
+    --bias-track-bg: #e2dcc9;
+
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #15130d;
+    --surface: #1c1912;
+    --border: #2e2a1f;
+    --border2: #443e2d;
+    --accent: #cf6f49;
+    --accent3: #79b294;
+    --text: #cfc7b0;
+    --muted: #8d8367;
+    --white: #f1e9d4;
+    --bias-track-bg: #242013;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "author": {
+        "@type": "Person",
+        "name": "Yash Kewlani",
+        "url": "https://github.com/yakew7"
+      },
+      "name": "What Are Pre-, In-, and Post-Processing Fairness Mitigations?",
+      "description": "Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo's own five-strategy benchmark ladder. Anchored to COMPAS's real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.",
+      "url": "https://www.thefaircode.xyz/explainers/mitigation-strategies.html",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Fair Code Explainers",
+        "url": "https://www.thefaircode.xyz/index.html#explainers"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "url": "https://www.thefaircode.xyz/explainers/mitigation-strategies.html",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What Are Pre-, In-, and Post-Processing Fairness Mitigations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pre-, in-, and post-processing are the three points in a model pipeline where a fairness intervention can happen: pre-processing changes the training data before the model ever sees it, in-processing bakes a fairness constraint into the training process itself, and post-processing adjusts the model's outputs after it has already been trained."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this matter for fairness?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "\"Mitigate the bias\" is not one technique - it's a choice of when to intervene, and that choice has real consequences independent of which specific method you pick within it. Pre-processing is the simplest to apply and needs no special training infrastructure, but it can only remove what the data explicitly encodes, not what a model learns to reconstruct from what's left."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fair Code",
+          "item": "https://www.thefaircode.xyz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Explainers",
+          "item": "https://www.thefaircode.xyz/index.html#explainers"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What Are Pre-, In-, and Post-Processing Fairness Mitigations?",
+          "item": "https://www.thefaircode.xyz/explainers/mitigation-strategies.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="84e0aebf-44e1-466e-b2c6-62f75e1c36c7"></script>
+</head>
+<body class="explainer-page">
+  <main class="explainer-shell is-ready" data-explainer-shell>
+    <div class="explainer-topbar">
+      <a class="explainer-back" href="../index.html#explainers">← Back to explainers</a>
+      <div class="explainer-topbar-actions">
+        <a class="explainer-source" href="https://github.com/yakew7/Fair-Code/blob/main/explainers/mitigation-strategies.md" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+        <button class="explainer-theme-toggle" id="explainerThemeToggle" aria-label="Toggle theme" aria-pressed="false">☀</button>
+      </div>
+    </div>
+
+    <section class="explainer-hero">
+      <div class="explainer-kicker">Explainer</div>
+      <h1 class="explainer-headline">What Are Pre-, In-, and Post-Processing Fairness Mitigations?</h1>
+      <p class="explainer-lede">Where in the pipeline you intervene changes what a fairness fix can and can&#x27;t do.</p>
+      <p class="explainer-lede">Learn the three families of fairness intervention - pre-processing, in-processing, and post-processing - through this repo&#x27;s own five-strategy benchmark ladder. Anchored to COMPAS&#x27;s real frozen progression (85.5% to 17.2% to 11.5% to -1.4% to 2.3% demographic parity gap), showing the three approaches converge rather than compound.</p>
+    </section>
+
+    <article class="explainer-content"><blockquote><p><em>Where in the machine learning pipeline you intervene - before training, during training, or after training - changes what a fairness fix can and can&#x27;t do, and the three approaches don&#x27;t produce interchangeable results even when they target the exact same gap.</em></p></blockquote>
+<h2 id="the-one-sentence-definition">The One-Sentence Definition</h2>
+<p><strong>Pre-, in-, and post-processing</strong> are the three points in a model pipeline where a fairness intervention can happen: pre-processing changes the training data before the model ever sees it, in-processing bakes a fairness constraint into the training process itself, and post-processing adjusts the model&#x27;s outputs after it has already been trained.</p>
+<h2 id="why-it-matters">Why It Matters</h2>
+<p>&quot;Mitigate the bias&quot; is not one technique - it&#x27;s a choice of <em>when</em> to intervene, and that choice has real consequences independent of which specific method you pick within it. Pre-processing is the simplest to apply and needs no special training infrastructure, but it can only remove what the data explicitly encodes, not what a model learns to reconstruct from what&#x27;s left. In-processing can enforce a fairness constraint directly during optimization, but it requires retraining access to the model - not always available with a third-party or already-deployed system. Post-processing needs no retraining at all, but it requires knowing each individual&#x27;s group membership at prediction time, which is sometimes exactly the information that&#x27;s illegal or impractical to collect.</p>
+<p>This repo&#x27;s own benchmark harness is built entirely around this taxonomy - it applies the same five-strategy ladder to every audit, so &quot;does this fix work&quot; always means &quot;compared to which stage of the pipeline.&quot;</p>
+<h2 id="core-concept-this-repo-s-s0-s4-ladder">Core Concept: This Repo&#x27;s S0-S4 Ladder</h2>
+<p><code>faircode/strategies.py</code> implements five strategies in strictly increasing order of intervention:</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Strategy</th><th>Stage</th><th>What it does</th></tr></thead><tbody><tr><td>S0 <code>baseline</code></td><td>none</td><td>Every feature, including the protected attribute, used as-is.</td></tr><tr><td>S1 <code>unawareness</code></td><td>pre-processing</td><td>Drop the protected attribute column only.</td></tr><tr><td>S2 <code>unawareness_proxy_removal</code></td><td>pre-processing</td><td>Drop the protected attribute <em>and</em> its known proxies.</td></tr><tr><td>S3 <code>in_processing</code></td><td>in-processing</td><td>Fairlearn <code>ExponentiatedGradient</code> (Agarwal et al. 2018) - trains under a Demographic Parity constraint, on the same reduced feature set as S2.</td></tr><tr><td>S4 <code>post_processing</code></td><td>post-processing</td><td>Fairlearn <code>ThresholdOptimizer</code> (Hardt, Price &amp; Srebro 2016 style) - fits per-group decision thresholds after training, on the same reduced feature set as S2.</td></tr></tbody></table></div>
+<p>S1 alone is <a href="fairness-through-unawareness.html">fairness through unawareness</a> - the intuition that removing the protected attribute is sufficient - and this repo&#x27;s own results are the direct rebuttal to that intuition, shown below. S3 and S4 deliberately train on the <em>same</em> feature set as S2, not the full S0 feature set, so any further improvement they show over S2 can be attributed to the constraint or the threshold adjustment itself, not to seeing different data.</p>
+<h2 id="concrete-example-compas-audit-01">Concrete Example: COMPAS - Audit 01</h2>
+<p>The demographic parity gap for the baseline logistic regression model on race, across all five strategies, using the frozen numbers exactly as <code>faircode/benchmark.py</code> computed them (<code>paper/results-frozen/results_fairness.csv</code>):</p>
+<div class="explainer-table-wrap"><table class="explainer-table"><thead><tr><th>Strategy</th><th>Demographic Parity Diff</th><th>95% CI</th><th>p-value</th></tr></thead><tbody><tr><td>S0 baseline</td><td>0.855</td><td>[0.839, 0.871]</td><td>0.0</td></tr><tr><td>S1 unawareness</td><td>0.172</td><td>[0.139, 0.206]</td><td>0.0</td></tr><tr><td>S2 unawareness_proxy_removal</td><td>0.115</td><td>[0.088, 0.144]</td><td>0.0</td></tr><tr><td>S3 in_processing</td><td>-0.014</td><td>[-0.040, 0.011]</td><td>0.3305</td></tr><tr><td>S4 post_processing</td><td>0.023</td><td>[-0.009, 0.056]</td><td>0.1485</td></tr></tbody></table></div>
+<p>Three things this progression shows that a single before/after comparison would miss:</p>
+<p><strong>Dropping the protected attribute alone (S0 → S1) does most of the work, but leaves a real gap.</strong> The 85.5-point baseline gap falls to 17.2 points - a huge improvement - but 17.2 points is still a large, clearly significant disparity. This is exactly the failure mode <a href="fairness-through-unawareness.html">Fairness Through Unawareness</a> warns about: &quot;we removed race&quot; does not mean &quot;we removed race&#x27;s effect.&quot;</p>
+<p><strong>Removing proxies too (S1 → S2) helps further, but not proportionally as much.</strong> Another 5.7 points close, to 11.5 - a real but much smaller gain than the first step, since not every remaining correlate of race was captured by the defined proxy list.</p>
+<p><strong>The constraint-based methods (S3, S4) land at or below S2, and stop being statistically significant.</strong> S3&#x27;s gap is actually slightly negative (-1.4 points) and S4&#x27;s is 2.3 points - both with confidence intervals that cross zero and p-values well above 0.05. Both strategies converge to roughly the same residual gap that simple proxy removal already reached, not a dramatically better one. That convergence is the basis for treating this residual as a floor characteristic of the data and task, rather than a limitation of any one specific mitigation method - three different approaches (drop proxies, constrain training, adjust thresholds) independently landing in the same place is stronger evidence than any one of them alone.</p>
+<h2 id="detection-code">Detection Code</h2>
+<p>Compares a metric across mitigation stages and flags whether later strategies actually helped, using the same held-out predictions pattern the other explainers in this repo use.</p>
+<pre><code class="language-python">import pandas as pd
+
+
+def summarize_mitigation_ladder(results_df, audit, metric, protected_attribute, model=&quot;logistic_regression&quot;):
+    &quot;&quot;&quot;
+    Extracts one metric&#x27;s progression across the five strategies for a
+    single audit/model/protected_attribute combination, in the fixed
+    S0-S4 order, and flags whether each step actually reduced the gap.
+
+    Parameters:
+        results_df: a DataFrame shaped like paper/results-frozen/results_fairness.csv
+        audit, metric, protected_attribute, model: filter values
+
+    Returns a DataFrame with one row per strategy, in S0-S4 order, plus an
+    `improved_since_previous` column (None for the first row).
+    &quot;&quot;&quot;
+    order = [&quot;baseline&quot;, &quot;unawareness&quot;, &quot;unawareness_proxy_removal&quot;,
+             &quot;in_processing&quot;, &quot;post_processing&quot;]
+
+    subset = results_df[
+        (results_df[&quot;audit&quot;] == audit)
+        &amp; (results_df[&quot;metric&quot;] == metric)
+        &amp; (results_df[&quot;protected_attribute&quot;] == protected_attribute)
+        &amp; (results_df[&quot;model&quot;] == model)
+    ].set_index(&quot;strategy&quot;).reindex(order)
+
+    improved = [None]
+    for prev, curr in zip(subset[&quot;value&quot;], subset[&quot;value&quot;].iloc[1:]):
+        improved.append(abs(curr) &lt; abs(prev))
+
+    subset = subset.reset_index()
+    subset[&quot;improved_since_previous&quot;] = improved
+    return subset[[&quot;strategy&quot;, &quot;value&quot;, &quot;ci_low&quot;, &quot;ci_high&quot;, &quot;p_value&quot;, &quot;improved_since_previous&quot;]]
+
+
+# Usage example:
+# import pandas as pd
+# results = pd.read_csv(&quot;paper/results-frozen/results_fairness.csv&quot;)
+# print(summarize_mitigation_ladder(results, &quot;compas&quot;, &quot;demographic_parity_diff&quot;, &quot;race&quot;))</code></pre>
+<h2 id="limitations">Limitations</h2>
+<h3 id="1-in-processing-needs-retraining-access-which-isn-t-always-available">1. In-processing needs retraining access, which isn&#x27;t always available</h3>
+<p><code>ExponentiatedGradient</code> requires fitting the model under the constraint from scratch. A team working with a third-party model, a legacy system, or a model that&#x27;s already deployed and expensive to retrain cannot apply this strategy at all - only pre- or post-processing remain options.</p>
+<h3 id="2-post-processing-needs-group-membership-at-prediction-time">2. Post-processing needs group membership at prediction time</h3>
+<p><code>ThresholdOptimizer</code> must know which group each individual belongs to <em>at inference</em>, to apply the right per-group threshold. In many regulated domains (credit, employment), collecting or using protected-attribute data at decision time is restricted or illegal even when it was available during training - making post-processing legally unavailable in exactly the settings where it&#x27;s most tempting.</p>
+<h3 id="3-none-of-the-three-approaches-monotonically-improves-every-metric">3. None of the three approaches monotonically improves every metric</h3>
+<p>The COMPAS example shows real progress on demographic parity, but a strategy tuned to close one metric&#x27;s gap can leave another metric&#x27;s gap unchanged or worse - this repo&#x27;s benchmark harness computes all six metrics for every strategy for exactly this reason, since a mitigation report using only one metric can miss that trade-off entirely.</p>
+<h3 id="4-a-near-zero-gap-after-mitigation-isn-t-the-same-as-a-fair-model">4. A near-zero gap after mitigation isn&#x27;t the same as a fair model</h3>
+<p>S3 and S4 close the <em>measured</em> demographic parity gap, but neither one touches the underlying label quality, feature construction, or the fact that the model is being used for this decision at all. See <a href="label-bias.html">What Is Label Bias?</a>.</p>
+<h2 id="related-concepts">Related Concepts</h2>
+<ul><li><a href="fairness-through-unawareness.html">What Is Fairness Through Unawareness?</a> - the S1 strategy on its own, and why the 17.2-point residual gap above is the direct evidence against relying on it alone.</li><li><a href="demographic-parity.html">What Is Demographic Parity?</a> - the metric <code>ExponentiatedGradient</code>&#x27;s constraint directly targets in this repo&#x27;s S3 strategy.</li><li><a href="proxy-variables.html">Proxy Variables</a> - what S2&#x27;s proxy-removal step is actually trying to remove, and why it can never remove all of it.</li></ul>
+<h2 id="related-projects-in-this-repo">Related Projects in This Repo</h2>
+<ul><li><a href="../faircode/strategies.py"><code>faircode/strategies.py</code></a> - the actual S0-S4 implementation this explainer describes.</li><li><a href="../index.html#project-compas"><code>COMPAS/</code></a> - the audit behind the five-strategy progression quoted above, and the one already cited on the project homepage.</li></ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul><li><a href="https://arxiv.org/abs/1803.02453" target="_blank" rel="noreferrer noopener">Agarwal, A. et al. (2018): A Reductions Approach to Fair Classification</a> - the paper behind <code>ExponentiatedGradient</code>, this repo&#x27;s in-processing strategy.</li><li><a href="https://arxiv.org/abs/1610.02413" target="_blank" rel="noreferrer noopener">Hardt, M., Price, E., Srebro, N. (2016): Equality of Opportunity in Supervised Learning</a> - the paper behind the threshold-adjustment approach <code>ThresholdOptimizer</code> implements.</li><li><a href="https://arxiv.org/abs/1802.04422" target="_blank" rel="noreferrer noopener">Friedler, S. et al. (2019): A Comparative Study of Fairness-Enhancing Interventions in Machine Learning</a> - an empirical comparison across the same three intervention families, on different datasets.</li></ul>
+<p><em>Part of <a href="https://instagram.com/thefaircodeproject" target="_blank" rel="noreferrer noopener">The Fair Code Project</a> - exposing and fixing algorithmic bias with real data and open code.</em></p></article>
+  </main>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('explainerThemeToggle');
+      const html = document.documentElement;
+      const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+      function syncTheme() {
+        const current = html.getAttribute('data-theme') || systemPref;
+        toggle.textContent = current === 'light' ? '☾' : '☀';
+        toggle.setAttribute('aria-label', current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        toggle.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
+      }
+
+      syncTheme();
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || systemPref;
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fc-theme', next);
+        syncTheme();
+      });
+    })();
+  </script>
+</body>
+</html>
