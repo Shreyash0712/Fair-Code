@@ -222,7 +222,7 @@ def _intersections(df: pd.DataFrame, dims: list[dict],
     floor = intersection_floor * n_total
 
     def labelize(name, kind):
-        if kind == "age":
+        if kind == "age" and not _looks_like_dates(df[name]):
             nums = [_age_to_numeric(v) for v in df[name]]
             if any(n is not None for n in nums):
                 return pd.Series([_age_band(n) for n in nums], index=df.index)

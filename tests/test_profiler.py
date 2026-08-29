@@ -247,6 +247,31 @@ def test_reference_deviation_and_underrepresentation_flag():
     assert any("'F' under-represented vs reference" in x for x in flags)
 
 
+def test_intersections_labelize_respects_date_guard():
+    # Without the date-vs-age guard, _age_to_numeric() extracts the leading
+    # digit run ("15") from both 15/05/1980 and 15/05/1990, banding both into
+    # "0-18" - merging two distinct, fully-segregated-by-sex birthdates into
+    # one balanced-looking bucket and silently hiding the real absent cells.
+    rows = (
+        [{"DateOfBirth": "15/05/1980", "sex": "M"}] * 60
+        + [{"DateOfBirth": "15/05/1990", "sex": "F"}] * 60
+        + [{"DateOfBirth": "20/06/1985", "sex": "M"}] * 5
+        + [{"DateOfBirth": "20/06/1985", "sex": "F"}] * 5
+    )
+    df = pd.DataFrame(rows)
+    result = profile(df)
+    names = [d["name"] for d in result["dimensions"]]
+    assert names == ["DateOfBirth", "sex"]
+
+    cells = result["intersections"][0]["cells"]
+    labels = {c["a"] for c in cells}
+    assert labels == {"15/05/1980", "15/05/1990"}
+    assert {(c["a"], c["b"]) for c in cells} == {
+        ("15/05/1980", "F"),
+        ("15/05/1990", "M"),
+    }
+
+
 def test_date_column_dropped_not_garbage():
     # A birthdate column must not become 6 nonsense age bands.
     df = pd.DataFrame({
