@@ -37,18 +37,22 @@ def read_table(path: str) -> pd.DataFrame:
         with open(path, "r", encoding="utf-8") as f:
             raw = f.read()
         try:
-            json.loads(raw)
+            parsed = json.loads(raw)
         except json.JSONDecodeError as exc:
             # pandas' own parser error for malformed JSON (e.g. a truncated
-            # file) is an internal/version-specific message, and calling
-            # pd.read_json() a second time with orient="split" below would
-            # just fail again with an equally confusing one. Fail fast with
+            # file) is an internal/version-specific message. Fail fast with
             # a clear message instead, mirroring the JS engine's parseJSON().
             raise ValueError(f"Unsupported JSON format (not valid JSON: {exc}).") from exc
-        try:
-            return pd.read_json(path)
-        except ValueError:
+        # Detect split-orient ({"columns": [...], "data": [...]}, optionally
+        # "index") from the parsed shape rather than trying the default
+        # (records) orientation first and catching its ValueError: a split
+        # file that omits the optional "index" key parses without error
+        # under the default orientation too - as two columns literally named
+        # "columns" and "data" - so the ValueError this used to rely on
+        # never fires, and the wrong shape comes back silently.
+        if isinstance(parsed, dict) and {"columns", "data"} <= parsed.keys():
             return pd.read_json(path, orient="split")
+        return pd.read_json(path)
 
     if suffix == ".parquet":
         try:

@@ -4,6 +4,7 @@ Run from the repo root:  pytest tests/ -q
 """
 
 import importlib.util
+import json
 
 import pandas as pd
 import pytest
@@ -81,6 +82,24 @@ def test_read_table_json_orientations(tmp_path, orient):
         expected.reset_index(drop=True),
         check_dtype=False,
     )
+
+def test_read_table_json_split_orient_without_index_key(tmp_path):
+    # A minimal, hand-written split-orient file that omits the optional
+    # "index" key - the shape assets/profiler-engine.js's own parseJSON()
+    # documents and accepts. pd.read_json(path) (the default orientation
+    # guess) doesn't raise on this shape, it just returns two columns
+    # literally named "columns" and "data", so detection can't rely on
+    # the default orientation failing.
+    path = tmp_path / "data.json"
+    path.write_text(json.dumps({
+        "columns": ["patient_id", "sex", "age"],
+        "data": [[1, "M", 30], [2, "F", 25]],
+    }))
+    df = read_table(str(path))
+    assert list(df.columns) == ["patient_id", "sex", "age"]
+    assert df.iloc[0].tolist() == [1, "M", 30]
+    assert df.iloc[1].tolist() == [2, "F", 25]
+
 
 @requires_openpyxl
 def test_read_table_xlsx(tmp_path):
