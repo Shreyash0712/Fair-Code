@@ -235,6 +235,16 @@ def test_parse_reference_fraction_and_percent():
     assert pct == {"sex": {"m": 0.4, "f": 0.6}}  # percentages normalized to fractions
 
 
+def test_parse_reference_percent_string_values():
+    # "49%" used to raise inside float() and get silently dropped by the
+    # bare except - the whole --reference file went to {} with no error.
+    # The JS engine's parseFloat("49%") == 49 already handled this.
+    pct_strings = parse_reference(pd.DataFrame({
+        "column": ["sex", "sex"], "group": ["m", "f"], "share": ["49%", "51%"],
+    }))
+    assert pct_strings == {"sex": {"m": 0.49, "f": 0.51}}
+
+
 def test_reference_deviation_and_underrepresentation_flag():
     df = pd.DataFrame({"sex": ["M"] * 70 + ["F"] * 30})   # 70/30 actual
     ref = {"sex": {"M": 0.5, "F": 0.5}}

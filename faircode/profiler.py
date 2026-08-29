@@ -367,8 +367,11 @@ def parse_reference(df: pd.DataFrame) -> dict:
 
     raw = []
     for _, row in df.iterrows():
+        value = row[shr_c]
+        if isinstance(value, str) and value.strip().endswith("%"):
+            value = value.strip()[:-1]
         try:
-            share = float(row[shr_c])
+            share = float(value)
         except (TypeError, ValueError):
             continue
         raw.append((str(row[col_c]).strip(), str(row[grp_c]).strip(), share))
