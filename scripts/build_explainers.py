@@ -121,7 +121,7 @@ def parse_table(lines, start_index):
         index += 1
 
     if len(rows) < 2 or not re.match(
-        r"^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$", rows[1]
+        r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$", rows[1]
     ):
         return None
 
