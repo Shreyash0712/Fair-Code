@@ -48,3 +48,12 @@
 /assets/og-light/ @yakew7
 /robots.txt @yakew7
 /sitemap.xml @yakew7
+
+# =========================
+# Top-level docs
+# =========================
+/README.md @yakew7 @Shreyash0712
+/CHANGELOG.md @yakew7 @Shreyash0712
+/CONTRIBUTORS.md @yakew7 @Shreyash0712
+/METRICS.md @yakew7 @Shreyash0712
+/ROADMAP.md @yakew7 @Shreyash0712
