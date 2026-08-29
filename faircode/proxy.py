@@ -31,11 +31,22 @@ def _labelize(df, name, kind):
     return df[name].astype("object")
 
 
-def proxy_hints(df: pd.DataFrame, dimensions: list, alpha=PROXY_ALPHA) -> list:
+def proxy_hints(df: pd.DataFrame, dimensions: list, alpha=PROXY_ALPHA,
+                held_out: dict | None = None) -> list:
     """Chi-squared test of independence over every pair of detected dimensions.
 
     Returns pairs with p < alpha, most-significant first, each with its p-value
     and Cramér's V effect size. Raises RuntimeError if scipy is unavailable.
+
+    `held_out` is an optional {column_name: pandas.Series} map for testing
+    against a protected attribute that has already been dropped from `df` -
+    "we dropped the column so it's fine" is the exact failure mode this
+    catches: without it, a dropped column can never be one half of a tested
+    pair, since it never appears in `dimensions`. Each series must share
+    `df`'s index (same rows, same order); pass the original, pre-drop values.
+    Held-out columns are compared to every detected dimension and to each
+    other, treated as plain categorical values (no age-band normalization,
+    since there's no detected `kind` for a column that was never profiled).
     """
     try:
         from scipy.stats import chi2_contingency
@@ -44,14 +55,16 @@ def proxy_hints(df: pd.DataFrame, dimensions: list, alpha=PROXY_ALPHA) -> list:
             "proxy hints need scipy (install with: pip install faircode[proxy])"
         ) from exc
 
-    cols = [(d["name"], d["kind"]) for d in dimensions]
+    labelized = {d["name"]: _labelize(df, d["name"], d["kind"]) for d in dimensions}
+    for name, series in (held_out or {}).items():
+        labelized[name] = series.astype("object")
+
+    names = list(labelized)
     hints = []
-    for i in range(len(cols)):
-        for j in range(i + 1, len(cols)):
-            name_a, kind_a = cols[i]
-            name_b, kind_b = cols[j]
-            ct = pd.crosstab(_labelize(df, name_a, kind_a),
-                             _labelize(df, name_b, kind_b))
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            name_a, name_b = names[i], names[j]
+            ct = pd.crosstab(labelized[name_a], labelized[name_b])
             if ct.shape[0] < 2 or ct.shape[1] < 2:
                 continue
             chi2, p_value, _dof, _exp = chi2_contingency(ct)

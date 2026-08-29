@@ -18,6 +18,10 @@ requires_openpyxl = pytest.mark.skipif(
     importlib.util.find_spec("openpyxl") is None,
     reason="optional 'excel' extra not installed",
 )
+requires_scipy = pytest.mark.skipif(
+    importlib.util.find_spec("scipy") is None,
+    reason="optional 'proxy' extra not installed",
+)
 
 
 def test_profile_fail_under_returns_nonzero_and_explains_score(tmp_path, capsys):
@@ -314,7 +318,7 @@ def test_profile_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, 
     path = tmp_path / "a.csv"
     path.write_text("sex\nM\nF\n", encoding="utf-8")
 
-    def raise_runtime(_df, _dimensions):
+    def raise_runtime(_df, _dimensions, **_kwargs):
         raise RuntimeError("proxy hints need scipy (install with: pip install faircode[proxy])")
 
     monkeypatch.setattr(cli, "proxy_hints", raise_runtime)
@@ -324,6 +328,69 @@ def test_profile_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, 
     captured = capsys.readouterr()
     assert exit_code == 2
     assert "error: proxy hints need scipy" in captured.err
+
+
+@requires_scipy
+def test_proxy_hints_with_flags_a_dropped_column(tmp_path, capsys):
+    path = tmp_path / "dropped.csv"
+    held_path = tmp_path / "full.csv"
+    zip_code = (["111"] * 100 + ["222"] * 100)
+    race = (["A"] * 100 + ["B"] * 100)  # perfectly aligned with zip_code
+    path.write_text("zip_code\n" + "\n".join(zip_code), encoding="utf-8")
+    held_path.write_text("zip_code,race\n" +
+                         "\n".join(f"{z},{r}" for z, r in zip(zip_code, race)),
+                         encoding="utf-8")
+
+    exit_code = main(["profile", str(path), "--proxy-hints",
+                      "--proxy-hints-with", f"{held_path}=race", "--json"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    result = json.loads(captured.out)
+    pair = next(h for h in result["proxy_hints"] if {h["a"], h["b"]} == {"zip_code", "race"})
+    assert pair["p_value"] < 0.05
+
+
+def test_proxy_hints_with_malformed_spec_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--proxy-hints", "--proxy-hints-with", "noequalssign"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "invalid --proxy-hints-with 'noequalssign'" in captured.err
+
+
+def test_proxy_hints_with_unknown_column_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    held_path = tmp_path / "b.csv"
+    path.write_text("sex\nM\nF\n", encoding="utf-8")
+    held_path.write_text("other\nx\ny\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--proxy-hints",
+              "--proxy-hints-with", f"{held_path}=race"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert f"column 'race' not found in {held_path}" in captured.err
+
+
+def test_proxy_hints_with_row_count_mismatch_returns_2_with_clean_error(tmp_path, capsys):
+    path = tmp_path / "a.csv"
+    held_path = tmp_path / "b.csv"
+    path.write_text("sex\nM\nF\nM\n", encoding="utf-8")
+    held_path.write_text("race\nA\nB\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["profile", str(path), "--proxy-hints",
+              "--proxy-hints-with", f"{held_path}=race"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 2
+    assert "rows must align 1:1" in captured.err
 
 
 requires_scipy = pytest.mark.skipif(
@@ -361,7 +428,7 @@ def test_compare_proxy_hints_runtime_error_returns_2_with_clean_error(tmp_path, 
     path_b = tmp_path / "b.csv"
     path_b.write_text("sex\nM\nF\n", encoding="utf-8")
 
-    def raise_runtime(_df, _dimensions):
+    def raise_runtime(_df, _dimensions, **_kwargs):
         raise RuntimeError("proxy hints need scipy (install with: pip install faircode[proxy])")
 
     monkeypatch.setattr(cli, "proxy_hints", raise_runtime)

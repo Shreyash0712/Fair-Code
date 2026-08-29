@@ -106,6 +106,21 @@ An optional pass (`faircode profile/compare … --proxy-hints`) runs a chi-squar
 This is **Python/CLI-only** (needs the optional `scipy` extra) and never affects the score, so it is
 intentionally **not** part of the JS engine; the two engines stay bit-for-bit identical without it.
 
+**Limitation - a dropped column is invisible by construction.** `proxy_hints()` only tests pairs
+drawn from `dimensions`, the columns actually present in the profiled data. If a protected attribute
+was already removed before profiling - "we dropped the column so it's fine" - it can never be one
+half of a tested pair, since it was never detected in the first place. This is silent: the pass
+reports no association involving that attribute, which reads as "no proxy risk" rather than "this
+column was never checked."
+
+`faircode profile --proxy-hints --proxy-hints-with PATH=COLUMN` (repeatable) closes this specific
+gap: `COLUMN` from `PATH` is treated as an additional column, tested against every detected dimension
+and against every other held-out column, without needing it back in the profiled dataset itself.
+`PATH`'s rows must align 1:1 (same order) with the profiled dataset - there is no join key, so a
+mismatched row count is a hard error rather than a silently wrong result. Programmatically,
+`proxy_hints(df, dimensions, held_out={"race": pd.Series(...)})` does the same thing directly.
+Currently `profile`-only; `compare`'s `--proxy-hints` does not accept `--proxy-hints-with`.
+
 ---
 
 ## 4. Intersectional gaps (informational, not scored)

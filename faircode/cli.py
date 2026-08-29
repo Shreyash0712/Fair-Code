@@ -27,6 +27,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+import pandas as pd
+
 from . import __version__
 from .compare import compare
 from .detect import VALID_KINDS
@@ -72,6 +74,32 @@ def _check_map_columns(overrides, known_columns):
         raise SystemExit(2)
 
 
+def _build_held_out(specs, df):
+    """Parse repeated --proxy-hints-with PATH=COLUMN flags into a
+    {column: pandas.Series} map aligned to `df`'s index, for proxy_hints()'s
+    held_out param. Prints a plain error and raises SystemExit(2) on any
+    parse failure, missing column, or row-count mismatch."""
+    held_out = {}
+    for spec in specs or []:
+        path, sep, column = spec.partition("=")
+        if not sep or not path or not column:
+            print(f"error: invalid --proxy-hints-with '{spec}', expected PATH=COLUMN",
+                  file=sys.stderr)
+            raise SystemExit(2)
+        held_df = _read_or_exit(path)
+        if column not in held_df.columns:
+            print(f"error: --proxy-hints-with column '{column}' not found in {path}",
+                  file=sys.stderr)
+            raise SystemExit(2)
+        if len(held_df) != len(df):
+            print(f"error: --proxy-hints-with {path} has {len(held_df)} row(s), but "
+                  f"the profiled dataset has {len(df)} - rows must align 1:1",
+                  file=sys.stderr)
+            raise SystemExit(2)
+        held_out[column] = pd.Series(held_df[column].to_numpy(), index=df.index)
+    return held_out
+
+
 def _read_or_exit(path: str):
     """Read a table, or print a plain error and raise SystemExit(2)."""
     try:
@@ -114,6 +142,10 @@ def main(argv: list[str] | None = None) -> int:
                    help="score against a reference baseline dataset (columns: column,group,share)")
     p.add_argument("--proxy-hints", action="store_true",
                    help="flag strongly-associated column pairs via chi-squared (needs scipy)")
+    p.add_argument("--proxy-hints-with", action="append", metavar="PATH=COLUMN",
+                   help="also test proxy_hints against a column already dropped from "
+                        "the dataset; PATH's rows must align 1:1 with the profiled "
+                        "dataset (repeatable, needs --proxy-hints)")
     p.add_argument("--min-share", type=float, metavar="F",
                    help="under-representation threshold (default 0.05)")
     p.add_argument("--intersection-floor", type=float, metavar="F",
@@ -222,8 +254,9 @@ def main(argv: list[str] | None = None) -> int:
         result = profile(df, overrides, opts)
 
         if args.proxy_hints:
+            held_out = _build_held_out(args.proxy_hints_with, df)
             try:
-                result["proxy_hints"] = proxy_hints(df, result["dimensions"])
+                result["proxy_hints"] = proxy_hints(df, result["dimensions"], held_out=held_out)
             except RuntimeError as exc:
                 print(f"error: {exc}", file=sys.stderr)
                 return 2

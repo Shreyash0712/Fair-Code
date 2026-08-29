@@ -26,6 +26,34 @@ def test_perfect_proxy_is_flagged():
     assert pair["cramers_v"] > 0.9   # near-perfect association (Yates-corrected)
 
 
+def test_held_out_column_catches_proxy_for_a_dropped_attribute():
+    # "we dropped race so it's fine": race isn't in the profiled dataframe at
+    # all, so it never becomes a dimension - proxy_hints() would otherwise
+    # have no way to flag zip_code as a proxy for it (#328).
+    race = (["A"] * 100 + ["B"] * 100)
+    zip_code = (["111"] * 100 + ["222"] * 100)  # perfectly aligned with race
+    df = pd.DataFrame({"zip_code": zip_code, "sex": ["M", "F"] * 100})
+
+    held_out = {"race": pd.Series(race, index=df.index)}
+    hints = proxy_hints(df, profile(df)["dimensions"], held_out=held_out)
+
+    pair = next(h for h in hints if {h["a"], h["b"]} == {"zip_code", "race"})
+    assert pair["p_value"] < 0.05
+    assert pair["cramers_v"] > 0.9
+
+
+def test_held_out_column_not_flagged_against_an_independent_column():
+    # sex cycles every 2 rows, race every 3 - deliberately different periods
+    # so the two are independent (verified: no hint), unlike the perfectly-
+    # aligned zip_code/race case above.
+    df = pd.DataFrame({"sex": ["male", "female"] * 150})
+    held_out = {"race": pd.Series((["A", "B", "C"] * 100), index=df.index)}
+
+    hints = proxy_hints(df, profile(df)["dimensions"], held_out=held_out)
+
+    assert not any("race" in (h["a"], h["b"]) for h in hints)
+
+
 def test_independent_columns_not_flagged():
     # Deterministic independence: sex alternates every row, grp every 3 rows,
     # so the two are (near) independent and should not be flagged.
