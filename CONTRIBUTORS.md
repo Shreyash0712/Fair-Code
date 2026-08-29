@@ -34,7 +34,7 @@ ordered by merged PR count, most first - ties broken by commit count, then by ea
 date. Within each entry, the PR numbers link the claim to the actual diff, so nothing here is an
 unverifiable "thanks to".
 
-**Snapshot:** 2026-08-28, covering everything merged through **PR #337**.
+**Snapshot:** 2026-08-29, covering everything merged through **PR #340**.
 Anything merged after that date is real and welcome, but is not yet reflected here - the
 [contributors graph](https://github.com/yakew7/Fair-Code/graphs/contributors) is always the live
 source of truth, and the `contrib.rocks` grid above regenerates from it automatically.
@@ -251,6 +251,16 @@ matching the check the web profiler already had for this exact case: every off-d
 same-column crosstab is a tautological 0 that reads as a real representation gap but isn't one
 ([#337](https://github.com/yakew7/Fair-Code/pull/337), closing issue #320).
 
+### Lovish Menaria - [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif)
+
+**2 merged PRs · 2 commits · first merged 2026-08-29**
+
+Added a `provenance` block to the web profiler's "Copy as JSON" export, mirroring the Python side's
+shape (`faircode_version`, `engine: "js"`, `dataset_hash`, `params`, `overrides`) via
+`crypto.subtle.digest` ([#339](https://github.com/yakew7/Fair-Code/pull/339), closing issue #329).
+Also fixed README.md's stale `explainer.html` repo-tree comment
+([#340](https://github.com/yakew7/Fair-Code/pull/340), closing issue #326).
+
 ---
 
 ## Contributions by area
@@ -262,12 +272,12 @@ A cross-cut of the same work, for anyone looking for who to ask about what.
 | **Audits** (`*/unfair.py`, `*/fair.py`, `audit.yaml`) | [@yakew7](https://github.com/yakew7), [@YashKewlani1](https://github.com/YashKewlani1), [@Rajveerx11](https://github.com/Rajveerx11), [@cannotdoit13](https://github.com/cannotdoit13) |
 | **Explainers** (`explainers/`) | [@yakew7](https://github.com/yakew7), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Rajveerx11](https://github.com/Rajveerx11), [@TanishGoyal-Dev](https://github.com/TanishGoyal-Dev), [@shwetagupta1234](https://github.com/shwetagupta1234), [@Aarav1611](https://github.com/Aarav1611) |
 | **Profiler - CLI & loaders** (`faircode/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@propcgamer20-png](https://github.com/propcgamer20-png), [@evanjain-dot](https://github.com/evanjain-dot), [@AnayDhawan](https://github.com/AnayDhawan), [@VedantMadane](https://github.com/VedantMadane), [@mahirhir](https://github.com/mahirhir), [@StudentSuite3](https://github.com/StudentSuite3) |
-| **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P), [@AnayDhawan](https://github.com/AnayDhawan), [@Shreyash0712](https://github.com/Shreyash0712) |
+| **Profiler - web** (`profiler.html`, `assets/profiler-*.js`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@ImMortaL0P](https://github.com/ImMortaL0P), [@AnayDhawan](https://github.com/AnayDhawan), [@Shreyash0712](https://github.com/Shreyash0712), [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif) |
 | **Benchmark harness & paper freeze** | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml) |
 | **CI & workflows** (`.github/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@cannotdoit13](https://github.com/cannotdoit13), [@Shreyash0712](https://github.com/Shreyash0712), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@Swastik-Yadav](https://github.com/Swastik-Yadav) |
 | **Website & explainer build** | [@yakew7](https://github.com/yakew7), [@anujkamdar](https://github.com/anujkamdar), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Ayaan-20-11](https://github.com/Ayaan-20-11) |
 | **Tests** (`tests/`) | [@yakew7](https://github.com/yakew7), [@ahmdkaml](https://github.com/ahmdkaml), [@tomatotomata](https://github.com/tomatotomata), [@ImMortaL0P](https://github.com/ImMortaL0P), [@evanjain-dot](https://github.com/evanjain-dot), [@propcgamer20-png](https://github.com/propcgamer20-png), [@mahirhir](https://github.com/mahirhir), [@StudentSuite3](https://github.com/StudentSuite3) |
-| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo), [@nivedmahendran](https://github.com/nivedmahendran) |
+| **Contributor tooling & docs** | [@yakew7](https://github.com/yakew7), [@propcgamer20-png](https://github.com/propcgamer20-png), [@ahmdkaml](https://github.com/ahmdkaml), [@Swastik-Yadav](https://github.com/Swastik-Yadav), [@Circout-sudo](https://github.com/Circout-sudo), [@nivedmahendran](https://github.com/nivedmahendran), [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif) |
 
 ---
 
@@ -307,6 +317,7 @@ makes `git shortlog -sne` reconcilable with the list above.
 | [@shwetagupta1234](https://github.com/shwetagupta1234) | `shwetagupta1234` |
 | [@Circout-sudo](https://github.com/Circout-sudo) | `Yojeet` |
 | [@Ayaan-20-11](https://github.com/Ayaan-20-11) | `Ayaan Kapoor` - commit email is a local hostname (`ayaankapoor@Mac.lan`), not linked to the GitHub account, so [#331](https://github.com/yakew7/Fair-Code/pull/331) doesn't register in the repo's contributors graph despite being a real merged PR |
+| [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif) | `Lovish Menaria` |
 
 If your name is wrong, missing, or you would rather be listed under a different handle, or not
 listed at all, open an issue or a one-line PR against this file. It gets merged, no questions asked.

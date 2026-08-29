@@ -3,7 +3,7 @@
 # Fair Code - Metrics Tracker
 
 ![Stars](https://img.shields.io/badge/Stars-48-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-21-blue?style=flat-square)
+![Contributors](https://img.shields.io/badge/Contributors-22-blue?style=flat-square)
 ![Forks](https://img.shields.io/badge/Forks-26-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
 ![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
@@ -41,7 +41,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
 | 2026-W35 | 47 | 25 | 8 | 21 | 30K+ total | 18 | 33 | 7 total |
-| 2026-W36 | 48 | 26 | 8 | 21 | 30K+ total | 20 | 0 | 7 total |
+| 2026-W36 | 48 | 26 | 8 | 22 | 30K+ total | 20 | 2 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -78,6 +78,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W35 (yet later) - a third same-week new contributor:** [@StudentSuite3](https://github.com/StudentSuite3) added the guard the web profiler already had (#306) but the CLI didn't - `faircode profile --cross COLA,COLA` (the same column crossed with itself) silently produced flags claiming an absent subgroup that was really just the tautological zero of a same-column crosstab. Now errors with a clear message (#337, closing #320). **Contributors `20 → 21`** (StudentSuite3's first merged PR). Stars, forks, watching, countries, and social reach unchanged from the entry above.
 >
 > **2026-W36 - new week, traction refresh:** Stars `47 → 48`, forks `25 → 26` (live GitHub numbers). Countries reached `18 → 20`, per site analytics. Contributors, watching, social reach, explainers, and audits unchanged from last week's snapshot. Issues-closed resets to `0` for the new week - nothing has closed yet since the #320 close that closed out W35's count.
+>
+> **2026-W36 (later) - web profiler provenance parity, a stale-hash bug caught in review, and a CODEOWNERS gap closed:** new contributor [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif) added a `provenance` block to the web profiler's "Copy as JSON" export (#339, closing #329), mirroring #330's Python-side shape via client-side `crypto.subtle.digest`. Review caught a real bug before crediting it as complete: the exported `dataset_hash` went stale after loading the sample dataset following a real upload, since the cached `File` object was never updated off that path - fixed directly (not part of the PR) by threading the file through as an explicit parameter instead of a side effect. Same contributor also fixed README.md's stale `explainer.html` comment (#340, closing #326) - a docs-only PR that triggered no CODEOWNERS review-request ping, since no top-level doc (`README.md`, `CHANGELOG.md`, `CONTRIBUTORS.md`, `METRICS.md`, `ROADMAP.md`) had an owner. Added `@yakew7`/`@Shreyash0712` to all five, verified both already hold write access via the `CODEOWNERS Access` workflow. **Contributors `21 → 22`** (lovishmenaria14-gif's first merged PR). Issues closed this week: `0 → 2` (#329, #326). Stars, forks, watching, countries, and social reach unchanged from the entry above.
 
 ---
 
@@ -88,10 +90,10 @@ Weekly snapshot of project health. Updated every Friday.
 | Stars | 48 | 50+ | End of 2026 |
 | Forks | 26 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
-| Contributors | 21 | 20+ | End of 2026 |
+| Contributors | 22 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 20 | 20+ | End of 2026 |
-| Issues closed | 0 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 2 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
 | Explainers | 47 | 60+ | End of 2026 |
 
