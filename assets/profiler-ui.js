@@ -111,7 +111,6 @@
   copyJsonBtn.addEventListener('click', copyResultAsJSON);
 
   function readFile(file) {
-  currentFile = file;
     var okExt = /\.(csv|tsv|json|xlsx)$/i.test(file.name);
     var okType = file.type === 'text/csv' || file.type === 'text/tab-separated-values' ||
       file.type === 'application/json' ||
@@ -126,7 +125,7 @@
         try {
           var result = await E.parseXLSX(reader.result);
 
-          runTable(result.table, file.name);
+          runTable(result.table, file.name, file);
 
           if (result.ignoredSheets.length > 0) {
             fileStatus.textContent =
@@ -140,12 +139,12 @@
       };
       reader.readAsArrayBuffer(file);
     } else {
-      reader.onload = function () { runText(String(reader.result), file.name); };
+      reader.onload = function () { runText(String(reader.result), file.name, file); };
       reader.readAsText(file);
     }
   }
 
-  function runText(text, name) {
+  function runText(text, name, file) {
     try {
       var trimmed = text.trim();
       if (/\.json$/i.test(name) || trimmed.startsWith('{') || trimmed.startsWith('[')) {
@@ -153,15 +152,19 @@
       } else {
         var table = E.parseCSV(text);
       }
-      runTable(table, name);
+      runTable(table, name, file);
     } catch (err) {
       showError('Could not profile that file: ' + err.message);
     }
   }
 
   // Shared tail for every input format (CSV/TSV, JSON, XLSX): validate the
-  // parsed table isn't empty, then profile and render it.
-  function runTable(table, name) {
+  // parsed table isn't empty, then profile and render it. `file` is the
+  // original File object for a real upload, or omitted for in-memory data
+  // (the sample dataset, ?demo) - set here rather than in readFile() so it
+  // can't go stale when a later run comes from a non-file path.
+  function runTable(table, name, file) {
+    currentFile = file || null;
     if (!table.columns.length || !table.rows.length) {
       return showError('That file looks empty or has no data rows.');
     }
@@ -702,7 +705,7 @@
     return ok;
   }
 
-    async function copyResultAsJSON() {
+  async function copyResultAsJSON() {
     if (!currentResult) return;
 
     var hash = await fileDigest(currentFile);
