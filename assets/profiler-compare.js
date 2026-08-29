@@ -436,7 +436,7 @@
 
     var style =
       ':root { --bg:#f4f1e8; --surface:#ebe7d9; --border:#d9d3c0; --accent:#a63a22; ' +
-      '--accent3:#2f6b4f; --text:#36321f; --muted:#7d7459; --bar-a:#7d7459; --bar-b:#2f6b4f; } ' +
+      '--accent3:#2f6b4f; --warn:#b8860b; --text:#36321f; --muted:#7d7459; --bar-a:#7d7459; --bar-b:#2f6b4f; } ' +
       'body { font-family:\'Helvetica Neue\',sans-serif; background:var(--bg); color:var(--text); ' +
       'max-width:820px; margin:0 auto; padding:48px 24px; } ' +
       'h1 { font-family:Georgia,serif; margin-bottom:8px; } ' +
@@ -452,6 +452,8 @@
       '.drift-delta.flat { color:var(--muted); } ' +
       '.kind { color:var(--muted); font-size:.6em; text-transform:uppercase; letter-spacing:.08em; font-weight:normal; } ' +
       '.drift-badge { font-size:11px; padding:2px 6px; border-radius:4px; text-transform:uppercase; font-weight:bold; background:var(--border); margin-left:8px; } ' +
+      '.drift-badge.none { background:var(--accent3); color:#fff; } ' +
+      '.drift-badge.moderate { background:var(--warn); color:#fff; } ' +
       '.drift-badge.significant { background:var(--accent); color:#fff; } ' +
       '.drift-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin:16px 0; } ' +
       '.drift-card-head { display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:12px; } ' +

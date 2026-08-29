@@ -152,6 +152,17 @@ def test_compare_to_html_renders_key_figures(mock_compare_result):
     assert "Dataset B" in html_out
 
 
+def test_compare_to_html_styles_all_three_drift_levels(mock_compare_result):
+    # Only .drift-badge.significant was styled; "moderate" and "none" fell
+    # back to the flat grey base style, indistinguishable from each other
+    # in the exported/CLI --html report (closes #322).
+    html_out = compare_to_html(mock_compare_result)
+
+    assert ".drift-badge.none" in html_out
+    assert ".drift-badge.moderate" in html_out
+    assert ".drift-badge.significant" in html_out
+
+
 def test_compare_to_html_renders_added_removed_dimensions(mock_compare_result):
     """Mirrors test_compare_to_terminal_renders_added_removed_dimensions for
     the HTML branch, which had no equivalent coverage (#302)."""
