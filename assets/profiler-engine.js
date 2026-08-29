@@ -584,13 +584,13 @@
     for (i = 0; i < nTotal; i++) {
       if (la[i] === null || lb[i] === null) continue;
       aVals[la[i]] = 1; bVals[lb[i]] = 1;
-      key = la[i] + ' ' + lb[i];
+      key = la[i] + '\0' + lb[i];
       ct[key] = (ct[key] || 0) + 1;
     }
     var cells = [];
     Object.keys(aVals).forEach(function (av) {
       Object.keys(bVals).forEach(function (bv) {
-        var count = ct[av + ' ' + bv] || 0;
+        var count = ct[av + '\0' + bv] || 0;
         if (count === 0 || count < floor) {
           cells.push({ a: String(av), b: String(bv), count: count });
         }
