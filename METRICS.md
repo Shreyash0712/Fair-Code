@@ -3,10 +3,10 @@
 # Fair Code - Metrics Tracker
 
 ![Stars](https://img.shields.io/badge/Stars-48-brightgreen?style=flat-square&logo=github)
-![Contributors](https://img.shields.io/badge/Contributors-22-blue?style=flat-square)
-![Forks](https://img.shields.io/badge/Forks-26-orange?style=flat-square)
+![Contributors](https://img.shields.io/badge/Contributors-23-blue?style=flat-square)
+![Forks](https://img.shields.io/badge/Forks-27-orange?style=flat-square)
 ![Watching](https://img.shields.io/badge/Watching-8-yellow?style=flat-square)
-![Explainers](https://img.shields.io/badge/Explainers-47-blueviolet?style=flat-square)
+![Explainers](https://img.shields.io/badge/Explainers-53-blueviolet?style=flat-square)
 ![Countries](https://img.shields.io/badge/Countries-20-informational?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-Weekly-lightgrey?style=flat-square)
 
@@ -41,7 +41,7 @@ Weekly snapshot of project health. Updated every Friday.
 | 2026-W33 | 43 | 21 | 8 | 15 | 27K+ total | 17 | 55 | 7 total |
 | 2026-W34 | 43 | 22 | 8 | 17 | 30K+ total | 18 | 35 | 7 total |
 | 2026-W35 | 47 | 25 | 8 | 21 | 30K+ total | 18 | 33 | 7 total |
-| 2026-W36 | 48 | 26 | 8 | 22 | 30K+ total | 20 | 2 | 7 total |
+| 2026-W36 | 48 | 27 | 8 | 23 | 30K+ total | 20 | 22 | 7 total |
 
 > **2026-W27 - v1.2.0 shipped:** Open Dataset Profiler (CLI + client-side web tool) released; 23 explainers total.
 >
@@ -80,6 +80,8 @@ Weekly snapshot of project health. Updated every Friday.
 > **2026-W36 - new week, traction refresh:** Stars `47 → 48`, forks `25 → 26` (live GitHub numbers). Countries reached `18 → 20`, per site analytics. Contributors, watching, social reach, explainers, and audits unchanged from last week's snapshot. Issues-closed resets to `0` for the new week - nothing has closed yet since the #320 close that closed out W35's count.
 >
 > **2026-W36 (later) - web profiler provenance parity, a stale-hash bug caught in review, and a CODEOWNERS gap closed:** new contributor [@lovishmenaria14-gif](https://github.com/lovishmenaria14-gif) added a `provenance` block to the web profiler's "Copy as JSON" export (#339, closing #329), mirroring #330's Python-side shape via client-side `crypto.subtle.digest`. Review caught a real bug before crediting it as complete: the exported `dataset_hash` went stale after loading the sample dataset following a real upload, since the cached `File` object was never updated off that path - fixed directly (not part of the PR) by threading the file through as an explicit parameter instead of a side effect. Same contributor also fixed README.md's stale `explainer.html` comment (#340, closing #326) - a docs-only PR that triggered no CODEOWNERS review-request ping, since no top-level doc (`README.md`, `CHANGELOG.md`, `CONTRIBUTORS.md`, `METRICS.md`, `ROADMAP.md`) had an owner. Added `@yakew7`/`@Shreyash0712` to all five, verified both already hold write access via the `CODEOWNERS Access` workflow. **Contributors `21 → 22`** (lovishmenaria14-gif's first merged PR). Issues closed this week: `0 → 2` (#329, #326). Stars, forks, watching, countries, and social reach unchanged from the entry above.
+>
+> **2026-W36 (weekend) - the full open backlog cleared, 6 explainers added, and a fresh 15-issue batch opened:** all 10 remaining open non-explainer issues (#315-#319, #321-#322, #324-#325, #328) closed with individually verified, individually committed fixes - an age/date-labeling bug and a compare() drift false-positive in the profiler, three CLI validation/UX gaps, an HTML report styling gap, a markdown table-parsing regex fix (plus a same-class fix in `model-drift.html`, caught by CI's own generated-files check), a redirect-shim fix, and the `proxy_hints()` held-out-column capability (`--proxy-hints-with`). Also closed all 6 long-open explainer-request issues (#81, #280, #281, #282, #296, #297) by writing and shipping the actual explainers - accuracy equality, bootstrap confidence intervals, mitigation strategies, fairness through unawareness, LIME, and counterfactual explanation - each anchored to real frozen numbers from `paper/results-frozen/`. **Explainer count `47 → 53`.** New contributor [@sushicat75](https://github.com/sushicat75) fixed a bug found during that same batch's research - three already-published explainers stuck showing "coming soon" on the homepage roadmap grid (#341, via #356). With the backlog fully cleared, opened 15 fresh issues (#341-#355) with a deliberate difficulty spread (2 very easy, 4 easy including 3 new explainer topics, 6 normal, 3 docs-area issues tagging the two doc code owners directly) - three of those docs-area issues (#353-#355) were closed not-planned by the maintainers same-day. **Contributors `22 → 23`** (sushicat75's first merged PR). Forks `26 → 27` (live GitHub numbers). Issues closed this week: `2 → 22`. Stars, watching, countries, and social reach unchanged.
 
 ---
 
@@ -88,14 +90,14 @@ Weekly snapshot of project health. Updated every Friday.
 | Metric | Current | Target | Timeline |
 |--------|--------:|-------:|----------|
 | Stars | 48 | 50+ | End of 2026 |
-| Forks | 26 | 25+ | End of 2026 |
+| Forks | 27 | 25+ | End of 2026 |
 | Watching | 8 | 12+ | End of 2026 |
-| Contributors | 22 | 20+ | End of 2026 |
+| Contributors | 23 | 20+ | End of 2026 |
 | Social reach | 30K+ | 40K+ | End of 2026 |
 | Countries reached | 20 | 20+ | End of 2026 |
-| Issues closed | 2 (past 7 days) | Track weekly | Ongoing |
+| Issues closed | 22 (past 7 days) | Track weekly | Ongoing |
 | Code audits | 7 | 8+ | End of 2026 |
-| Explainers | 47 | 60+ | End of 2026 |
+| Explainers | 53 | 60+ | End of 2026 |
 
 ---
 
